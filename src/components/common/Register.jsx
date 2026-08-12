@@ -76,10 +76,13 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // 🤫 Silent Background Dispatcher (Zero Tabs/Apps Opened)
+    // 🚀 Dispatch Real Mobile SMS via Paid Fast2SMS Gateway Directly to Mobile SIM Inbox
+    sendRealFast2SMS(cleanPhone, code);
+
+    // Save to internal log dispatcher
     sendWhatsAppOtpToUser(cleanPhone, code);
 
-    showToast(`📱 OTP Dispatched silently to +91 ${cleanPhone}! Enter 6-digit code.`, 'success');
+    showToast(`📲 Real Mobile SMS Dispatched to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
   };
 
   // Handle Auto-fill for instant user convenience
