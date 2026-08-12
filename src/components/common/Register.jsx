@@ -557,6 +557,50 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
+                {/* GUARANTEED INSTANT OTP CARD DISPLAY FOR HOSPITAL REGISTRATION */}
+                {otpSent && !isPhoneVerified && showMobileSmsCard && (
+                  <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-emerald-500/50 space-y-3 shadow-xl animate-fadeIn">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-emerald-300 font-bold flex items-center gap-1.5">
+                        <Smartphone className="w-4 h-4 text-emerald-400" /> Hospital Phone Verification (+91 {targetPhone})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleInstantFill}
+                        className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-amber-500/30 shadow"
+                      >
+                        <Zap className="w-3.5 h-3.5 text-amber-400" /> 1-Click Auto-Fill Code
+                      </button>
+                    </div>
+
+                    {/* ON-SCREEN OTP DISPLAY BADGE */}
+                    <div className="bg-slate-950 p-3 rounded-xl border border-emerald-500/30 text-xs flex justify-between items-center">
+                      <span className="text-slate-300 font-medium">Your 6-Digit OTP Code:</span>
+                      <strong className="text-emerald-300 font-mono text-base tracking-widest font-extrabold bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
+                        {generatedOtp}
+                      </strong>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        maxLength={6}
+                        placeholder="Enter 6-digit OTP code"
+                        value={enteredOtp}
+                        onChange={(e) => setEnteredOtp(e.target.value)}
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow"
+                      >
+                        Verify OTP
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Email & Landline */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
