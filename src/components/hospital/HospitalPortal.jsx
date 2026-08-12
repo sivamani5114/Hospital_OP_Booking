@@ -793,40 +793,75 @@ export default function HospitalPortal() {
                   <span className="text-[10px] text-cyan-400 font-semibold">{docForm.selectedQualifications?.length || 0} Degrees Selected</span>
                 </label>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 max-h-48 overflow-y-auto custom-scrollbar bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 max-h-56 overflow-y-auto custom-scrollbar bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
                   {OFFICIAL_QUALIFICATIONS.map((q, idx) => {
                     const isSelected = docForm.selectedQualifications?.includes(q);
+                    const degreeCertKey = `cert_${q.split(' ')[0]}`;
+                    const certFileName = docForm[`${degreeCertKey}_Name`];
                     return (
-                      <label
+                      <div
                         key={idx}
-                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all border ${
+                        className={`p-2 rounded-lg transition-all border space-y-1.5 ${
                           isSelected 
                             ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/40 font-bold' 
                             : 'text-slate-300 border-slate-900 hover:bg-slate-900'
                         }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={(e) => {
-                            setDocForm(prev => {
-                              const current = prev.selectedQualifications || [];
-                              const next = e.target.checked
-                                ? [...current, q]
-                                : current.filter(item => item !== q);
-                              
-                              const joined = next.join(', ');
-                              return {
-                                ...prev,
-                                selectedQualifications: next,
-                                qualificationDegree: joined || 'MBBS'
-                              };
-                            });
-                          }}
-                          className="rounded accent-cyan-500"
-                        />
-                        <span className="text-[11px]">{q}</span>
-                      </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              setDocForm(prev => {
+                                const current = prev.selectedQualifications || [];
+                                const next = e.target.checked
+                                  ? [...current, q]
+                                  : current.filter(item => item !== q);
+                                
+                                const joined = next.join(', ');
+                                return {
+                                  ...prev,
+                                  selectedQualifications: next,
+                                  qualificationDegree: joined || 'MBBS'
+                                };
+                              });
+                            }}
+                            className="rounded accent-cyan-500"
+                          />
+                          <span className="text-[11px]">{q}</span>
+                        </label>
+
+                        {/* Direct Certificate Upload Input when Degree is Selected */}
+                        {isSelected && (
+                          <div className="pt-1 border-t border-cyan-500/20 text-[10px]">
+                            <span className="text-slate-400 block mb-0.5 font-semibold">Upload {q.split(' ')[0]} Certificate (PDF/Img):</span>
+                            <input
+                              type="file"
+                              accept="image/*,.pdf"
+                              onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => {
+                                    setDocForm(prev => ({
+                                      ...prev,
+                                      [degreeCertKey]: reader.result,
+                                      [`${degreeCertKey}_Name`]: file.name
+                                    }));
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                              className="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-1.5 file:py-0.5 file:mr-1 file:font-bold"
+                            />
+                            {certFileName && (
+                              <span className="text-[9px] text-cyan-400 font-bold block mt-0.5">
+                                ✓ Uploaded: {certFileName}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
