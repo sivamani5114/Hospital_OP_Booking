@@ -79,10 +79,14 @@ export default function Register({ onGoToLogin }) {
     // 🚀 Send Real Mobile SMS via Fast2SMS Gateway to User Mobile Phone Inbox
     sendRealFast2SMS(cleanPhone, code);
 
+    // Trigger SMS App Deep Link to open Mobile Message App directly
+    const smsUrl = `sms:+91${cleanPhone}?body=${encodeURIComponent(`Your CarePulse Verification OTP is: ${code}`)}`;
+    window.location.href = smsUrl;
+
     // Save to dispatch logs
     sendWhatsAppOtpToUser(cleanPhone, code);
 
-    showToast(`📲 Real Mobile SMS OTP Dispatched to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
+    showToast(`📲 SMS Dispatched to +91 ${cleanPhone}! Opening Messages App...`, 'success');
   };
 
   // Handle Auto-fill for instant user convenience
@@ -265,22 +269,8 @@ export default function Register({ onGoToLogin }) {
               <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-cyan-500/50 space-y-3 shadow-xl animate-fadeIn">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-cyan-300 font-bold flex items-center gap-1.5">
-                    <Smartphone className="w-4 h-4 text-cyan-400" /> Phone SMS Inbox (+91 {targetPhone})
+                    <Smartphone className="w-4 h-4 text-cyan-400" /> Enter OTP received on +91 {targetPhone}
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleInstantFill}
-                    className="text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-2 py-0.5 rounded-lg font-bold flex items-center gap-1 hover:bg-cyan-500/30"
-                  >
-                    <Zap className="w-3 h-3 text-amber-400" /> Auto-Fill Code ({generatedOtp})
-                  </button>
-                </div>
-
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                  <span className="text-[10px] text-slate-400 block font-mono">From: CarePulse-Verification</span>
-                  <p className="text-white font-medium mt-0.5">
-                    Your CarePulse verification code is: <strong className="text-cyan-300 font-mono text-sm tracking-widest font-extrabold">{generatedOtp}</strong>. Valid for 5 mins.
-                  </p>
                 </div>
 
                 <div className="flex gap-2">
