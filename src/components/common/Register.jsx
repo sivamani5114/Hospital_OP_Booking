@@ -299,13 +299,28 @@ export default function Register({ onGoToLogin }) {
               </div>
             </div>
 
-            {/* GUARANTEED INSTANT MOBILE SMS CARD DISPLAY */}
+            {/* GUARANTEED INSTANT MOBILE SMS CARD DISPLAY WITH ON-SCREEN OTP */}
             {otpSent && !isPhoneVerified && showMobileSmsCard && (
               <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-cyan-500/50 space-y-3 shadow-xl animate-fadeIn">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-cyan-300 font-bold flex items-center gap-1.5">
-                    <Smartphone className="w-4 h-4 text-cyan-400" /> Enter OTP received on +91 {targetPhone}
+                    <Smartphone className="w-4 h-4 text-cyan-400" /> Phone Verification (+91 {targetPhone})
                   </span>
+                  <button
+                    type="button"
+                    onClick={handleInstantFill}
+                    className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-amber-500/30 shadow"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-400" /> 1-Click Auto-Fill Code
+                  </button>
+                </div>
+
+                {/* ON-SCREEN OTP DISPLAY BADGE */}
+                <div className="bg-slate-950 p-3 rounded-xl border border-cyan-500/30 text-xs flex justify-between items-center">
+                  <span className="text-slate-300 font-medium">Your 6-Digit OTP Code:</span>
+                  <strong className="text-cyan-300 font-mono text-base tracking-widest font-extrabold bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/30">
+                    {generatedOtp}
+                  </strong>
                 </div>
 
                 <div className="flex gap-2">
