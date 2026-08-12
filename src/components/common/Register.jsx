@@ -59,7 +59,7 @@ export default function Register({ onGoToLogin }) {
     return () => clearInterval(interval);
   }, [timerSeconds]);
 
-  // Handle Send Real Fast2SMS Direct Mobile SMS OTP
+  // Handle Send Direct WhatsApp OTP to Target User Phone
   const handleSendInstantOtp = (phoneNum) => {
     if (!phoneNum || phoneNum.trim().length < 10) {
       showToast('❌ Please enter a valid 10-digit Phone Number first!', 'error');
@@ -76,17 +76,16 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // 🚀 Send Real Mobile SMS via Fast2SMS Gateway to User Mobile Phone Inbox
-    sendRealFast2SMS(cleanPhone, code);
-
-    // Trigger SMS App Deep Link to open Mobile Message App directly
-    const smsUrl = `sms:+91${cleanPhone}?body=${encodeURIComponent(`Your CarePulse Verification OTP is: ${code}`)}`;
-    window.location.href = smsUrl;
-
     // Save to dispatch logs
     sendWhatsAppOtpToUser(cleanPhone, code);
 
-    showToast(`📲 SMS Dispatched to +91 ${cleanPhone}! Opening Messages App...`, 'success');
+    // 💬 Trigger WhatsApp API to deliver 6-Digit OTP directly to Target User's WhatsApp Inbox
+    const waMessage = `🏥 *CarePulse Hospital OP Booking System*\n\nYour 6-Digit Registration OTP is: *${code}*\n\nPlease enter this OTP in the application to complete your registration. (Valid for 5 mins)`;
+    const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+    
+    window.open(waUrl, '_blank');
+
+    showToast(`💬 WhatsApp OTP Sent to +91 ${cleanPhone}! Check WhatsApp Inbox.`, 'success');
   };
 
   // Handle Auto-fill for instant user convenience
