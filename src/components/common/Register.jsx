@@ -269,18 +269,6 @@ export default function Register({ onGoToLogin }) {
                   </span>
                 </div>
 
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-                  <span className="text-slate-400">SMS / System OTP Code:</span>
-                  <span className="font-mono text-cyan-300 font-extrabold text-sm tracking-widest bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/20">{generatedOtp}</span>
-                  <button
-                    type="button"
-                    onClick={handleInstantFill}
-                    className="text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-1 rounded-lg font-bold hover:bg-cyan-500/30"
-                  >
-                    ⚡ Auto-Fill
-                  </button>
-                </div>
-
                 <div className="flex gap-2">
                   <input
                     type="text"
