@@ -519,7 +519,37 @@ export default function UserPortal() {
                     <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
                   </h3>
                   <p className="text-xs text-slate-400">{h.address}, {h.area}, {h.city}</p>
-                  <p className="text-xs text-slate-500">Contact: {h.phone}</p>
+
+                  {/* 📍 Google Maps Navigation Button */}
+                  <div className="flex items-center justify-between pt-1">
+                    <p className="text-xs text-slate-500">Contact: {h.phone}</p>
+                    <a
+                      href={h.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.hospitalName + ' ' + h.city)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all"
+                    >
+                      <MapPin className="w-3 h-3 text-emerald-400" /> Google Maps 📍
+                    </a>
+                  </div>
+
+                  {/* 🏥 Real-time Emergency Beds Availability Widget */}
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 grid grid-cols-3 gap-1 text-center">
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-[9px] text-slate-400 block font-bold">ICU BEDS</span>
+                      <span className="text-xs font-extrabold text-cyan-400">{h.icuBeds || 6} Free</span>
+                    </div>
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-[9px] text-slate-400 block font-bold">GENERAL</span>
+                      <span className="text-xs font-extrabold text-emerald-400">{h.generalBeds || 18} Free</span>
+                    </div>
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-[9px] text-slate-400 block font-bold">AMBULANCE</span>
+                      <span className="text-[10px] font-extrabold text-rose-400">24/7 Ready 🚑</span>
+                    </div>
+                  </div>
+
                   <div className="flex flex-wrap gap-1 pt-1">
                     {h.departments.map((dept, idx) => (
                       <span key={idx} className="bg-slate-900 text-cyan-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-800">

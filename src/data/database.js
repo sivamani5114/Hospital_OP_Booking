@@ -69,6 +69,11 @@ export const initialHospitals = [
     departments: ['Cardiology', 'Neurology', 'Pediatrics', 'General Medicine'],
     opFee: 700,
     status: 'APPROVED',
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Apollo+Hospital+Jubilee+Hills+Hyderabad',
+    icuBeds: 8,
+    generalBeds: 24,
+    oxygenBeds: 15,
+    ambulanceReady: true,
     logo: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=600&auto=format&fit=crop&q=80',
     createdAt: '2026-08-01'
   },
@@ -85,6 +90,11 @@ export const initialHospitals = [
     departments: ['Orthopedics', 'Dermatology', 'Cardiology'],
     opFee: 600,
     status: 'APPROVED',
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sunshine+Hospital+MG+Road+Vijayawada',
+    icuBeds: 5,
+    generalBeds: 18,
+    oxygenBeds: 10,
+    ambulanceReady: true,
     logo: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80',
     createdAt: '2026-08-02'
   },
@@ -100,9 +110,14 @@ export const initialHospitals = [
     emergencyAvailable: false,
     departments: ['Pediatrics', 'Dermatology'],
     opFee: 500,
-    status: 'PENDING',
-    logo: 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&auto=format&fit=crop&q=80',
-    createdAt: '2026-08-10'
+    status: 'APPROVED',
+    mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Care+Cure+Hospital+Arilova+Visakhapatnam',
+    icuBeds: 3,
+    generalBeds: 12,
+    oxygenBeds: 6,
+    ambulanceReady: true,
+    logo: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80',
+    createdAt: '2026-08-03'
   }
 ];
 
