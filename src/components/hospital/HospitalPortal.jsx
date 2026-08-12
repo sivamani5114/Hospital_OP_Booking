@@ -76,6 +76,7 @@ export default function HospitalPortal() {
 
   // Modal States
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
+  const [editingDoctorId, setEditingDoctorId] = useState(null);
   const [customSpecialtyText, setCustomSpecialtyText] = useState('');
   const [customQualificationText, setCustomQualificationText] = useState('');
 
@@ -128,9 +129,9 @@ export default function HospitalPortal() {
     }
 
     const finalSpecialty = docForm.specialization.startsWith('OTHER') ? customSpecialtyText : docForm.specialization.split(' (')[0];
-    const finalQualification = docForm.qualificationDegree.startsWith('OTHER') ? customQualificationText : docForm.qualificationDegree.split(' (')[0];
+    const finalQualification = docForm.qualificationDegree.startsWith('OTHER') ? customQualificationText : docForm.qualificationDegree;
 
-    addDoctor({
+    const doctorData = {
       hospitalId: hospital._id,
       doctorName: docForm.doctorName,
       medicalRegistrationNo: docForm.medicalRegistrationNo.toUpperCase(),
@@ -138,21 +139,29 @@ export default function HospitalPortal() {
       qualificationDegree: finalQualification,
       specialization: finalSpecialty,
       department: finalSpecialty,
-      experience: Number(docForm.experience),
+      experience: Number(docForm.experience) || 5,
       phone: docForm.phone,
-      opFee: Number(docForm.opFee),
-      availableDays: docForm.availableDays,
-      availableTime: docForm.availableTime,
-      maxPatients: Number(docForm.maxPatients),
+      opFee: Number(docForm.opFee) || 500,
+      availableDays: docForm.availableDays || 'Monday - Saturday',
+      availableTime: docForm.availableTime || '09:00 AM - 01:00 PM',
+      maxPatients: Number(docForm.maxPatients) || 20,
       isVerified: true,
       image: docForm.image || PRESET_AVATARS[0]
-    });
+    };
+
+    if (editingDoctorId) {
+      updateDoctor(editingDoctorId, doctorData);
+      alert('✅ Doctor Profile Details Updated Successfully!');
+    } else {
+      addDoctor(doctorData);
+      alert('✅ Educated & Verified Doctor Added with Medical Council Reg. No!');
+    }
 
     setShowAddDoctorModal(false);
-    setDocForm({ doctorName: '', medicalRegistrationNo: '', qualificationDegree: OFFICIAL_QUALIFICATIONS[0], specialization: ALL_DOCTOR_CATEGORIES[0], department: 'Cardiology', experience: 5, phone: '', opFee: 500, availableDays: 'Monday - Saturday', availableTime: '09:00 AM - 01:00 PM', maxPatients: 20, image: PRESET_AVATARS[0] });
+    setEditingDoctorId(null);
+    setDocForm({ doctorName: '', medicalRegistrationNo: '', qualificationDegree: 'MBBS (Bachelor of Medicine & Surgery)', selectedQualifications: ['MBBS (Bachelor of Medicine & Surgery)'], specialization: ALL_DOCTOR_CATEGORIES[0], department: 'Cardiology', experience: '', phone: '', opFee: '', availableDays: 'Monday - Saturday', availableTime: '', maxPatients: '', image: '' });
     setCustomSpecialtyText('');
     setCustomQualificationText('');
-    alert('✅ Educated & Verified Doctor Added with Medical Council Reg. No!');
   };
 
   const handleUpdateHospitalProfile = (e) => {
@@ -495,10 +504,35 @@ export default function HospitalPortal() {
                   <p>Fee: <strong className="text-emerald-400">₹{doc.opFee}</strong> | Max Patients: {doc.maxPatients}/day</p>
                 </div>
 
-                <div className="flex justify-end pt-1">
+                <div className="flex justify-end gap-2 pt-1">
+                  <button
+                    onClick={() => {
+                      setEditingDoctorId(doc._id);
+                      setDocForm({
+                        doctorName: doc.doctorName || '',
+                        medicalRegistrationNo: doc.medicalRegistrationNo || '',
+                        qualificationDegree: doc.qualification || doc.qualificationDegree || 'MBBS',
+                        selectedQualifications: doc.qualification ? doc.qualification.split(', ') : ['MBBS'],
+                        specialization: doc.specialization || ALL_DOCTOR_CATEGORIES[0],
+                        department: doc.department || 'General Medicine',
+                        experience: doc.experience || '',
+                        phone: doc.phone || '',
+                        opFee: doc.opFee || '',
+                        availableDays: doc.availableDays || 'Monday - Saturday',
+                        availableTime: doc.availableTime || '',
+                        maxPatients: doc.maxPatients || '',
+                        image: doc.image || ''
+                      });
+                      setShowAddDoctorModal(true);
+                    }}
+                    className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+                  </button>
                   <button
                     onClick={() => deleteDoctor(doc._id)}
-                    className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl"
+                    className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800"
+                    title="Delete Doctor Profile"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -685,7 +719,7 @@ export default function HospitalPortal() {
             </button>
 
             <h3 className="font-extrabold text-white text-xl flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-emerald-400" /> Add Doctor (Medical License Reg. ID & Qualifications)
+              <ShieldCheck className="w-6 h-6 text-emerald-400" /> {editingDoctorId ? 'Edit Doctor Profile Details' : 'Add Doctor (Medical License Reg. ID & Qualifications)'}
             </h3>
 
             <form onSubmit={handleCreateDoctorSubmit} className="space-y-4 text-xs">
