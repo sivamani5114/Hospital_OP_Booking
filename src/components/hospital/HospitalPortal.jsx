@@ -912,6 +912,113 @@ export default function HospitalPortal() {
                 </div>
               </div>
 
+              {/* 📑 MANDATORY 12 HOSPITAL LEGAL CERTIFICATES & OWNER VERIFICATION DOCS UPLOAD BOX */}
+              <div className="bg-slate-900/90 p-4 rounded-2xl border border-amber-500/40 space-y-3">
+                <h4 className="font-bold text-amber-300 text-xs flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    📑 Hospital Legal Certificates & Owner Verification (12 Documents) *
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-mono font-bold bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">12 MANDATORY DOCS</span>
+                </h4>
+                <p className="text-[10px] text-slate-400">Please provide all 12 legal certificates & owner verification document uploads below to complete doctor profile registration:</p>
+
+                {/* 👨‍💼 1. Owner Verification Docs (3 Documents) */}
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+                  <span className="text-cyan-400 font-bold text-[11px] block">👨‍💼 1. Owner / Authorized Person Verification (3 Docs):</span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div>
+                      <label className="text-slate-300 text-[10px] font-bold block mb-1">Aadhaar / Govt Photo ID *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setDocForm(prev => ({ ...prev, ownerAadhaarDoc: reader.result, ownerAadhaarDocName: file.name }));
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {docForm.ownerAadhaarDocName && <span className="text-[9px] text-cyan-400 font-bold block">✓ {docForm.ownerAadhaarDocName}</span>}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-300 text-[10px] font-bold block mb-1">Personal PAN Card *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setDocForm(prev => ({ ...prev, ownerPanDoc: reader.result, ownerPanDocName: file.name }));
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {docForm.ownerPanDocName && <span className="text-[9px] text-cyan-400 font-bold block">✓ {docForm.ownerPanDocName}</span>}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-300 text-[10px] font-bold block mb-1">Authorization Letter *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setDocForm(prev => ({ ...prev, authLetterDoc: reader.result, authLetterDocName: file.name }));
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {docForm.authLetterDocName && <span className="text-[9px] text-cyan-400 font-bold block">✓ {docForm.authLetterDocName}</span>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🏥 2. Hospital Government Licenses (9 Documents) */}
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+                  <span className="text-emerald-400 font-bold text-[11px] block">🏥 2. Hospital Government Licenses & Compliance (9 Docs):</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
+                    {[
+                      { label: '1. Hospital Reg Certificate', key: 'hospRegDoc' },
+                      { label: '2. Clinical Establishment Cert', key: 'clinicalCertDoc' },
+                      { label: '3. NABH Certificate', key: 'nabhCertDoc' },
+                      { label: '4. Hospital Business PAN', key: 'hospPanDoc' },
+                      { label: '5. GST Certificate', key: 'gstCertDoc' },
+                      { label: '6. Pharmacy Drug License', key: 'drugLicenseDoc' },
+                      { label: '7. Biomedical Waste Auth', key: 'biomedicalDoc' },
+                      { label: '8. Fire Safety NOC Cert', key: 'fireNocDoc' },
+                      { label: '9. Trade / Municipal License', key: 'tradeLicenseDoc' }
+                    ].map(item => (
+                      <div key={item.key} className="bg-slate-900 p-2 rounded-lg border border-slate-800 space-y-1">
+                        <label className="text-slate-300 font-bold block truncate">{item.label} *</label>
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => setDocForm(prev => ({ ...prev, [item.key]: reader.result, [`${item.key}Name`]: file.name }));
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 rounded p-1 text-[9px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-1.5 file:py-0.5 file:mr-1 file:font-bold"
+                        />
+                        {docForm[`${item.key}Name`] && <span className="text-[9px] text-emerald-400 font-bold block">✓ {docForm[`${item.key}Name`]}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
 
 
               {/* Specialization Category */}
