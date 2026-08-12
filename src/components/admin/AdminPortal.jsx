@@ -1054,31 +1054,40 @@ export default function AdminPortal() {
                   </div>
                 </div>
 
-                {/* 9 Government Licenses Grid */}
-                <span className="text-emerald-400 font-bold text-[11px] block">🏥 GOVERNMENT LICENSES & CERTIFICATES:</span>
-                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                {/* 9 Government Licenses Grid with License Numbers */}
+                <span className="text-emerald-400 font-bold text-[11px] block">🏥 GOVERNMENT LICENSES, CERTIFICATE NUMBERS & FILES:</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
                   {[
-                    { title: '1. Reg Certificate', key: 'regCertificate' },
-                    { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert' },
-                    { title: '3. NABH Certificate', key: 'nabhCertificate' },
-                    { title: '4. Hospital PAN Card', key: 'hospitalPan' },
-                    { title: '5. GST Certificate', key: 'gstCertificate' },
-                    { title: '6. Drug License', key: 'drugLicense' },
-                    { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth' },
-                    { title: '8. Fire Safety NOC', key: 'fireNocCert' },
-                    { title: '9. Trade License', key: 'tradeLicenseCert' }
-                  ].map(doc => (
-                    <div key={doc.key} className="bg-slate-950 p-2 rounded-lg border border-slate-800 flex justify-between items-center">
-                      <span className="text-slate-300 font-medium truncate pr-1">{doc.title}</span>
-                      {selectedHospitalDetails[doc.key] ? (
-                        <a href={selectedHospitalDetails[doc.key]} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold shrink-0">
-                          View PDF
-                        </a>
-                      ) : (
-                        <span className="text-slate-500 italic shrink-0">Not Provided</span>
-                      )}
-                    </div>
-                  ))}
+                    { title: '1. Hospital Reg Cert', key: 'regCertificate', numKey: 'regCertificateNo' },
+                    { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert', numKey: 'clinicalEstablishmentCertNo' },
+                    { title: '3. NABH Certificate', key: 'nabhCertificate', numKey: 'nabhCertificateNo' },
+                    { title: '4. Hospital PAN Card', key: 'hospitalPan', numKey: 'hospitalPanNo' },
+                    { title: '5. GST Certificate', key: 'gstCertificate', numKey: 'gstCertificateNo' },
+                    { title: '6. Pharmacy Drug License', key: 'drugLicense', numKey: 'drugLicenseNo' },
+                    { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth', numKey: 'biomedicalWasteAuthNo' },
+                    { title: '8. Fire Safety NOC', key: 'fireNocCert', numKey: 'fireNocCertNo' },
+                    { title: '9. Trade License', key: 'tradeLicenseCert', numKey: 'tradeLicenseCertNo' }
+                  ].map(doc => {
+                    const certNo = selectedHospitalDetails[doc.numKey];
+                    const certFile = selectedHospitalDetails[doc.key];
+                    return (
+                      <div key={doc.key} className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-300 font-bold truncate">{doc.title}</span>
+                          {certFile ? (
+                            <a href={certFile} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[9px] font-bold shrink-0">
+                              View File
+                            </a>
+                          ) : (
+                            <span className="text-slate-500 italic text-[9px]">No File</span>
+                          )}
+                        </div>
+                        <p className="text-slate-400 font-mono text-[9px]">
+                          <strong>No:</strong> {certNo || 'N/A'}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

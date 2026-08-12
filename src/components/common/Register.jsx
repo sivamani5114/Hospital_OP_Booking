@@ -60,33 +60,45 @@ export default function Register({ onGoToLogin }) {
     pincode: '',
     mapsUrl: '',
 
-    // 4. Legal & Verification Documents (1. Hospital Registration, 2. Clinical Establishment, 3. NABH, 4. PAN, 5. GST, 6. Drug License, 7. Biomedical Waste, 8. Fire NOC, 9. Trade License)
+    // 4. Legal & Verification Documents & Certificate Numbers (1. Hospital Registration, 2. Clinical Establishment, 3. NABH, 4. PAN, 5. GST, 6. Drug License, 7. Biomedical Waste, 8. Fire NOC, 9. Trade License)
+    regCertificateNo: '',
     regCertificate: '',
     regCertificateName: '',
+    clinicalEstablishmentCertNo: '',
     clinicalEstablishmentCert: '',
     clinicalEstablishmentCertName: '',
+    nabhCertificateNo: '',
     nabhCertificate: '',
     nabhCertificateName: '',
+    hospitalPanNo: '',
     hospitalPan: '',
     hospitalPanName: '',
+    gstCertificateNo: '',
     gstCertificate: '',
     gstCertificateName: '',
+    drugLicenseNo: '',
     drugLicense: '',
     drugLicenseName: '',
+    biomedicalWasteAuthNo: '',
     biomedicalWasteAuth: '',
     biomedicalWasteAuthName: '',
+    fireNocCertNo: '',
     fireNocCert: '',
     fireNocCertName: '',
+    tradeLicenseCertNo: '',
     tradeLicenseCert: '',
     tradeLicenseCertName: '',
 
-    // 👨‍💼 Hospital Owner / Authorized Person Verification
+    // 👨‍💼 Hospital Owner / Authorized Person Verification & Govt ID Numbers
     authorizedPersonName: '',
     authorizedPersonDesignation: '',
+    authorizedPersonAadhaarNo: '',
     authorizedPersonIdProof: '',
     authorizedPersonIdName: '',
+    authorizedPersonPanNo: '',
     authorizedPersonPan: '',
     authorizedPersonPanName: '',
+    authorizationLetterNo: '',
     authorizationLetter: '',
     authorizationLetterName: '',
 
@@ -848,6 +860,13 @@ export default function Register({ onGoToLogin }) {
                     <div>
                       <label className="text-slate-400 font-semibold block mb-1">Aadhaar / Govt ID *</label>
                       <input
+                        type="text"
+                        placeholder="Aadhaar No (e.g. 5566 7788 9900)"
+                        value={hospitalForm.authorizedPersonAadhaarNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonAadhaarNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white mb-1 font-mono"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -869,6 +888,13 @@ export default function Register({ onGoToLogin }) {
                     <div>
                       <label className="text-slate-400 font-semibold block mb-1">Personal PAN Card *</label>
                       <input
+                        type="text"
+                        placeholder="Personal PAN (e.g. ABCDE1234F)"
+                        value={hospitalForm.authorizedPersonPanNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonPanNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white mb-1 font-mono uppercase"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -889,6 +915,13 @@ export default function Register({ onGoToLogin }) {
 
                     <div>
                       <label className="text-slate-400 font-semibold block mb-1">Authorization Letter *</label>
+                      <input
+                        type="text"
+                        placeholder="Letter Ref No (e.g. AUTH/2026/09)"
+                        value={hospitalForm.authorizationLetterNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizationLetterNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-white mb-1 font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -913,7 +946,7 @@ export default function Register({ onGoToLogin }) {
                 {/* 📑 2. Full Hospital Legal & Compliance Certificates Upload Box */}
                 <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
                   <h4 className="font-bold text-emerald-300 text-xs flex items-center justify-between">
-                    <span>📑 2. Mandatory & Facility Legal Documents Upload (9 Documents)</span>
+                    <span>📑 2. Mandatory & Facility Legal Documents Upload & License Numbers (9 Documents)</span>
                     <span className="text-[10px] text-emerald-400 font-semibold font-mono">GOVT LICENSES</span>
                   </h4>
 
@@ -921,6 +954,13 @@ export default function Register({ onGoToLogin }) {
                     {/* 1. Hospital Registration Certificate (Compulsory) */}
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">1. Hospital Registration Certificate * (Compulsory)</label>
+                      <input
+                        type="text"
+                        placeholder="Registration / License Number (e.g. REG-TS-88492)"
+                        value={hospitalForm.regCertificateNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, regCertificateNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -944,6 +984,13 @@ export default function Register({ onGoToLogin }) {
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">2. Clinical Establishment Certificate</label>
                       <input
+                        type="text"
+                        placeholder="Clinical Est. License No (e.g. CEA/TS/2022/101)"
+                        value={hospitalForm.clinicalEstablishmentCertNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, clinicalEstablishmentCertNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -964,7 +1011,14 @@ export default function Register({ onGoToLogin }) {
 
                     {/* 3. NABH Certificate */}
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                      <label className="text-slate-300 font-bold block text-[11px]">3. NABH Certificate (If Available)</label>
+                      <label className="text-slate-300 font-bold block text-[11px]">3. NABH Accreditation Certificate</label>
+                      <input
+                        type="text"
+                        placeholder="NABH Accreditation No (e.g. NABH-2024-H-199)"
+                        value={hospitalForm.nabhCertificateNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, nabhCertificateNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -988,6 +1042,13 @@ export default function Register({ onGoToLogin }) {
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">4. Hospital Business PAN Card *</label>
                       <input
+                        type="text"
+                        placeholder="Hospital Business PAN (e.g. AABCH1234F)"
+                        value={hospitalForm.hospitalPanNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalPanNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono uppercase"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -1010,6 +1071,13 @@ export default function Register({ onGoToLogin }) {
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">5. GST Certificate (If Applicable)</label>
                       <input
+                        type="text"
+                        placeholder="GSTIN Number (e.g. 36AABCH1234F1Z5)"
+                        value={hospitalForm.gstCertificateNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, gstCertificateNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono uppercase"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -1030,7 +1098,14 @@ export default function Register({ onGoToLogin }) {
 
                     {/* 6. Drug License */}
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                      <label className="text-slate-300 font-bold block text-[11px]">6. Pharmacy Drug License (If Pharmacy Facility)</label>
+                      <label className="text-slate-300 font-bold block text-[11px]">6. Pharmacy Drug License</label>
+                      <input
+                        type="text"
+                        placeholder="Drug License No (e.g. DL/TS/20/4491)"
+                        value={hospitalForm.drugLicenseNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, drugLicenseNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -1054,6 +1129,13 @@ export default function Register({ onGoToLogin }) {
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">7. Biomedical Waste Authorization</label>
                       <input
+                        type="text"
+                        placeholder="BMWM Auth No (e.g. TSPCB/BMW/2023/88)"
+                        value={hospitalForm.biomedicalWasteAuthNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, biomedicalWasteAuthNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -1075,6 +1157,13 @@ export default function Register({ onGoToLogin }) {
                     {/* 8. Fire Safety Certificate / NOC */}
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
                       <label className="text-slate-300 font-bold block text-[11px]">8. Fire Safety Certificate / NOC</label>
+                      <input
+                        type="text"
+                        placeholder="Fire NOC No (e.g. FIRE/TS/NOC/2024/991)"
+                        value={hospitalForm.fireNocCertNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, fireNocCertNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -1098,6 +1187,13 @@ export default function Register({ onGoToLogin }) {
                     <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1 col-span-1 md:col-span-2">
                       <label className="text-slate-300 font-bold block text-[11px]">9. Local Municipal / Trade License</label>
                       <input
+                        type="text"
+                        placeholder="Trade License No (e.g. GHMC/TRADE/2025/1102)"
+                        value={hospitalForm.tradeLicenseCertNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, tradeLicenseCertNo: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -1113,7 +1209,6 @@ export default function Register({ onGoToLogin }) {
                         }}
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
                       />
-                      {hospitalForm.tradeLicenseCertName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.tradeLicenseCertName}</span>}
                     </div>
                   </div>
                 </div>
