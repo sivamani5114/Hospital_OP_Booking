@@ -737,8 +737,8 @@ export default function HospitalPortal() {
                 />
               </div>
 
-              {/* Medical Council Registration Number / License ID */}
-              <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/30 space-y-1">
+              {/* Medical Council Registration Number / License ID & Upload Certificate */}
+              <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/30 space-y-2">
                 <label className="text-emerald-300 font-bold block flex items-center gap-1.5">
                   <Award className="w-4 h-4 text-emerald-400" /> Medical Council Registration Number / License ID *
                 </label>
@@ -750,7 +750,31 @@ export default function HospitalPortal() {
                   className="w-full bg-slate-950 border border-emerald-500/40 rounded-xl p-2.5 text-white font-mono text-xs font-bold"
                   required
                 />
-                <span className="text-[10px] text-slate-400 block">Required by Medical Council to verify doctor's genuine license.</span>
+                
+                {/* Upload Medical Council Registration Certificate */}
+                <div className="pt-1">
+                  <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Medical Registration Certificate (PDF/Image) *</label>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setDocForm(prev => ({ ...prev, medicalRegCertDoc: reader.result, medicalRegCertDocName: file.name }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                  />
+                  {docForm.medicalRegCertDocName && (
+                    <span className="text-[10px] text-emerald-400 font-bold mt-0.5 block">
+                      ✓ Certificate Selected: {docForm.medicalRegCertDocName}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Multi-Degree Qualification Checkbox Selector */}
@@ -817,6 +841,31 @@ export default function HospitalPortal() {
                     />
                   </div>
                 )}
+
+                {/* Upload Medical Degree Certificates File */}
+                <div className="pt-2 border-t border-slate-800">
+                  <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Medical Degree Certificates (MBBS/MD/MS/Fellowship PDF or Image) *</label>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setDocForm(prev => ({ ...prev, degreeCertDoc: reader.result, degreeCertDocName: file.name }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                  />
+                  {docForm.degreeCertDocName && (
+                    <span className="text-[10px] text-cyan-400 font-bold mt-0.5 block">
+                      ✓ Degree Certificate Selected: {docForm.degreeCertDocName}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Specialization Category */}
