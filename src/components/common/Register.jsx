@@ -569,15 +569,32 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* Google Maps Location Link */}
+                {/* Google Maps Location Link (Compulsory) */}
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Google Maps Location Link (Optional)</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-slate-400 font-semibold">Google Maps Location Link * (Compulsory)</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!hospitalForm.hospitalName || !hospitalForm.city) {
+                          alert('❌ Please enter Hospital Name & City first to auto-generate Google Maps link!');
+                          return;
+                        }
+                        const autoUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospitalForm.hospitalName + ' ' + hospitalForm.area + ' ' + hospitalForm.city)}`;
+                        setHospitalForm(prev => ({ ...prev, mapsUrl: autoUrl }));
+                      }}
+                      className="text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30 hover:bg-cyan-500/20"
+                    >
+                      📍 Auto-Generate Maps Link
+                    </button>
+                  </div>
                   <input
                     type="url"
-                    placeholder="e.g. https://maps.google.com/..."
+                    placeholder="e.g. https://maps.google.com/?q=Apollo+Hospital"
                     value={hospitalForm.mapsUrl}
                     onChange={(e) => setHospitalForm(prev => ({ ...prev, mapsUrl: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
                   />
                 </div>
 
