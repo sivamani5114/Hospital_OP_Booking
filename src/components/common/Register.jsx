@@ -569,33 +569,32 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* Google Maps Location Link (Compulsory) */}
+                {/* Google Maps Location Link (Select on Map) */}
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-slate-400 font-semibold">Google Maps Location Link * (Compulsory)</label>
+                    <label className="text-slate-400 font-semibold">Google Maps Location Link * (Select on Map)</label>
                     <button
                       type="button"
                       onClick={() => {
-                        if (!hospitalForm.hospitalName || !hospitalForm.city) {
-                          alert('❌ Please enter Hospital Name & City first to auto-generate Google Maps link!');
-                          return;
-                        }
-                        const autoUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospitalForm.hospitalName + ' ' + hospitalForm.area + ' ' + hospitalForm.city)}`;
-                        setHospitalForm(prev => ({ ...prev, mapsUrl: autoUrl }));
+                        const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital near me';
+                        window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
                       }}
-                      className="text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/30 hover:bg-cyan-500/20"
+                      className="text-[10px] text-emerald-300 font-bold bg-emerald-500/20 px-2.5 py-1 rounded-lg border border-emerald-500/40 hover:bg-emerald-500/30 flex items-center gap-1"
                     >
-                      📍 Auto-Generate Maps Link
+                      🗺️ Open Google Maps to Select Location 📍
                     </button>
                   </div>
                   <input
                     type="url"
-                    placeholder="e.g. https://maps.google.com/?q=Apollo+Hospital"
+                    placeholder="Paste copied Google Maps Share link here (e.g. https://maps.app.goo.gl/... or https://maps.google.com/...)"
                     value={hospitalForm.mapsUrl}
                     onChange={(e) => setHospitalForm(prev => ({ ...prev, mapsUrl: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-xs"
                     required
                   />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    💡 <strong>Instructions:</strong> Click 'Open Google Maps', search & select your exact hospital location, click <strong>Share ➔ Copy Link</strong>, and paste the URL here.
+                  </p>
                 </div>
 
                 <button
