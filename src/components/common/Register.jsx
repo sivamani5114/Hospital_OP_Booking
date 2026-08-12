@@ -762,6 +762,59 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
+                {/* 📄 4. Document File Upload Inputs (Registration Certificate & ID Proof) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Upload Registration Certificate (PDF/Image) *</label>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHospitalForm(prev => ({ ...prev, regCertificate: reader.result, regCertificateName: file.name }));
+                            showToast(`📄 Certificate Uploaded: ${file.name}`, 'success');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                    {hospitalForm.regCertificateName && (
+                      <span className="text-[10px] text-emerald-400 font-bold mt-1 block">
+                        ✓ {hospitalForm.regCertificateName}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Upload Authorized ID Proof (Aadhaar/PAN) *</label>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHospitalForm(prev => ({ ...prev, authorizedPersonIdProof: reader.result, authorizedPersonIdName: file.name }));
+                            showToast(`🪪 ID Proof Uploaded: ${file.name}`, 'success');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                    {hospitalForm.authorizedPersonIdName && (
+                      <span className="text-[10px] text-cyan-400 font-bold mt-1 block">
+                        ✓ {hospitalForm.authorizedPersonIdName}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 {/* PAN & GST */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>

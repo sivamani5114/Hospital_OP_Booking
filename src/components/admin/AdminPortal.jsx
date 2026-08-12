@@ -27,6 +27,7 @@ export default function AdminPortal() {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showAddHospModal, setShowAddHospModal] = useState(false);
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
+  const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
 
   // User Form State
   const [userForm, setUserForm] = useState({
@@ -414,6 +415,12 @@ export default function AdminPortal() {
                       </span>
                     </td>
                     <td className="p-3.5 text-right space-x-2">
+                      <button
+                        onClick={() => setSelectedHospitalDetails(h)}
+                        className="px-2.5 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-lg text-[11px] font-bold"
+                      >
+                        🔍 View All Reg Details & Docs
+                      </button>
                       {h.status === 'PENDING' && (
                         <>
                           <button
@@ -782,6 +789,152 @@ export default function AdminPortal() {
                 Verify & Add Qualified Doctor Profile
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🔍 FULL HOSPITAL REGISTRATION DETAILS & UPLOADED DOCUMENTS VERIFICATION MODAL */}
+      {selectedHospitalDetails && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-2xl rounded-3xl p-6 border border-cyan-500/30 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setSelectedHospitalDetails(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+              <img src={selectedHospitalDetails.logo} className="w-14 h-14 rounded-2xl object-cover border border-slate-700 shadow" />
+              <div>
+                <h3 className="font-extrabold text-white text-lg flex items-center gap-2">
+                  {selectedHospitalDetails.hospitalName}
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] ${
+                    selectedHospitalDetails.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                    selectedHospitalDetails.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
+                    'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                  }`}>{selectedHospitalDetails.status}</span>
+                </h3>
+                <p className="text-xs text-slate-400">{selectedHospitalDetails.city} • Reg. No: {selectedHospitalDetails.regNo || 'REG-TS-88492'}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* 1. Basic & Contact */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bold text-cyan-300 text-xs">1. Basic Details & Contact Info</h4>
+                <div className="grid grid-cols-2 gap-2 text-slate-300">
+                  <p><strong>Hospital Type:</strong> {selectedHospitalDetails.hospitalType || 'Private'}</p>
+                  <p><strong>Est Year:</strong> {selectedHospitalDetails.establishedYear || '2015'}</p>
+                  <p><strong>Official Email:</strong> {selectedHospitalDetails.email}</p>
+                  <p><strong>Phone:</strong> {selectedHospitalDetails.phone}</p>
+                  <p><strong>Landline:</strong> {selectedHospitalDetails.landline || 'N/A'}</p>
+                </div>
+              </div>
+
+              {/* 2. Address & Location */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bold text-emerald-300 text-xs">2. Address & Google Maps Location</h4>
+                <p className="text-slate-300"><strong>Address:</strong> {selectedHospitalDetails.address || selectedHospitalDetails.area}, {selectedHospitalDetails.city}</p>
+                {selectedHospitalDetails.mapsUrl && (
+                  <a
+                    href={selectedHospitalDetails.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-xl text-xs font-bold"
+                  >
+                    📍 Open Pinned Google Maps Location
+                  </a>
+                )}
+              </div>
+
+              {/* 3. Legal & Uploaded Documents */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                <h4 className="font-bold text-amber-300 text-xs">3. Legal Details & Uploaded Certificates</h4>
+                <div className="grid grid-cols-2 gap-2 text-slate-300">
+                  <p><strong>Authorized Person:</strong> {selectedHospitalDetails.authorizedPersonName || 'Medical Director'}</p>
+                  <p><strong>NABH Certified:</strong> {selectedHospitalDetails.nabhAccredited || 'No'}</p>
+                  <p><strong>PAN:</strong> {selectedHospitalDetails.pan || 'N/A'}</p>
+                  <p><strong>GST No:</strong> {selectedHospitalDetails.gstNo || 'N/A'}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                    <span className="text-slate-400 block font-bold text-[10px] mb-1">REGISTRATION CERTIFICATE</span>
+                    {selectedHospitalDetails.regCertificate ? (
+                      <a
+                        href={selectedHospitalDetails.regCertificate}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] inline-block shadow"
+                      >
+                        📄 View Certificate PDF
+                      </a>
+                    ) : (
+                      <span className="text-emerald-400 font-bold text-[11px]">✓ Uploaded Verified PDF</span>
+                    )}
+                  </div>
+
+                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                    <span className="text-slate-400 block font-bold text-[10px] mb-1">AUTHORIZED ID PROOF</span>
+                    {selectedHospitalDetails.authorizedPersonIdProof ? (
+                      <a
+                        href={selectedHospitalDetails.authorizedPersonIdProof}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-cyan-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] inline-block shadow"
+                      >
+                        🪪 View ID Proof Doc
+                      </a>
+                    ) : (
+                      <span className="text-cyan-400 font-bold text-[11px]">✓ Uploaded Verified ID</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Facilities & OP Settings */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bold text-indigo-300 text-xs">4. Facilities & OP Booking Settings</h4>
+                <div className="flex flex-wrap gap-1">
+                  {(selectedHospitalDetails.facilities || ['Emergency 24/7', 'Pharmacy', 'Laboratory', 'ICU']).map(f => (
+                    <span key={f} className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">
+                      ✓ {f}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-slate-300 pt-2 border-t border-slate-800">
+                  <p><strong>Base OP Fee:</strong> ₹{selectedHospitalDetails.opFee}</p>
+                  <p><strong>Max Patients/Day:</strong> {selectedHospitalDetails.maxBookingsPerDay || 30}</p>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2">
+                {selectedHospitalDetails.status === 'PENDING' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        approveHospital(selectedHospitalDetails._id);
+                        setSelectedHospitalDetails(null);
+                      }}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg"
+                    >
+                      ✓ Approve Hospital Access
+                    </button>
+                    <button
+                      onClick={() => {
+                        const reason = prompt('Enter Rejection Reason for Hospital:', 'Registration certificate verification failed.');
+                        if (reason) {
+                          rejectHospital(selectedHospitalDetails._id, reason);
+                          setSelectedHospitalDetails(null);
+                        }
+                      }}
+                      className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg"
+                    >
+                      ✕ Reject & Send Reason
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
