@@ -179,43 +179,43 @@ export default function HospitalPortal() {
         <div className="flex items-center gap-1 min-w-max">
           <button
             onClick={() => setActiveTab('DASHBOARD')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
               activeTab === 'DASHBOARD' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Dashboard
           </button>
           <button
-            onClick={() => setActiveTab('PROFILE')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'PROFILE' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5" /> Hospital Profile
-          </button>
-          <button
-            onClick={() => setActiveTab('DOCTORS')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'DOCTORS' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Stethoscope className="w-3.5 h-3.5" /> Doctor Management ({hospitalDoctors.length})
-          </button>
-          <button
             onClick={() => setActiveTab('BOOKINGS')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
               activeTab === 'BOOKINGS' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Calendar className="w-3.5 h-3.5" /> OP Bookings ({hospitalBookings.length})
+            <Calendar className="w-3.5 h-3.5" /> Appointments ({hospitalBookings.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('DOCTORS')}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              activeTab === 'DOCTORS' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Stethoscope className="w-3.5 h-3.5" /> Doctors ({hospitalDoctors.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('PROFILE')}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              activeTab === 'PROFILE' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5" /> Hospital Profile & Settings
           </button>
           <button
             onClick={() => setActiveTab('REPORTS')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
               activeTab === 'REPORTS' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <BarChart3 className="w-3.5 h-3.5" /> Reports
+            <BarChart3 className="w-3.5 h-3.5" /> Payments & Reports
           </button>
         </div>
 

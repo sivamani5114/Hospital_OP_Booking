@@ -646,6 +646,65 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
+                {/* 🏥 5. Hospital Facilities Checkbox Selector */}
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1.5">Hospital Facilities Available (Select all that apply)</label>
+                  <div className="grid grid-cols-2 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px]">
+                    {[
+                      'Emergency 24/7', 'Pharmacy', 'Laboratory', 'Radiology / X-Ray', 
+                      'CT Scan', 'MRI', 'ICU', 'Ambulance 24/7', 'Blood Bank', 'Operation Theatre'
+                    ].map((facility) => {
+                      const isChecked = hospitalForm.facilities.includes(facility);
+                      return (
+                        <label key={facility} className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setHospitalForm(prev => ({ ...prev, facilities: [...prev.facilities, facility] }));
+                              } else {
+                                setHospitalForm(prev => ({ ...prev, facilities: prev.facilities.filter(f => f !== facility) }));
+                              }
+                            }}
+                            className="rounded accent-emerald-500"
+                          />
+                          <span>{facility}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ⚙️ 6. OP Booking Settings (Slot Duration & Same Day Booking) */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">OP Slot Duration</label>
+                    <select
+                      value={hospitalForm.slotDurationMinutes}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, slotDurationMinutes: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    >
+                      <option value="10">10 Minutes Slot</option>
+                      <option value="15">15 Minutes Slot</option>
+                      <option value="20">20 Minutes Slot</option>
+                      <option value="30">30 Minutes Slot</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Same-Day OP Booking</label>
+                    <select
+                      value={hospitalForm.sameDayBooking}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, sameDayBooking: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    >
+                      <option value="Yes">Allowed (Same Day)</option>
+                      <option value="No">1 Day Advance Only</option>
+                    </select>
+                  </div>
+                </div>
+
                 {/* OP Fee & Timings */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
