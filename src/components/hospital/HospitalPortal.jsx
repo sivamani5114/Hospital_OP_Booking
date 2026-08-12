@@ -299,8 +299,6 @@ export default function HospitalPortal() {
             <Building2 className="w-5 h-5 text-emerald-400" /> Manage Hospital Profile
           </h3>
 
-          </h3>
-
           <form onSubmit={handleUpdateHospitalProfile} className="space-y-4 text-xs">
             {/* 1. Basic Details */}
             <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
