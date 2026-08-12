@@ -85,13 +85,13 @@ export default function HospitalPortal() {
     qualificationDegree: OFFICIAL_QUALIFICATIONS[0],
     specialization: ALL_DOCTOR_CATEGORIES[0],
     department: 'Cardiology',
-    experience: 5,
+    experience: '',
     phone: '',
-    opFee: hospital.opFee || 500,
+    opFee: '',
     availableDays: 'Monday - Saturday',
-    availableTime: '09:00 AM - 01:00 PM',
-    maxPatients: 20,
-    image: PRESET_AVATARS[0]
+    availableTime: '',
+    maxPatients: '',
+    image: ''
   });
 
   // Profile Form State
@@ -783,7 +783,13 @@ export default function HospitalPortal() {
                 </label>
 
                 <div className="flex gap-4 items-center">
-                  <img src={docForm.image} className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-500/40 shadow-lg" />
+                  {docForm.image ? (
+                    <img src={docForm.image} className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-500/40 shadow-lg" alt="Doctor Preview" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-[10px] text-slate-500 font-bold text-center p-1">
+                      No Photo Selected
+                    </div>
+                  )}
                   <div className="flex-1 space-y-2">
                     <label className="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-semibold px-3 py-1.5 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer w-fit">
                       <Upload className="w-3.5 h-3.5" /> Upload Photo from Computer
@@ -791,7 +797,7 @@ export default function HospitalPortal() {
                     </label>
                     <input
                       type="text"
-                      placeholder="Or paste Photo URL"
+                      placeholder="Or paste Photo URL (optional)"
                       value={docForm.image}
                       onChange={(e) => setDocForm(prev => ({ ...prev, image: e.target.value }))}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
@@ -803,9 +809,10 @@ export default function HospitalPortal() {
               {/* Fee, Experience, Max Patients */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">OP Fee (₹)</label>
+                  <label className="text-slate-400 font-semibold block mb-1">OP Fee (₹) *</label>
                   <input
                     type="number"
+                    placeholder="e.g. 500"
                     value={docForm.opFee}
                     onChange={(e) => setDocForm(prev => ({ ...prev, opFee: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
@@ -813,9 +820,10 @@ export default function HospitalPortal() {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Experience (Yrs)</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Experience (Yrs) *</label>
                   <input
                     type="number"
+                    placeholder="e.g. 8"
                     value={docForm.experience}
                     onChange={(e) => setDocForm(prev => ({ ...prev, experience: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
@@ -823,9 +831,10 @@ export default function HospitalPortal() {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Max Patients/Day</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Max Patients/Day *</label>
                   <input
                     type="number"
+                    placeholder="e.g. 25"
                     value={docForm.maxPatients}
                     onChange={(e) => setDocForm(prev => ({ ...prev, maxPatients: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
@@ -837,10 +846,10 @@ export default function HospitalPortal() {
               {/* Days & Time */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Available Days</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Available Days *</label>
                   <input
                     type="text"
-                    placeholder="Mon - Sat"
+                    placeholder="e.g. Monday - Saturday"
                     value={docForm.availableDays}
                     onChange={(e) => setDocForm(prev => ({ ...prev, availableDays: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
@@ -848,10 +857,10 @@ export default function HospitalPortal() {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Available Time</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Available Time *</label>
                   <input
                     type="text"
-                    placeholder="09:00 AM - 01:00 PM"
+                    placeholder="e.g. 09:00 AM - 01:00 PM"
                     value={docForm.availableTime}
                     onChange={(e) => setDocForm(prev => ({ ...prev, availableTime: e.target.value }))}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"

@@ -48,13 +48,13 @@ export default function AdminPortal() {
     medicalRegistrationNo: '',
     qualificationDegree: OFFICIAL_QUALIFICATIONS[0],
     specialization: ALL_DOCTOR_CATEGORIES[0],
-    experience: 5,
+    experience: '',
     phone: '',
-    opFee: 500,
+    opFee: '',
     availableDays: 'Monday - Saturday',
-    availableTime: '09:00 AM - 01:00 PM',
-    maxPatients: 20,
-    image: PRESET_AVATARS[0]
+    availableTime: '',
+    maxPatients: '',
+    image: ''
   });
 
   // Stats Calculations
@@ -746,7 +746,13 @@ export default function AdminPortal() {
                 </label>
                 
                 <div className="flex gap-3 items-center">
-                  <img src={docForm.image} className="w-14 h-14 rounded-xl object-cover border border-slate-700 shadow" />
+                  {docForm.image ? (
+                    <img src={docForm.image} className="w-14 h-14 rounded-xl object-cover border border-slate-700 shadow" alt="Doctor Preview" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-[9px] text-slate-500 font-bold text-center p-1">
+                      No Photo
+                    </div>
+                  )}
                   <div className="flex-1 space-y-1.5">
                     <label className="bg-slate-800 hover:bg-slate-700 text-cyan-300 font-semibold px-3 py-1 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer w-fit">
                       <Upload className="w-3.5 h-3.5" /> Upload File from Device
@@ -754,7 +760,7 @@ export default function AdminPortal() {
                     </label>
                     <input
                       type="text"
-                      placeholder="Or paste Photo URL"
+                      placeholder="Or paste Photo URL (optional)"
                       value={docForm.image}
                       onChange={(e) => setDocForm(prev => ({ ...prev, image: e.target.value }))}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
