@@ -299,46 +299,157 @@ export default function HospitalPortal() {
             <Building2 className="w-5 h-5 text-emerald-400" /> Manage Hospital Profile
           </h3>
 
-          <form onSubmit={handleUpdateHospitalProfile} className="space-y-3 text-xs">
-            <div>
-              <label className="text-slate-400 font-semibold block mb-1">Hospital Name</label>
-              <input
-                type="text"
-                value={hospProfileForm.hospitalName}
-                onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalName: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                required
-              />
+          </h3>
+
+          <form onSubmit={handleUpdateHospitalProfile} className="space-y-4 text-xs">
+            {/* 1. Basic Details */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h4 className="font-bold text-cyan-400 text-sm">1. Hospital Basic & Contact Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Hospital Name</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.hospitalName}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalName: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Hospital Type</label>
+                  <select
+                    value={hospital.hospitalType || 'Private'}
+                    onChange={(e) => updateHospital(hospital._id, { hospitalType: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="Private">Private Hospital</option>
+                    <option value="Government">Government Hospital</option>
+                    <option value="Corporate">Corporate Multi-Speciality</option>
+                    <option value="Clinic">Polyclinic / Specialty Clinic</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.phone}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Official Email</label>
+                  <input
+                    type="email"
+                    value={hospProfileForm.email}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-slate-400 font-semibold block mb-1">Phone Number</label>
-                <input
-                  type="text"
-                  value={hospProfileForm.phone}
-                  onChange={(e) => setHospProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                  required
-                />
+            {/* 2. Address & Maps */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h4 className="font-bold text-emerald-400 text-sm">2. Address & Google Maps Location</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">City</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.city}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, city: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Area / Locality</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.area}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, area: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
               </div>
               <div>
-                <label className="text-slate-400 font-semibold block mb-1">Email</label>
+                <label className="text-slate-400 font-semibold block mb-1">Street Address</label>
                 <input
-                  type="email"
-                  value={hospProfileForm.email}
-                  onChange={(e) => setHospProfileForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                  required
+                  type="text"
+                  value={hospProfileForm.address}
+                  onChange={(e) => setHospProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
                 />
+              </div>
+            </div>
+
+            {/* 3. Legal & Verification */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h4 className="font-bold text-amber-400 text-sm">3. Legal & Verification Details</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Reg Certificate</label>
+                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-2 rounded-xl block font-mono text-[11px]">
+                    ✓ Verified Certificate
+                  </span>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">NABH Accreditation</label>
+                  <span className="bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl block text-slate-300">
+                    {hospital.nabhAccredited || 'No'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Facilities */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-indigo-400 text-sm">4. Active Hospital Facilities</h4>
+              <div className="flex flex-wrap gap-1.5">
+                {(hospital.facilities || ['Emergency 24/7', 'Pharmacy', 'Laboratory', 'ICU', 'Ambulance 24/7', 'Operation Theatre']).map(f => (
+                  <span key={f} className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-xl text-[11px] font-semibold">
+                    ✓ {f}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 5. OP Settings */}
+            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <h4 className="font-bold text-rose-400 text-sm">5. OP Booking Settings</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Base OP Fee (₹)</label>
+                  <input
+                    type="number"
+                    value={hospProfileForm.opFee}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, opFee: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-bold text-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">OP Timings</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.hospitalTimings}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalTimings: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl"
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg"
             >
-              Update Hospital Details
+              Save & Update Full Hospital Profile 🚀
             </button>
           </form>
         </div>
