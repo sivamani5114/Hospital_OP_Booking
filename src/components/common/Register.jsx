@@ -60,14 +60,35 @@ export default function Register({ onGoToLogin }) {
     pincode: '',
     mapsUrl: '',
 
-    // 4. Legal & Verification
-    regCertificate: 'Uploaded Certificate PDF',
-    nabhAccredited: 'No',
-    pan: '',
-    gstNo: '',
+    // 4. Legal & Verification Documents (1. Hospital Registration, 2. Clinical Establishment, 3. NABH, 4. PAN, 5. GST, 6. Drug License, 7. Biomedical Waste, 8. Fire NOC, 9. Trade License)
+    regCertificate: '',
+    regCertificateName: '',
+    clinicalEstablishmentCert: '',
+    clinicalEstablishmentCertName: '',
+    nabhCertificate: '',
+    nabhCertificateName: '',
+    hospitalPan: '',
+    hospitalPanName: '',
+    gstCertificate: '',
+    gstCertificateName: '',
+    drugLicense: '',
+    drugLicenseName: '',
+    biomedicalWasteAuth: '',
+    biomedicalWasteAuthName: '',
+    fireNocCert: '',
+    fireNocCertName: '',
+    tradeLicenseCert: '',
+    tradeLicenseCertName: '',
+
+    // 👨‍💼 Hospital Owner / Authorized Person Verification
     authorizedPersonName: '',
     authorizedPersonDesignation: '',
     authorizedPersonIdProof: '',
+    authorizedPersonIdName: '',
+    authorizedPersonPan: '',
+    authorizedPersonPanName: '',
+    authorizationLetter: '',
+    authorizationLetterName: '',
 
     // 5. Facilities (Selected Checkboxes - empty by default)
     facilities: [],
@@ -788,83 +809,312 @@ export default function Register({ onGoToLogin }) {
             {/* STEP 2: Legal Docs, Facilities & OP Settings */}
             {hospStep === 2 && (
               <div className="space-y-3 animate-fadeIn text-xs">
-                {/* Authorized Person Name & Designation */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Authorized Person Name *</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Dr. Rajesh Kumar"
-                      value={hospitalForm.authorizedPersonName}
-                      onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonName: e.target.value }))}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                      required
-                    />
+
+                {/* 👨‍💼 1. Authorized Person Verification */}
+                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                  <h4 className="font-bold text-cyan-300 text-xs flex items-center justify-between">
+                    <span>👨‍💼 1. Hospital Owner / Authorized Person Verification</span>
+                    <span className="text-[10px] text-cyan-400 font-semibold font-mono">KYC VERIFICATION</span>
+                  </h4>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Authorized Person Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Dr. Rajesh Kumar"
+                        value={hospitalForm.authorizedPersonName}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonName: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Designation *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Managing Director / Trustee"
+                        value={hospitalForm.authorizedPersonDesignation}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonDesignation: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">NABH Accredited?</label>
-                    <select
-                      value={hospitalForm.nabhAccredited}
-                      onChange={(e) => setHospitalForm(prev => ({ ...prev, nabhAccredited: e.target.value }))}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                    >
-                      <option value="Yes">Yes (NABH Certified)</option>
-                      <option value="No">No</option>
-                    </select>
+                  {/* Authorized Person Document Uploads (Aadhaar/Govt ID, PAN Card, Authorization Letter) */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Aadhaar / Govt ID *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, authorizedPersonIdProof: reader.result, authorizedPersonIdName: file.name }));
+                              showToast(`🪪 Aadhaar Uploaded: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-1.5 text-[11px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-md file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.authorizedPersonIdName && <span className="text-[10px] text-cyan-400 font-bold block mt-0.5">✓ {hospitalForm.authorizedPersonIdName}</span>}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Personal PAN Card *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, authorizedPersonPan: reader.result, authorizedPersonPanName: file.name }));
+                              showToast(`📄 Personal PAN Uploaded: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-1.5 text-[11px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-md file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.authorizedPersonPanName && <span className="text-[10px] text-cyan-400 font-bold block mt-0.5">✓ {hospitalForm.authorizedPersonPanName}</span>}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Authorization Letter *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, authorizationLetter: reader.result, authorizationLetterName: file.name }));
+                              showToast(`📑 Authorization Letter Uploaded: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-1.5 text-[11px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-md file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.authorizationLetterName && <span className="text-[10px] text-cyan-400 font-bold block mt-0.5">✓ {hospitalForm.authorizationLetterName}</span>}
+                    </div>
                   </div>
                 </div>
 
-                {/* 📄 4. Document File Upload Inputs (Registration Certificate & ID Proof) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Upload Registration Certificate (PDF/Image) *</label>
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setHospitalForm(prev => ({ ...prev, regCertificate: reader.result, regCertificateName: file.name }));
-                            showToast(`📄 Certificate Uploaded: ${file.name}`, 'success');
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
-                    />
-                    {hospitalForm.regCertificateName && (
-                      <span className="text-[10px] text-emerald-400 font-bold mt-1 block">
-                        ✓ {hospitalForm.regCertificateName}
-                      </span>
-                    )}
-                  </div>
+                {/* 📑 2. Full Hospital Legal & Compliance Certificates Upload Box */}
+                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                  <h4 className="font-bold text-emerald-300 text-xs flex items-center justify-between">
+                    <span>📑 2. Mandatory & Facility Legal Documents Upload (9 Documents)</span>
+                    <span className="text-[10px] text-emerald-400 font-semibold font-mono">GOVT LICENSES</span>
+                  </h4>
 
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Upload Authorized ID Proof (Aadhaar/PAN) *</label>
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setHospitalForm(prev => ({ ...prev, authorizedPersonIdProof: reader.result, authorizedPersonIdName: file.name }));
-                            showToast(`🪪 ID Proof Uploaded: ${file.name}`, 'success');
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
-                    />
-                    {hospitalForm.authorizedPersonIdName && (
-                      <span className="text-[10px] text-cyan-400 font-bold mt-1 block">
-                        ✓ {hospitalForm.authorizedPersonIdName}
-                      </span>
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* 1. Hospital Registration Certificate (Compulsory) */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">1. Hospital Registration Certificate * (Compulsory)</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, regCertificate: reader.result, regCertificateName: file.name }));
+                              showToast(`📄 Hospital Reg Certificate: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.regCertificateName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.regCertificateName}</span>}
+                    </div>
+
+                    {/* 2. Clinical Establishment Registration */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">2. Clinical Establishment Certificate</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, clinicalEstablishmentCert: reader.result, clinicalEstablishmentCertName: file.name }));
+                              showToast(`📄 Clinical Establishment Cert: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.clinicalEstablishmentCertName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.clinicalEstablishmentCertName}</span>}
+                    </div>
+
+                    {/* 3. NABH Certificate */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">3. NABH Certificate (If Available)</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, nabhCertificate: reader.result, nabhCertificateName: file.name }));
+                              showToast(`🏅 NABH Cert: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.nabhCertificateName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.nabhCertificateName}</span>}
+                    </div>
+
+                    {/* 4. Hospital PAN Card */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">4. Hospital Business PAN Card *</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, hospitalPan: reader.result, hospitalPanName: file.name }));
+                              showToast(`📄 Hospital PAN: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.hospitalPanName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.hospitalPanName}</span>}
+                    </div>
+
+                    {/* 5. GST Certificate */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">5. GST Certificate (If Applicable)</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, gstCertificate: reader.result, gstCertificateName: file.name }));
+                              showToast(`📄 GST Cert: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.gstCertificateName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.gstCertificateName}</span>}
+                    </div>
+
+                    {/* 6. Drug License */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">6. Pharmacy Drug License (If Pharmacy Facility)</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, drugLicense: reader.result, drugLicenseName: file.name }));
+                              showToast(`💊 Drug License: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.drugLicenseName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.drugLicenseName}</span>}
+                    </div>
+
+                    {/* 7. Biomedical Waste Authorization */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">7. Biomedical Waste Authorization</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, biomedicalWasteAuth: reader.result, biomedicalWasteAuthName: file.name }));
+                              showToast(`♻️ Biomedical Waste Auth: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.biomedicalWasteAuthName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.biomedicalWasteAuthName}</span>}
+                    </div>
+
+                    {/* 8. Fire Safety Certificate / NOC */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
+                      <label className="text-slate-300 font-bold block text-[11px]">8. Fire Safety Certificate / NOC</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, fireNocCert: reader.result, fireNocCertName: file.name }));
+                              showToast(`🔥 Fire NOC Cert: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.fireNocCertName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.fireNocCertName}</span>}
+                    </div>
+
+                    {/* 9. Local Municipal / Trade License */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1 col-span-1 md:col-span-2">
+                      <label className="text-slate-300 font-bold block text-[11px]">9. Local Municipal / Trade License</label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospitalForm(prev => ({ ...prev, tradeLicenseCert: reader.result, tradeLicenseCertName: file.name }));
+                              showToast(`🏢 Trade License: ${file.name}`, 'success');
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospitalForm.tradeLicenseCertName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.tradeLicenseCertName}</span>}
+                    </div>
                   </div>
                 </div>
 

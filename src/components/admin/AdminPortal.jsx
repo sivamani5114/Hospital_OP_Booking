@@ -1021,47 +1021,64 @@ export default function AdminPortal() {
                   </div>
                 </div>
               </div>
+              {/* 3. Legal Documents (9 Licenses) & Owner Verification (3 Docs) */}
               <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
-                <h4 className="font-bold text-amber-300 text-xs">3. Legal Details & Uploaded Certificates</h4>
-                <div className="grid grid-cols-2 gap-2 text-slate-300">
-                  <p><strong>Authorized Person:</strong> {selectedHospitalDetails.authorizedPersonName || 'Medical Director'}</p>
-                  <p><strong>NABH Certified:</strong> {selectedHospitalDetails.nabhAccredited || 'No'}</p>
-                  <p><strong>PAN:</strong> {selectedHospitalDetails.pan || 'N/A'}</p>
-                  <p><strong>GST No:</strong> {selectedHospitalDetails.gstNo || 'N/A'}</p>
+                <h4 className="font-bold text-amber-300 text-xs flex items-center justify-between">
+                  <span>📑 3. Owner Verification & Legal Certificates Audit</span>
+                  <span className="text-[10px] text-amber-400 font-semibold font-mono">12 GOVT DOCS</span>
+                </h4>
+
+                {/* Owner Verification Details */}
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+                  <span className="text-cyan-400 font-bold text-[11px] block">👨‍💼 AUTHORIZED PERSON & KYC:</span>
+                  <div className="grid grid-cols-2 gap-2 text-slate-300 text-[11px]">
+                    <p><strong>Name:</strong> {selectedHospitalDetails.authorizedPersonName || 'Medical Director'}</p>
+                    <p><strong>Designation:</strong> {selectedHospitalDetails.authorizedPersonDesignation || 'Managing Trustee'}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-800">
+                    {selectedHospitalDetails.authorizedPersonIdProof && (
+                      <a href={selectedHospitalDetails.authorizedPersonIdProof} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">
+                        🪪 View Aadhaar / Govt ID
+                      </a>
+                    )}
+                    {selectedHospitalDetails.authorizedPersonPan && (
+                      <a href={selectedHospitalDetails.authorizedPersonPan} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">
+                        📄 View Owner PAN
+                      </a>
+                    )}
+                    {selectedHospitalDetails.authorizationLetter && (
+                      <a href={selectedHospitalDetails.authorizationLetter} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">
+                        📑 View Authorization Letter
+                      </a>
+                    )}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
-                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                    <span className="text-slate-400 block font-bold text-[10px] mb-1">REGISTRATION CERTIFICATE</span>
-                    {selectedHospitalDetails.regCertificate ? (
-                      <a
-                        href={selectedHospitalDetails.regCertificate}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] inline-block shadow"
-                      >
-                        📄 View Certificate PDF
-                      </a>
-                    ) : (
-                      <span className="text-emerald-400 font-bold text-[11px]">✓ Uploaded Verified PDF</span>
-                    )}
-                  </div>
-
-                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                    <span className="text-slate-400 block font-bold text-[10px] mb-1">AUTHORIZED ID PROOF</span>
-                    {selectedHospitalDetails.authorizedPersonIdProof ? (
-                      <a
-                        href={selectedHospitalDetails.authorizedPersonIdProof}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-cyan-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] inline-block shadow"
-                      >
-                        🪪 View ID Proof Doc
-                      </a>
-                    ) : (
-                      <span className="text-cyan-400 font-bold text-[11px]">✓ Uploaded Verified ID</span>
-                    )}
-                  </div>
+                {/* 9 Government Licenses Grid */}
+                <span className="text-emerald-400 font-bold text-[11px] block">🏥 GOVERNMENT LICENSES & CERTIFICATES:</span>
+                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  {[
+                    { title: '1. Reg Certificate', key: 'regCertificate' },
+                    { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert' },
+                    { title: '3. NABH Certificate', key: 'nabhCertificate' },
+                    { title: '4. Hospital PAN Card', key: 'hospitalPan' },
+                    { title: '5. GST Certificate', key: 'gstCertificate' },
+                    { title: '6. Drug License', key: 'drugLicense' },
+                    { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth' },
+                    { title: '8. Fire Safety NOC', key: 'fireNocCert' },
+                    { title: '9. Trade License', key: 'tradeLicenseCert' }
+                  ].map(doc => (
+                    <div key={doc.key} className="bg-slate-950 p-2 rounded-lg border border-slate-800 flex justify-between items-center">
+                      <span className="text-slate-300 font-medium truncate pr-1">{doc.title}</span>
+                      {selectedHospitalDetails[doc.key] ? (
+                        <a href={selectedHospitalDetails[doc.key]} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold shrink-0">
+                          View PDF
+                        </a>
+                      ) : (
+                        <span className="text-slate-500 italic shrink-0">Not Provided</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
