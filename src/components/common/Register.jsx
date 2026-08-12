@@ -503,17 +503,43 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* Hospital Phone Number */}
+                {/* Hospital Phone Number + Send OTP Button */}
                 <div>
                   <label className="text-slate-400 font-semibold block mb-1">Hospital Phone Number *</label>
-                  <input
-                    type="tel"
-                    placeholder="e.g. 9848012345"
-                    value={hospitalForm.phone}
-                    onChange={(e) => setHospitalForm(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                      <input
+                        type="tel"
+                        placeholder="e.g. 9848012345"
+                        value={hospitalForm.phone}
+                        onChange={(e) => {
+                          setHospitalForm(prev => ({ ...prev, phone: e.target.value }));
+                          setIsPhoneVerified(false);
+                        }}
+                        className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3 py-2.5 text-xs text-white ${
+                          isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800'
+                        }`}
+                        required
+                      />
+                    </div>
+
+                    {!isPhoneVerified ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSendInstantOtp(hospitalForm.phone)}
+                        disabled={timerSeconds > 0}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 min-w-max"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
+                      </button>
+                    ) : (
+                      <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4" /> Verified
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Email & Landline */}
