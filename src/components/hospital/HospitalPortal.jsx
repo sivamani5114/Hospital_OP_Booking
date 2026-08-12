@@ -738,43 +738,52 @@ export default function HospitalPortal() {
               </div>
 
               {/* Medical Council Registration Number / License ID & Upload Certificate */}
-              <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/30 space-y-2">
-                <label className="text-emerald-300 font-bold block flex items-center gap-1.5">
-                  <Award className="w-4 h-4 text-emerald-400" /> Medical Council Registration Number / License ID *
+              <div className="bg-emerald-500/10 p-3.5 rounded-2xl border border-emerald-500/40 space-y-2">
+                <label className="text-emerald-300 font-bold block flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-emerald-400" /> Medical Council Registration License & Certificate *
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/20 px-2 py-0.5 rounded">MANDATORY</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g. TSMC/F/88912 or APMC/2021/4401 or MCI-77821"
-                  value={docForm.medicalRegistrationNo}
-                  onChange={(e) => setDocForm(prev => ({ ...prev, medicalRegistrationNo: e.target.value }))}
-                  className="w-full bg-slate-950 border border-emerald-500/40 rounded-xl p-2.5 text-white font-mono text-xs font-bold"
-                  required
-                />
                 
-                {/* Upload Medical Council Registration Certificate */}
-                <div className="pt-1">
-                  <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Medical Registration Certificate (PDF/Image) *</label>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setDocForm(prev => ({ ...prev, medicalRegCertDoc: reader.result, medicalRegCertDocName: file.name }));
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
-                  />
-                  {docForm.medicalRegCertDocName && (
-                    <span className="text-[10px] text-emerald-400 font-bold mt-0.5 block">
-                      ✓ Certificate Selected: {docForm.medicalRegCertDocName}
-                    </span>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Registration Number / License ID *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. TSMC/F/88912 or MCI-77821"
+                      value={docForm.medicalRegistrationNo}
+                      onChange={(e) => setDocForm(prev => ({ ...prev, medicalRegistrationNo: e.target.value }))}
+                      className="w-full bg-slate-950 border border-emerald-500/50 rounded-xl p-2.5 text-white font-mono text-xs font-bold"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Reg Certificate (PDF/Image) *</label>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setDocForm(prev => ({ ...prev, medicalRegCertDoc: reader.result, medicalRegCertDocName: file.name }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                  </div>
                 </div>
+
+                {docForm.medicalRegCertDocName && (
+                  <span className="text-[10px] text-emerald-400 font-bold mt-1 block">
+                    ✓ Reg Certificate Selected: {docForm.medicalRegCertDocName}
+                  </span>
+                )}
               </div>
 
               {/* Multi-Degree Qualification Checkbox Selector */}
