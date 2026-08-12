@@ -1,0 +1,192 @@
+// translations.js — Telugu & English UI Text
+export const translations = {
+  EN: {
+    // Navbar
+    appName: 'CarePulse Hospital OP System',
+    langToggle: 'తె',
+
+    // Portal Selection
+    selectPortal: 'Select Your Portal',
+    patientLogin: 'Patient Login',
+    hospitalLogin: 'Hospital Login',
+    adminLogin: 'Admin Login',
+    registerNew: 'Register Now',
+
+    // User Portal Nav
+    home: 'Home',
+    search: 'Search',
+    myBookings: 'My OP Bookings',
+    hospitals: 'Hospitals',
+    doctors: 'Doctors',
+    profile: 'Profile',
+    logout: 'Logout',
+
+    // Home Page
+    welcomeBack: 'Welcome back',
+    homeSubtitle: 'Search verified hospitals & specialist doctors, book instant OP tokens, and avoid long waiting queues.',
+    searchPlaceholder: 'Search Doctor, Hospital, or Area...',
+    allCities: 'All Cities',
+    searchBook: 'Search Doctor & Book OP',
+    upcomingAppt: 'Upcoming OP Appointment',
+    topDoctors: "Today's Top Available Doctors",
+    viewTicket: 'View Digital Ticket',
+    bookNow: 'Book OP Now',
+    viewAll: 'View All',
+
+    // Booking
+    bookingFor: 'Book OP Appointment',
+    selectDate: 'Select Date',
+    selectTime: 'Select Time',
+    patientName: 'Patient Name',
+    patientPhone: 'Patient Phone',
+    reason: 'Reason / Symptoms',
+    fee: 'OP Consultation Fee',
+    proceedPayment: 'Proceed to Payment →',
+    payAtCounter: 'Pay at Counter (Offline)',
+    paidUpi: "✅ I've Paid via UPI",
+    scanQr: 'Scan QR Code to Pay',
+    upiId: 'UPI ID',
+    amount: 'Amount',
+    paymentNote: 'After payment, click "I\'ve Paid via UPI" to confirm your booking.',
+    bookingConfirmed: '✅ Booking Confirmed!',
+    cancelBooking: 'Cancel Booking',
+
+    // Ticket
+    digitalTicket: 'Digital OP Ticket',
+    tokenNo: 'Token No.',
+    date: 'Date',
+    time: 'Time',
+    hospital: 'Hospital',
+    doctor: 'Doctor',
+    department: 'Department',
+    status: 'Status',
+    printTicket: 'Print Ticket',
+    close: 'Close',
+
+    // Hospital Portal
+    dashboard: 'Dashboard',
+    hospitalProfile: 'Hospital Profile',
+    doctorMgmt: 'Doctor Management',
+    bookingMgmt: 'Booking Management',
+    reports: 'Reports & Export',
+    totalDoctors: 'Total Doctors',
+    totalBookings: 'Total Bookings',
+    todayBookings: "Today's Bookings",
+    revenue: 'Total Revenue',
+    downloadPdf: '⬇️ Download PDF Report',
+    downloadCsv: '⬇️ Download Excel (CSV)',
+    addDoctor: 'Add Verified Doctor',
+    confirm: 'Confirm',
+    complete: 'Complete',
+    cancel: 'Cancel',
+
+    // Admin Portal
+    adminDashboard: 'Admin Dashboard',
+    userMgmt: 'User Management',
+    hospitalMgmt: 'Hospital Management',
+    allBookings: 'All OP Bookings',
+    dispatcher: 'WhatsApp Dispatcher',
+    totalUsers: 'Total Users',
+    pending: 'Pending',
+    approve: 'Approve',
+    reject: 'Reject',
+    delete: 'Delete',
+    activate: 'Activate',
+    deactivate: 'Deactivate',
+  },
+
+  TE: {
+    // Navbar
+    appName: 'కేర్‌పల్స్ హాస్పిటల్ OP సిస్టమ్',
+    langToggle: 'EN',
+
+    // Portal Selection
+    selectPortal: 'మీ పోర్టల్‌ని ఎంచుకోండి',
+    patientLogin: 'పేషెంట్ లాగిన్',
+    hospitalLogin: 'హాస్పిటల్ లాగిన్',
+    adminLogin: 'అడ్మిన్ లాగిన్',
+    registerNew: 'ఇప్పుడు నమోదు చేయండి',
+
+    // User Portal Nav
+    home: 'హోమ్',
+    search: 'శోధన',
+    myBookings: 'నా OP బుకింగ్‌లు',
+    hospitals: 'హాస్పిటళ్లు',
+    doctors: 'డాక్టర్లు',
+    profile: 'ప్రొఫైల్',
+    logout: 'లాగ్ అవుట్',
+
+    // Home Page
+    welcomeBack: 'స్వాగతం',
+    homeSubtitle: 'ధృవీకరించబడిన హాస్పిటళ్లు & నిపుణుల డాక్టర్లను శోధించి, తక్షణ OP టోకెన్లు బుక్ చేసుకోండి.',
+    searchPlaceholder: 'డాక్టర్, హాస్పిటల్, లేదా ప్రాంతం వెతకండి...',
+    allCities: 'అన్ని నగరాలు',
+    searchBook: 'డాక్టర్ వెతకండి & OP బుక్ చేయండి',
+    upcomingAppt: 'రాబోయే OP అపాయింట్‌మెంట్',
+    topDoctors: 'ఈ రోజు అందుబాటులో ఉన్న డాక్టర్లు',
+    viewTicket: 'డిజిటల్ టికెట్ చూడండి',
+    bookNow: 'OP బుక్ చేయండి',
+    viewAll: 'అన్నీ చూడండి',
+
+    // Booking
+    bookingFor: 'OP అపాయింట్‌మెంట్ బుక్ చేయండి',
+    selectDate: 'తేదీ ఎంచుకోండి',
+    selectTime: 'సమయం ఎంచుకోండి',
+    patientName: 'రోగి పేరు',
+    patientPhone: 'రోగి ఫోన్',
+    reason: 'కారణం / లక్షణాలు',
+    fee: 'OP కన్సల్టేషన్ రుసుము',
+    proceedPayment: 'చెల్లింపుకు కొనసాగండి →',
+    payAtCounter: 'కౌంటర్‌లో చెల్లించండి (ఆఫ్‌లైన్)',
+    paidUpi: '✅ UPI ద్వారా చెల్లించాను',
+    scanQr: 'చెల్లింపు కోసం QR స్కాన్ చేయండి',
+    upiId: 'UPI ID',
+    amount: 'మొత్తం',
+    paymentNote: 'చెల్లించిన తర్వాత "UPI ద్వారా చెల్లించాను" క్లిక్ చేయండి.',
+    bookingConfirmed: '✅ బుకింగ్ నిర్ధారించబడింది!',
+    cancelBooking: 'బుకింగ్ రద్దు చేయండి',
+
+    // Ticket
+    digitalTicket: 'డిజిటల్ OP టికెట్',
+    tokenNo: 'టోకెన్ నం.',
+    date: 'తేదీ',
+    time: 'సమయం',
+    hospital: 'హాస్పిటల్',
+    doctor: 'డాక్టర్',
+    department: 'విభాగం',
+    status: 'స్థితి',
+    printTicket: 'టికెట్ ప్రింట్ చేయండి',
+    close: 'మూసివేయండి',
+
+    // Hospital Portal
+    dashboard: 'డాష్‌బోర్డ్',
+    hospitalProfile: 'హాస్పిటల్ ప్రొఫైల్',
+    doctorMgmt: 'డాక్టర్ నిర్వహణ',
+    bookingMgmt: 'బుకింగ్ నిర్వహణ',
+    reports: 'నివేదికలు & ఎగుమతి',
+    totalDoctors: 'మొత్తం డాక్టర్లు',
+    totalBookings: 'మొత్తం బుకింగ్‌లు',
+    todayBookings: 'ఈ రోజు బుకింగ్‌లు',
+    revenue: 'మొత్తం ఆదాయం',
+    downloadPdf: '⬇️ PDF నివేదిక డౌన్‌లోడ్',
+    downloadCsv: '⬇️ Excel (CSV) డౌన్‌లోడ్',
+    addDoctor: 'ధృవీకరించిన డాక్టర్‌ను చేర్చండి',
+    confirm: 'నిర్ధారించండి',
+    complete: 'పూర్తి చేయండి',
+    cancel: 'రద్దు చేయండి',
+
+    // Admin Portal
+    adminDashboard: 'అడ్మిన్ డాష్‌బోర్డ్',
+    userMgmt: 'యూజర్ నిర్వహణ',
+    hospitalMgmt: 'హాస్పిటల్ నిర్వహణ',
+    allBookings: 'అన్ని OP బుకింగ్‌లు',
+    dispatcher: 'WhatsApp డిస్పాచర్',
+    totalUsers: 'మొత్తం యూజర్లు',
+    pending: 'పెండింగ్',
+    approve: 'ఆమోదించండి',
+    reject: 'తిరస్కరించండి',
+    delete: 'తొలగించండి',
+    activate: 'యాక్టివేట్ చేయండి',
+    deactivate: 'డీయాక్టివేట్ చేయండి',
+  }
+};
