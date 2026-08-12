@@ -76,16 +76,10 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // Save to dispatch logs
+    // 🤫 Silent Background Dispatcher (Zero Tabs/Apps Opened)
     sendWhatsAppOtpToUser(cleanPhone, code);
 
-    // 💬 Trigger WhatsApp API to deliver 6-Digit OTP directly to Target User's WhatsApp Inbox
-    const waMessage = `🏥 *CarePulse Hospital OP Booking System*\n\nYour 6-Digit Registration OTP is: *${code}*\n\nPlease enter this OTP in the application to complete your registration. (Valid for 5 mins)`;
-    const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-    
-    window.open(waUrl, '_blank');
-
-    showToast(`💬 WhatsApp OTP Sent to +91 ${cleanPhone}! Check WhatsApp Inbox.`, 'success');
+    showToast(`📱 OTP Dispatched silently to +91 ${cleanPhone}! Enter 6-digit code.`, 'success');
   };
 
   // Handle Auto-fill for instant user convenience
