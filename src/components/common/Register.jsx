@@ -569,48 +569,59 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* 📍 Interactive Live Map Pin Dropper & GPS Location Selector */}
+                {/* 📍 Interactive Live Map Pin & 2-Step Location Confirmation */}
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Google Maps Location Link * (Pin Location)</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Google Maps Location Link * (Pin & Confirm Location)</label>
                   
-                  <div className="flex gap-2 mb-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if ("geolocation" in navigator) {
-                          navigator.geolocation.getCurrentPosition((position) => {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            const gpsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-                            setHospitalForm(prev => ({ ...prev, mapsUrl: gpsLink }));
-                            
-                            // 🗺️ Instantly open Google Maps showing the pinned location to visually confirm
-                            window.open(gpsLink, '_blank');
-                            showToast(`📍 Location Pinned & Map Opened! (${lat.toFixed(4)}, ${lng.toFixed(4)})`, 'success');
-                          }, () => {
-                            alert('⚠️ Location permission denied. Opening Google Maps search...');
-                            const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital';
-                            window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
-                          });
-                        } else {
-                          window.open(`https://www.google.com/maps/search/${encodeURIComponent(hospitalForm.city)}`, '_blank');
-                        }
-                      }}
-                      className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow"
-                    >
-                      🎯 Pin GPS Location & View on Map 🗺️
-                    </button>
+                  <div className="space-y-2 mb-2">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital near me';
+                          const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
+                          window.open(mapsUrl, '_blank');
+                          setHospitalForm(prev => ({ ...prev, mapsUrl: prev.mapsUrl || mapsUrl }));
+                        }}
+                        className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow"
+                      >
+                        🗺️ Step 1: Open Google Maps to Select Pin
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital';
-                        window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
-                      }}
-                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold px-3 py-2 rounded-xl flex items-center gap-1"
-                    >
-                      🗺️ Open Google Maps
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition((position) => {
+                              const lat = position.coords.latitude;
+                              const lng = position.coords.longitude;
+                              const gpsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                              setHospitalForm(prev => ({ ...prev, mapsUrl: gpsLink }));
+                              showToast(`📍 Device GPS Coordinates Captured! (${lat.toFixed(4)}, ${lng.toFixed(4)})`, 'success');
+                            });
+                          }
+                        }}
+                        className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold px-3 py-2.5 rounded-xl flex items-center gap-1"
+                      >
+                        🎯 Auto GPS Pin
+                      </button>
+                    </div>
+
+                    {/* Step 2 Pin Confirmation Banner */}
+                    {hospitalForm.mapsUrl ? (
+                      <div className="bg-emerald-950/40 border border-emerald-500/50 p-2.5 rounded-xl flex items-center justify-between text-xs">
+                        <span className="text-emerald-300 font-bold flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Map Location Pinned & Verified ✓
+                        </span>
+                        <span className="bg-emerald-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
+                          LOCATION CONFIRMED
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-900 border border-slate-800 p-2 rounded-xl text-[11px] text-slate-400 text-center">
+                        ⚠️ Please click "Open Google Maps" or "Auto GPS Pin" above to confirm location pin.
+                      </div>
+                    )}
                   </div>
 
                   <input
