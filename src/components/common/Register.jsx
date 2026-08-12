@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { sendWhatsAppOtpToUser } from '../../utils/whatsappService';
+import { sendRealFast2SMS } from '../../utils/smsService';
 import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap } from 'lucide-react';
 
 export default function Register({ onGoToLogin }) {
@@ -58,7 +59,7 @@ export default function Register({ onGoToLogin }) {
     return () => clearInterval(interval);
   }, [timerSeconds]);
 
-  // Handle Send Real WhatsApp OTP to User Phone
+  // Handle Send Real Fast2SMS Direct Mobile SMS OTP
   const handleSendInstantOtp = (phoneNum) => {
     if (!phoneNum || phoneNum.trim().length < 10) {
       showToast('❌ Please enter a valid 10-digit Phone Number first!', 'error');
@@ -75,15 +76,13 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // Save to dispatch logs & send real WhatsApp message to target phone number
+    // 🚀 Send Real Mobile SMS via Fast2SMS Gateway to User Mobile Phone Inbox
+    sendRealFast2SMS(cleanPhone, code);
+
+    // Save to dispatch logs
     sendWhatsAppOtpToUser(cleanPhone, code);
 
-    // Trigger WhatsApp web deep link to deliver OTP directly to user WhatsApp
-    const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(`🏥 *CarePulse Hospital OP System*\n\nYour 6-Digit Registration OTP is: *${code}*\n\nPlease enter this OTP in the application to complete your registration.`)}`;
-    
-    window.open(waUrl, '_blank');
-
-    showToast(`📱 WhatsApp OTP Link Triggered for +91 ${cleanPhone}! OTP: ${code}`, 'success');
+    showToast(`📲 Real Mobile SMS OTP Dispatched to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
   };
 
   // Handle Auto-fill for instant user convenience

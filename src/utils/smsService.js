@@ -1,30 +1,52 @@
 /**
- * Official Admin SMS Dispatcher Engine
- * Admin Sender Number: +91 9346700951
+ * Fast2SMS Real Mobile Gateway API Dispatcher
+ * Sends Amazon/Flipkart style Direct Mobile SMS to User Phone Inbox
  */
 
-export const ADMIN_SENDER_NUMBER = '9346700951';
+export const FAST2SMS_API_KEY = 'meEBH583i0vD9TVOCRZwcYgjfsNdopG1LXqh6SubrMaWUn4Kl7EtvQq0x8Uw972HfjcaeKbo6WuXhRmP';
 
-// In-Memory & LocalStorage OTP Dispatch Records
-export function dispatchAdminOtp(recipientPhone, otpCode) {
+/**
+ * Sends real SMS OTP to Indian Mobile Numbers via Fast2SMS Gateway
+ * @param {string} recipientPhone - 10-digit Mobile Number
+ * @param {string} otpCode - 6-digit OTP Code
+ */
+export async function sendRealFast2SMS(recipientPhone, otpCode) {
   const cleanPhone = recipientPhone.replace(/[^0-9]/g, '').slice(-10);
-  
-  const dispatchRecord = {
-    id: `otp-${Date.now()}`,
-    sender: ADMIN_SENDER_NUMBER,
-    recipient: cleanPhone,
-    code: otpCode,
-    status: 'DELIVERED',
-    timestamp: new Date().toLocaleTimeString()
-  };
 
-  // Save to LocalStorage for Admin Dispatcher Log tracking
-  const existing = JSON.parse(localStorage.getItem('op_admin_otp_logs') || '[]');
-  localStorage.setItem('op_admin_otp_logs', JSON.stringify([dispatchRecord, ...existing]));
+  try {
+    const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+      method: 'POST',
+      headers: {
+        'authorization': FAST2SMS_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'route': 'otp',
+        'variables_values': otpCode,
+        'numbers': cleanPhone
+      })
+    });
 
-  return dispatchRecord;
-}
+    const data = await response.json();
+    console.log('Fast2SMS Response:', data);
 
-export function getAdminOtpLogs() {
-  return JSON.parse(localStorage.getItem('op_admin_otp_logs') || '[]');
+    // Save record to local logs
+    const dispatchRecord = {
+      id: `fast2sms-${Date.now()}`,
+      sender: 'FAST2SMS_GATEWAY',
+      recipient: cleanPhone,
+      code: otpCode,
+      status: data.return ? 'SENT_REAL_MOBILE_SMS' : 'API_RESPONSE_FAILED',
+      responseMsg: data.message || 'SUCCESS',
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    const existing = JSON.parse(localStorage.getItem('op_admin_otp_logs') || '[]');
+    localStorage.setItem('op_admin_otp_logs', JSON.stringify([dispatchRecord, ...existing]));
+
+    return data;
+  } catch (err) {
+    console.error('Fast2SMS Error:', err);
+    return { return: false, message: err.message };
+  }
 }
