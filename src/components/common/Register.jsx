@@ -569,31 +569,57 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* Google Maps Location Link (Select on Map) */}
+                {/* 📍 Interactive Live Map Pin Dropper & GPS Location Selector */}
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="text-slate-400 font-semibold">Google Maps Location Link * (Select on Map)</label>
+                  <label className="text-slate-400 font-semibold block mb-1">Google Maps Location Link * (Pin Location)</label>
+                  
+                  <div className="flex gap-2 mb-2">
                     <button
                       type="button"
                       onClick={() => {
-                        const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital near me';
+                        if ("geolocation" in navigator) {
+                          navigator.geolocation.getCurrentPosition((position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const gpsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                            setHospitalForm(prev => ({ ...prev, mapsUrl: gpsLink }));
+                            alert(`📍 GPS Location Pinned! Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+                          }, () => {
+                            alert('⚠️ Location permission denied. Opening Google Maps...');
+                            const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital';
+                            window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
+                          });
+                        } else {
+                          window.open(`https://www.google.com/maps/search/${encodeURIComponent(hospitalForm.city)}`, '_blank');
+                        }
+                      }}
+                      className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 shadow"
+                    >
+                      🎯 Pin Current Device GPS Location
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital';
                         window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
                       }}
-                      className="text-[10px] text-emerald-300 font-bold bg-emerald-500/20 px-2.5 py-1 rounded-lg border border-emerald-500/40 hover:bg-emerald-500/30 flex items-center gap-1"
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold px-3 py-2 rounded-xl flex items-center gap-1"
                     >
-                      🗺️ Open Google Maps to Select Location 📍
+                      🗺️ Open Google Maps
                     </button>
                   </div>
+
                   <input
                     type="url"
-                    placeholder="Paste copied Google Maps Share link here (e.g. https://maps.app.goo.gl/... or https://maps.google.com/...)"
+                    placeholder="https://www.google.com/maps?q=latitude,longitude"
                     value={hospitalForm.mapsUrl}
                     onChange={(e) => setHospitalForm(prev => ({ ...prev, mapsUrl: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-xs"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-xs font-mono"
                     required
                   />
                   <p className="text-[10px] text-slate-400 mt-1">
-                    💡 <strong>Instructions:</strong> Click 'Open Google Maps', search & select your exact hospital location, click <strong>Share ➔ Copy Link</strong>, and paste the URL here.
+                    🎯 Click <strong>"Pin Current Device GPS Location"</strong> while at the hospital to drop exact GPS coordinates instantly!
                   </p>
                 </div>
 
