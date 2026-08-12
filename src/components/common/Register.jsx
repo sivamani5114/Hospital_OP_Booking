@@ -583,9 +583,12 @@ export default function Register({ onGoToLogin }) {
                             const lng = position.coords.longitude;
                             const gpsLink = `https://www.google.com/maps?q=${lat},${lng}`;
                             setHospitalForm(prev => ({ ...prev, mapsUrl: gpsLink }));
-                            alert(`📍 GPS Location Pinned! Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+                            
+                            // 🗺️ Instantly open Google Maps showing the pinned location to visually confirm
+                            window.open(gpsLink, '_blank');
+                            showToast(`📍 Location Pinned & Map Opened! (${lat.toFixed(4)}, ${lng.toFixed(4)})`, 'success');
                           }, () => {
-                            alert('⚠️ Location permission denied. Opening Google Maps...');
+                            alert('⚠️ Location permission denied. Opening Google Maps search...');
                             const searchQuery = hospitalForm.hospitalName || hospitalForm.city || 'Hospital';
                             window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
                           });
@@ -593,9 +596,9 @@ export default function Register({ onGoToLogin }) {
                           window.open(`https://www.google.com/maps/search/${encodeURIComponent(hospitalForm.city)}`, '_blank');
                         }
                       }}
-                      className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold py-2 rounded-xl flex items-center justify-center gap-1.5 shadow"
+                      className="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow"
                     >
-                      🎯 Pin Current Device GPS Location
+                      🎯 Pin GPS Location & View on Map 🗺️
                     </button>
 
                     <button
