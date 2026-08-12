@@ -1365,7 +1365,32 @@ export default function Register({ onGoToLogin }) {
 
                   <button
                     type="button"
-                    onClick={() => setHospStep(3)}
+                    onClick={() => {
+                      // 🔒 Strict Document Verification Audit (All 12 Documents Mandatory Check)
+                      const requiredDocs = [
+                        { key: 'regCertificate', name: '1. Hospital Registration Certificate' },
+                        { key: 'clinicalEstablishmentCert', name: '2. Clinical Establishment Registration Certificate' },
+                        { key: 'nabhCertificate', name: '3. NABH Certificate' },
+                        { key: 'hospitalPan', name: '4. Hospital Business PAN Card' },
+                        { key: 'gstCertificate', name: '5. GST Certificate' },
+                        { key: 'drugLicense', name: '6. Pharmacy Drug License' },
+                        { key: 'biomedicalWasteAuth', name: '7. Biomedical Waste Authorization Certificate' },
+                        { key: 'fireNocCert', name: '8. Fire Safety Certificate / Fire NOC' },
+                        { key: 'tradeLicenseCert', name: '9. Local Municipal / Trade License' },
+                        { key: 'authorizedPersonIdProof', name: 'Owner Aadhaar / Government Photo ID' },
+                        { key: 'authorizedPersonPan', name: 'Owner Personal PAN Card' },
+                        { key: 'authorizationLetter', name: 'Hospital Official Authorization Letter / Proof' }
+                      ];
+
+                      const missingDoc = requiredDocs.find(doc => !hospitalForm[doc.key]);
+                      if (missingDoc) {
+                        showToast(`⚠️ Mandatory Document Missing: Please upload "${missingDoc.name}" to proceed!`, 'error');
+                        alert(`❌ MANDATORY VERIFICATION REQUIREMENT:\n\nPlease upload "${missingDoc.name}" to complete legal verification audit.`);
+                        return;
+                      }
+
+                      setHospStep(3);
+                    }}
                     className="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg"
                   >
                     Proceed to Step 3: Bank Details & QR Code →
