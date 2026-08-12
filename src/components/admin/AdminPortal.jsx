@@ -769,6 +769,101 @@ export default function AdminPortal() {
                 </div>
               </div>
 
+              {/* Interactive Calendar Days Picker & Time Range Dropdowns */}
+              <div className="space-y-3 bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800">
+                {/* 📅 Available Days Checkbox Chips */}
+                <div>
+                  <label className="text-slate-300 font-bold block mb-1.5 text-xs flex items-center justify-between">
+                    <span>📅 Select OP Working Days *</span>
+                    <span className="text-[10px] text-indigo-400 font-semibold">{docForm.selectedDays?.length || 0} Days Selected</span>
+                  </label>
+
+                  <div className="grid grid-cols-7 gap-1">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => {
+                      const isSelected = docForm.selectedDays?.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => {
+                            setDocForm(prev => {
+                              const current = prev.selectedDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                              const next = current.includes(day)
+                                ? current.filter(d => d !== day)
+                                : [...current, day];
+                              
+                              const formattedDays = next.length === 7 ? 'All 7 Days (Sun - Sat)' :
+                                (next.includes('Mon') && next.includes('Sat') && next.length === 6) ? 'Monday - Saturday' :
+                                next.join(', ');
+
+                              return { ...prev, selectedDays: next, availableDays: formattedDays };
+                            });
+                          }}
+                          className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                            isSelected
+                              ? 'bg-indigo-500 text-white border-indigo-400 shadow-md shadow-indigo-500/20'
+                              : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ⏰ Available Start & End Time Dropdowns */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1 text-xs">OP Start Time *</label>
+                    <select
+                      value={docForm.startTime || '09:00 AM'}
+                      onChange={(e) => {
+                        const newStart = e.target.value;
+                        const end = docForm.endTime || '01:00 PM';
+                        setDocForm(prev => ({
+                          ...prev,
+                          startTime: newStart,
+                          availableTime: `${newStart} - ${end}`
+                        }));
+                      }}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs font-semibold"
+                    >
+                      {[
+                        '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+                        '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM'
+                      ].map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1 text-xs">OP End Time *</label>
+                    <select
+                      value={docForm.endTime || '01:00 PM'}
+                      onChange={(e) => {
+                        const newEnd = e.target.value;
+                        const start = docForm.startTime || '09:00 AM';
+                        setDocForm(prev => ({
+                          ...prev,
+                          endTime: newEnd,
+                          availableTime: `${start} - ${newEnd}`
+                        }));
+                      }}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-xs font-semibold"
+                    >
+                      {[
+                        '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM',
+                        '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM'
+                      ].map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="number"
