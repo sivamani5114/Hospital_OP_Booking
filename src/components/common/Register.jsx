@@ -32,16 +32,55 @@ export default function Register({ onGoToLogin }) {
     confirmPassword: ''
   });
 
-  // Hospital Registration Form State (Blank by Default)
+  // 2-Step Hospital Registration State (Step 1: Basic Info, Step 2: Legal Docs & Facilities)
+  const [hospStep, setHospStep] = useState(1);
+  
   const [hospitalForm, setHospitalForm] = useState({
+    // 1. Basic Details
     hospitalName: '',
-    phone: '',
+    hospitalType: 'Private', // Private / Government / Corporate / Clinic
+    regNo: '',
+    establishedYear: '2015',
+    logo: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=600&auto=format&fit=crop&q=80',
+    description: '',
+
+    // 2. Contact Details
     email: '',
-    city: 'Hyderabad',
+    phone: '',
+    landline: '',
+    website: '',
+
+    // 3. Address & Location
+    doorNo: '',
+    street: '',
     area: '',
-    address: '',
-    hospitalTimings: '09:00 AM - 08:00 PM',
+    city: 'Hyderabad',
+    district: 'Hyderabad',
+    state: 'Telangana',
+    pincode: '500033',
+    mapsUrl: '',
+
+    // 4. Legal & Verification
+    regCertificate: 'Uploaded Certificate PDF',
+    nabhAccredited: 'No',
+    pan: '',
+    gstNo: '',
+    authorizedPersonName: '',
+    authorizedPersonDesignation: 'Medical Director',
+    authorizedPersonIdProof: 'Aadhaar Card Uploaded',
+
+    // 5. Facilities (Selected Checkboxes)
+    facilities: ['Emergency', 'Pharmacy', 'Laboratory', 'ICU', 'Ambulance', 'Operation Theatre'],
+
+    // 6. OP Booking Settings
+    opDays: 'Monday - Saturday',
+    opTimings: '09:00 AM - 08:00 PM',
     opFee: '500',
+    maxBookingsPerDay: '30',
+    slotDurationMinutes: '15',
+    sameDayBooking: 'Yes',
+    cancellationPolicy: 'Free cancellation up to 2 hours before OP slot',
+
     password: '',
     confirmPassword: ''
   });
@@ -380,115 +419,310 @@ export default function Register({ onGoToLogin }) {
           </form>
         )}
 
-        {/* --- HOSPITAL REGISTRATION FORM WITH GUARANTEED OTP --- */}
+        {/* --- HOSPITAL REGISTRATION FORM (2-Step Professional Registration) --- */}
         {regType === 'HOSPITAL' && (
           <form onSubmit={handleHospitalSubmit} className="space-y-4">
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Hospital Name</label>
-              <input
-                type="text"
-                placeholder="e.g. Care & Cure City Hospital"
-                value={hospitalForm.hospitalName}
-                onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalName: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
-                required
-              />
+            
+            {/* Step Navigation Pill Indicator */}
+            <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setHospStep(1)}
+                className={`flex-1 py-2 rounded-xl text-center transition-all ${
+                  hospStep === 1 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Step 1: Basic Info & Contact
+              </button>
+              <button
+                type="button"
+                onClick={() => setHospStep(2)}
+                className={`flex-1 py-2 rounded-xl text-center transition-all ${
+                  hospStep === 2 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Step 2: Legal, Facilities & OP Settings
+              </button>
             </div>
 
-            {/* Hospital Phone Number + OTP */}
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Hospital Phone Number *</label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+            {/* STEP 1: Basic Info & Contact */}
+            {hospStep === 1 && (
+              <div className="space-y-3 animate-fadeIn text-xs">
+                {/* Hospital Name & Type */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Apollo / Sunshine Hospital"
+                      value={hospitalForm.hospitalName}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalName: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Type *</label>
+                    <select
+                      value={hospitalForm.hospitalType}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalType: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    >
+                      <option value="Private">Private Hospital</option>
+                      <option value="Government">Government Hospital</option>
+                      <option value="Corporate">Corporate Multi-Speciality</option>
+                      <option value="Clinic">Polyclinic / Specialty Clinic</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Reg No & Est Year */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Reg. No *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. REG-TS-88492"
+                      value={hospitalForm.regNo}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, regNo: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Established Year</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 2012"
+                      value={hospitalForm.establishedYear}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, establishedYear: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Hospital Phone Number */}
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Hospital Phone Number *</label>
                   <input
-                    type="text"
+                    type="tel"
                     placeholder="e.g. 9848012345"
                     value={hospitalForm.phone}
-                    onChange={(e) => {
-                      setHospitalForm(prev => ({ ...prev, phone: e.target.value }));
-                      setIsPhoneVerified(false);
-                    }}
-                    className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3 py-2.5 text-xs text-white ${
-                      isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800'
-                    }`}
+                    onChange={(e) => setHospitalForm(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                     required
                   />
                 </div>
 
-                {!isPhoneVerified ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSendInstantOtp(hospitalForm.phone)}
-                    disabled={timerSeconds > 0}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 min-w-max"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
-                  </button>
-                ) : (
-                  <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" /> Verified
-                  </span>
-                )}
-              </div>
-            </div>
+                {/* Email & Landline */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Official Hospital Email *</label>
+                    <input
+                      type="email"
+                      placeholder="e.g. contact@hospital.com"
+                      value={hospitalForm.email}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
 
-            {/* GUARANTEED INSTANT MOBILE SMS CARD DISPLAY */}
-            {otpSent && !isPhoneVerified && showMobileSmsCard && (
-              <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-emerald-500/50 space-y-3 shadow-xl animate-fadeIn">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-emerald-300 font-bold flex items-center gap-1.5">
-                    <Smartphone className="w-4 h-4 text-emerald-400" /> Hospital Phone SMS Inbox (+91 {targetPhone})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleInstantFill}
-                    className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-lg font-bold flex items-center gap-1 hover:bg-emerald-500/30"
-                  >
-                    <Zap className="w-3 h-3 text-amber-400" /> Auto-Fill Code ({generatedOtp})
-                  </button>
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Landline Number (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 040-23456789"
+                      value={hospitalForm.landline}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, landline: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
                 </div>
 
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
-                  <span className="text-[10px] text-slate-400 block font-mono">From: CarePulse-Verification</span>
-                  <p className="text-white font-medium mt-0.5">
-                    Your CarePulse verification code is: <strong className="text-emerald-300 font-mono text-sm tracking-widest font-extrabold">{generatedOtp}</strong>. Valid for 5 mins.
-                  </p>
+                {/* Address: City, Area, Door No, Pincode */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">City *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Hyderabad / Vijayawada"
+                      value={hospitalForm.city}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, city: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Area / Locality *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Jubilee Hills / MG Road"
+                      value={hospitalForm.area}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, area: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Google Maps Location Link */}
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Google Maps Location Link (Optional)</label>
+                  <input
+                    type="url"
+                    placeholder="e.g. https://maps.google.com/..."
+                    value={hospitalForm.mapsUrl}
+                    onChange={(e) => setHospitalForm(prev => ({ ...prev, mapsUrl: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setHospStep(2)}
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg"
+                >
+                  Proceed to Step 2: Legal Docs & OP Settings →
+                </button>
+              </div>
+            )}
+
+            {/* STEP 2: Legal Docs, Facilities & OP Settings */}
+            {hospStep === 2 && (
+              <div className="space-y-3 animate-fadeIn text-xs">
+                {/* Authorized Person Name & Designation */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Authorized Person Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Dr. Rajesh Kumar"
+                      value={hospitalForm.authorizedPersonName}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonName: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">NABH Accredited?</label>
+                    <select
+                      value={hospitalForm.nabhAccredited}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, nabhAccredited: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    >
+                      <option value="Yes">Yes (NABH Certified)</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* PAN & GST */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">PAN Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ABCDE1234F"
+                      value={hospitalForm.pan}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, pan: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">GST Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 36AAACH7492K1Z5"
+                      value={hospitalForm.gstNo}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, gstNo: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* OP Fee & Timings */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Base OP Fee (₹) *</label>
+                    <input
+                      type="number"
+                      placeholder="500"
+                      value={hospitalForm.opFee}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, opFee: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Max Bookings / Day</label>
+                    <input
+                      type="number"
+                      placeholder="30"
+                      value={hospitalForm.maxBookingsPerDay}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, maxBookingsPerDay: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Password & Confirm Password */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Password *</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={hospitalForm.password}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, password: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Confirm Password *</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={hospitalForm.confirmPassword}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-[11px] text-amber-300">
+                  🔒 <strong>Admin Verification Required:</strong> Your hospital will be submitted for Super Admin document review. Once approved by Admin, your hospital portal will be activated.
                 </div>
 
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="Enter 6-digit OTP code"
-                    value={enteredOtp}
-                    onChange={(e) => setEnteredOtp(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest"
-                  />
                   <button
                     type="button"
-                    onClick={handleVerifyOtp}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow"
+                    onClick={() => setHospStep(1)}
+                    className="w-1/3 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl border border-slate-700"
                   >
-                    Verify OTP
+                    ← Back
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/25"
+                  >
+                    Submit for Admin Approval 🚀
                   </button>
                 </div>
               </div>
             )}
-
-            {/* Email Address */}
-            <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Email Address</label>
-              <input
-                type="email"
-                placeholder="e.g. info@carecure.com"
-                value={hospitalForm.email}
-                onChange={(e) => setHospitalForm(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
-                required
-              />
-            </div>
+          </form>
+        )}
 
             <div className="grid grid-cols-2 gap-3">
               <div>

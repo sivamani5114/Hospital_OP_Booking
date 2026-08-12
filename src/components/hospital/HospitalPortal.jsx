@@ -227,6 +227,31 @@ export default function HospitalPortal() {
         </button>
       </div>
 
+      {/* --- ADMIN APPROVAL / REJECTION WARNING BANNERS --- */}
+      {hospital.status === 'PENDING' && (
+        <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl flex items-center justify-between text-xs text-amber-300">
+          <div className="flex items-center gap-2 font-bold">
+            <Clock className="w-5 h-5 text-amber-400 animate-spin" />
+            <span>Hospital Approval Pending: Your registration documents are under review by Super Admin. Public OP booking will activate after Admin approval.</span>
+          </div>
+          <span className="bg-amber-500/20 px-3 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider">UNDER REVIEW</span>
+        </div>
+      )}
+
+      {hospital.status === 'REJECTED' && (
+        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl space-y-1 text-xs text-rose-300">
+          <div className="flex items-center justify-between font-bold">
+            <span className="flex items-center gap-2 text-rose-400">
+              <ShieldAlert className="w-5 h-5 text-rose-500" /> Hospital Approval Rejected by Super Admin
+            </span>
+            <span className="bg-rose-500/20 px-3 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider">REJECTED</span>
+          </div>
+          <p className="text-slate-300 pl-7">
+            <strong>Reason for Rejection:</strong> {hospital.rejectionReason || 'Uploaded hospital registration certificates or license documents failed verification criteria.'}
+          </p>
+        </div>
+      )}
+
       {/* --- DASHBOARD --- */}
       {activeTab === 'DASHBOARD' && (
         <div className="space-y-6">

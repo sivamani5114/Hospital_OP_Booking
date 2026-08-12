@@ -423,10 +423,13 @@ export default function AdminPortal() {
                             Approve
                           </button>
                           <button
-                            onClick={() => rejectHospital(h._id)}
-                            className="px-3 py-1 bg-rose-600 text-white rounded-lg text-[11px]"
+                            onClick={() => {
+                              const reason = prompt('Enter Rejection Reason for Hospital (e.g. Invalid Registration Certificate / Invalid License):', 'Registration Certificate Verification Failed.');
+                              if (reason) rejectHospital(h._id, reason);
+                            }}
+                            className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[11px]"
                           >
-                            Reject
+                            Reject & Send Reason
                           </button>
                         </>
                       )}

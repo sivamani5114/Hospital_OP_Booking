@@ -164,11 +164,11 @@ export function DbProvider({ children }) {
   };
 
   const approveHospital = (id) => {
-    setHospitals(prev => prev.map(h => h._id === id ? { ...h, status: 'APPROVED' } : h));
+    setHospitals(prev => prev.map(h => h._id === id ? { ...h, status: 'APPROVED', rejectionReason: '' } : h));
   };
 
-  const rejectHospital = (id) => {
-    setHospitals(prev => prev.map(h => h._id === id ? { ...h, status: 'REJECTED' } : h));
+  const rejectHospital = (id, reason) => {
+    setHospitals(prev => prev.map(h => h._id === id ? { ...h, status: 'REJECTED', rejectionReason: reason || 'Documents verification failed.' } : h));
   };
 
   const toggleHospitalStatus = (id) => {
