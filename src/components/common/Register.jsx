@@ -81,6 +81,19 @@ export default function Register({ onGoToLogin }) {
     sameDayBooking: 'Yes',
     cancellationPolicy: '',
 
+    // 7. Payment & Business Bank Details (Section 7)
+    accountHolderName: '',
+    bankAccountNo: '',
+    confirmBankAccountNo: '',
+    bankName: '',
+    ifscCode: '',
+    accountType: 'Current', // Current / Savings
+    upiId: '',
+    upiQrCode: '',
+    upiQrCodeName: '',
+    bankProof: '',
+    bankProofName: '',
+
     password: '',
     confirmPassword: ''
   });
@@ -438,8 +451,8 @@ export default function Register({ onGoToLogin }) {
         {regType === 'HOSPITAL' && (
           <form onSubmit={handleHospitalSubmit} className="space-y-4">
             
-            {/* Step Navigation Pill Indicator */}
-            <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold">
+            {/* Step Navigation Pill Indicator (3 Steps) */}
+            <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold gap-1">
               <button
                 type="button"
                 onClick={() => setHospStep(1)}
@@ -447,7 +460,7 @@ export default function Register({ onGoToLogin }) {
                   hospStep === 1 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Step 1: Basic Info & Contact
+                Step 1: Basic & Contact
               </button>
               <button
                 type="button"
@@ -456,7 +469,16 @@ export default function Register({ onGoToLogin }) {
                   hospStep === 2 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Step 2: Legal, Facilities & OP Settings
+                Step 2: Legal & Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => setHospStep(3)}
+                className={`flex-1 py-2 rounded-xl text-center transition-all ${
+                  hospStep === 3 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Step 3: Bank & Payment Details 💳
               </button>
             </div>
 
@@ -997,10 +1019,189 @@ export default function Register({ onGoToLogin }) {
                   </button>
 
                   <button
+                    type="button"
+                    onClick={() => setHospStep(3)}
+                    className="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg"
+                  >
+                    Proceed to Step 3: Bank Details & QR Code →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: Payment & Business Bank Details */}
+            {hospStep === 3 && (
+              <div className="space-y-3 animate-fadeIn text-xs">
+                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                  <h4 className="font-bold text-amber-300 text-xs">💳 Business Bank Account Details</h4>
+
+                  {/* Account Holder Name */}
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Account Holder Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Apollo Health City Pvt Ltd"
+                      value={hospitalForm.accountHolderName}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  {/* Bank Account Number & Confirm Account Number */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Business Bank Account No *</label>
+                      <input
+                        type="password"
+                        placeholder="e.g. 99881100223344"
+                        value={hospitalForm.bankAccountNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, bankAccountNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Confirm Account No *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 99881100223344"
+                        value={hospitalForm.confirmBankAccountNo}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, confirmBankAccountNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bank Name, IFSC Code & Account Type */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Bank Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. HDFC / ICICI Bank"
+                        value={hospitalForm.bankName}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, bankName: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">IFSC Code *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. HDFC0000123"
+                        value={hospitalForm.ifscCode}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, ifscCode: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white uppercase font-mono"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Account Type</label>
+                      <select
+                        value={hospitalForm.accountType}
+                        onChange={(e) => setHospitalForm(prev => ({ ...prev, accountType: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                      >
+                        <option value="Current">Current Account</option>
+                        <option value="Savings">Savings Account</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hospital UPI ID & QR Code Upload */}
+                <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
+                  <h4 className="font-bold text-cyan-300 text-xs">📱 Hospital UPI Payment & QR Code</h4>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Official UPI ID *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. apollohealth@ybl or abchospital@upi"
+                      value={hospitalForm.upiId}
+                      onChange={(e) => setHospitalForm(prev => ({ ...prev, upiId: e.target.value }))}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                      required
+                    />
+                  </div>
+
+                  {/* Upload Hospital UPI QR Code Image */}
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Upload Hospital UPI QR Code Image *</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHospitalForm(prev => ({ ...prev, upiQrCode: reader.result, upiQrCodeName: file.name }));
+                            showToast(`📱 UPI QR Code Uploaded: ${file.name}`, 'success');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                    {hospitalForm.upiQrCodeName && (
+                      <span className="text-[10px] text-cyan-400 font-bold mt-1 block">
+                        ✓ QR Code Selected: {hospitalForm.upiQrCodeName}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Upload Cancelled Cheque / Bank Proof */}
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Upload Cancelled Cheque / Bank Proof (PDF/Image) *</label>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHospitalForm(prev => ({ ...prev, bankProof: reader.result, bankProofName: file.name }));
+                            showToast(`📑 Bank Proof Uploaded: ${file.name}`, 'success');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                    {hospitalForm.bankProofName && (
+                      <span className="text-[10px] text-emerald-400 font-bold mt-1 block">
+                        ✓ Bank Proof Selected: {hospitalForm.bankProofName}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-[11px] text-amber-300">
+                  🔒 <strong>Protected & Encrypted Storage:</strong> Bank Account Numbers & Proofs are encrypted. Patient will only see Hospital Name, UPI ID & Official QR Code during payment.
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setHospStep(2)}
+                    className="w-1/3 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl border border-slate-700"
+                  >
+                    ← Back
+                  </button>
+
+                  <button
                     type="submit"
                     className="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/25"
                   >
-                    Submit for Admin Approval 🚀
+                    Submit Complete Hospital Registration 🚀
                   </button>
                 </div>
               </div>

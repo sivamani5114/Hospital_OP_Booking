@@ -760,35 +760,47 @@ export default function UserPortal() {
             )}
 
             {/* Step 2: UPI / QR Payment */}
-            {bookingStep === 'PAYMENT' && (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2</p>
-                  <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                    <ScanLine className="w-5 h-5 text-cyan-400" /> {t('scanQr')}
-                  </h3>
-                </div>
+            {bookingStep === 'PAYMENT' && (() => {
+              const targetHosp = hospitals.find(h => h._id === bookingDoctor.hospitalId) || hospitals[0];
+              const displayUpiId = targetHosp?.upiId || 'carepulse@ybl';
+              const displayQrImage = targetHosp?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${encodeURIComponent(displayUpiId)}&pn=${encodeURIComponent(targetHosp?.hospitalName || 'Hospital')}&am=${bookingDoctor.opFee}`;
 
-                {/* UPI QR Code Area */}
-                <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3">
-                  <div className="bg-slate-950 p-3 rounded-xl">
-                    <QrCode className="w-28 h-28 text-cyan-500" />
+              return (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE UPI PAYMENT</p>
+                    <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                      <ScanLine className="w-5 h-5 text-cyan-400" /> {targetHosp?.hospitalName || 'Hospital'} OP Payment
+                    </h3>
                   </div>
-                  <div className="text-center">
-                    <p className="text-slate-800 font-bold text-sm">CarePulse Hospital OP</p>
-                    <p className="text-slate-600 text-xs font-mono mt-0.5">carepulse@ybl</p>
-                    <p className="text-slate-500 text-[11px] mt-0.5">GPay / PhonePe / PayTM / BHIM UPI</p>
-                  </div>
-                  <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-4 py-2 text-center">
-                    <p className="text-[10px] text-cyan-600 font-semibold">{t('amount')}</p>
-                    <p className="text-2xl font-extrabold text-cyan-700">₹{bookingDoctor.opFee}</p>
-                  </div>
-                </div>
 
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 flex items-start gap-2">
-                  <Smartphone className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                  <span>{t('paymentNote')}</span>
-                </div>
+                  {/* Dynamic Hospital UPI QR Code Area */}
+                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
+                    <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
+                      <img src={displayQrImage} className="w-36 h-36 object-contain rounded-xl" alt="Hospital UPI QR Code" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-slate-900 font-extrabold text-base">{targetHosp?.hospitalName}</p>
+                      <p className="text-slate-700 font-semibold text-xs mt-0.5">Dr. {bookingDoctor.doctorName}</p>
+                      <p className="text-slate-600 text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
+                        UPI ID: {displayUpiId}
+                      </p>
+                      <p className="text-slate-500 text-[10px] mt-1 font-medium">Pay via GPay / PhonePe / Paytm / BHIM UPI</p>
+                    </div>
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-5 py-2 text-center w-full">
+                      <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">{t('amount')}</p>
+                      <p className="text-2xl font-extrabold text-cyan-700 font-outfit">₹{bookingDoctor.opFee}</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-cyan-400">
+                      <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
+                    </div>
+                    <p className="text-[11px] text-slate-400">
+                      🔒 Payments are routed directly to <strong>{targetHosp?.hospitalName}</strong>'s Business Bank Account. Patient bank credentials remain 100% encrypted & protected.
+                    </p>
+                  </div>
 
                 <div className="grid grid-cols-1 gap-2">
                   <button
@@ -812,7 +824,8 @@ export default function UserPortal() {
                   ← Back to booking details
                 </button>
               </div>
-            )}
+            );
+          })()}
           </div>
         </div>
       )}

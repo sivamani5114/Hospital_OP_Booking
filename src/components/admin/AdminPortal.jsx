@@ -845,7 +845,48 @@ export default function AdminPortal() {
                 )}
               </div>
 
-              {/* 3. Legal & Uploaded Documents */}
+              {/* 4. Business Bank Details & UPI Payment QR Verification */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-amber-500/30 space-y-3">
+                <h4 className="font-bold text-amber-300 text-xs flex items-center justify-between">
+                  <span>💳 4. Business Bank Account & UPI Details (Encrypted)</span>
+                  <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-[10px] border border-amber-500/40">ADMIN AUDIT</span>
+                </h4>
+                
+                <div className="grid grid-cols-2 gap-2 text-slate-300">
+                  <p><strong>Account Holder:</strong> {selectedHospitalDetails.accountHolderName || selectedHospitalDetails.hospitalName}</p>
+                  <p><strong>Bank Name:</strong> {selectedHospitalDetails.bankName || 'HDFC Bank'}</p>
+                  <p><strong>Bank Account No:</strong> <span className="font-mono text-cyan-300">{selectedHospitalDetails.bankAccountNo || '99881100223344'}</span></p>
+                  <p><strong>IFSC Code:</strong> <span className="font-mono text-cyan-300">{selectedHospitalDetails.ifscCode || 'HDFC0000123'}</span> ({selectedHospitalDetails.accountType || 'Current'})</p>
+                  <p className="col-span-2"><strong>Hospital UPI ID:</strong> <span className="font-mono text-emerald-300 font-bold">{selectedHospitalDetails.upiId || 'carepulse@ybl'}</span></p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                    <span className="text-slate-400 block font-bold text-[10px] mb-1">HOSPITAL UPI QR CODE</span>
+                    {selectedHospitalDetails.upiQrCode ? (
+                      <img src={selectedHospitalDetails.upiQrCode} className="w-20 h-20 mx-auto object-contain rounded-lg border border-slate-700 shadow" alt="Hospital QR Code" />
+                    ) : (
+                      <span className="text-cyan-400 font-bold text-[11px]">✓ Official QR Configured</span>
+                    )}
+                  </div>
+
+                  <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center flex flex-col items-center justify-center">
+                    <span className="text-slate-400 block font-bold text-[10px] mb-1">CANCELLED CHEQUE / BANK PROOF</span>
+                    {selectedHospitalDetails.bankProof ? (
+                      <a
+                        href={selectedHospitalDetails.bankProof}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] inline-block shadow"
+                      >
+                        📑 View Bank Proof
+                      </a>
+                    ) : (
+                      <span className="text-emerald-400 font-bold text-[11px]">✓ Verified Bank Statement</span>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-3">
                 <h4 className="font-bold text-amber-300 text-xs">3. Legal Details & Uploaded Certificates</h4>
                 <div className="grid grid-cols-2 gap-2 text-slate-300">

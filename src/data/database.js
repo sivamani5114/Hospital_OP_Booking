@@ -75,6 +75,14 @@ export const initialHospitals = [
     oxygenBeds: 15,
     ambulanceReady: true,
     logo: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=600&auto=format&fit=crop&q=80',
+    accountHolderName: 'Apollo Health City Ltd',
+    bankAccountNo: '99881100223344',
+    bankName: 'HDFC Bank',
+    ifscCode: 'HDFC0000123',
+    accountType: 'Current',
+    upiId: 'apollohealth@ybl',
+    upiQrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=apollohealth@ybl&pn=Apollo%20Health%20City&am=700',
+    bankProof: 'Cancelled Cheque Uploaded',
     createdAt: '2026-08-01'
   },
   {
@@ -96,6 +104,14 @@ export const initialHospitals = [
     oxygenBeds: 10,
     ambulanceReady: true,
     logo: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80',
+    accountHolderName: 'Sunshine Hospitals Pvt Ltd',
+    bankAccountNo: '55443322110099',
+    bankName: 'ICICI Bank',
+    ifscCode: 'ICIC0000456',
+    accountType: 'Current',
+    upiId: 'sunshinehospitals@upi',
+    upiQrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=sunshinehospitals@upi&pn=Sunshine%20Hospital&am=600',
+    bankProof: 'Bank Statement Uploaded',
     createdAt: '2026-08-02'
   },
   {
