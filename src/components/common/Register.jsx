@@ -40,7 +40,7 @@ export default function Register({ onGoToLogin }) {
     hospitalName: '',
     hospitalType: 'Private', // Private / Government / Corporate / Clinic
     regNo: '',
-    establishedYear: '2015',
+    establishedYear: '',
     logo: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=600&auto=format&fit=crop&q=80',
     description: '',
 
@@ -54,10 +54,10 @@ export default function Register({ onGoToLogin }) {
     doorNo: '',
     street: '',
     area: '',
-    city: 'Hyderabad',
-    district: 'Hyderabad',
-    state: 'Telangana',
-    pincode: '500033',
+    city: '',
+    district: '',
+    state: '',
+    pincode: '',
     mapsUrl: '',
 
     // 4. Legal & Verification
@@ -66,20 +66,20 @@ export default function Register({ onGoToLogin }) {
     pan: '',
     gstNo: '',
     authorizedPersonName: '',
-    authorizedPersonDesignation: 'Medical Director',
-    authorizedPersonIdProof: 'Aadhaar Card Uploaded',
+    authorizedPersonDesignation: '',
+    authorizedPersonIdProof: '',
 
-    // 5. Facilities (Selected Checkboxes)
-    facilities: ['Emergency', 'Pharmacy', 'Laboratory', 'ICU', 'Ambulance', 'Operation Theatre'],
+    // 5. Facilities (Selected Checkboxes - empty by default)
+    facilities: [],
 
     // 6. OP Booking Settings
     opDays: 'Monday - Saturday',
-    opTimings: '09:00 AM - 08:00 PM',
-    opFee: '500',
-    maxBookingsPerDay: '30',
+    opTimings: '',
+    opFee: '',
+    maxBookingsPerDay: '',
     slotDurationMinutes: '15',
     sameDayBooking: 'Yes',
-    cancellationPolicy: 'Free cancellation up to 2 hours before OP slot',
+    cancellationPolicy: '',
 
     password: '',
     confirmPassword: ''
