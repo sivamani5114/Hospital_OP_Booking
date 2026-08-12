@@ -82,7 +82,8 @@ export default function HospitalPortal() {
   const [docForm, setDocForm] = useState({
     doctorName: '',
     medicalRegistrationNo: '',
-    qualificationDegree: OFFICIAL_QUALIFICATIONS[0],
+    qualificationDegree: 'MBBS (Bachelor of Medicine & Surgery)',
+    selectedQualifications: ['MBBS (Bachelor of Medicine & Surgery)'],
     specialization: ALL_DOCTOR_CATEGORIES[0],
     department: 'Cardiology',
     experience: '',
@@ -718,33 +719,71 @@ export default function HospitalPortal() {
                 <span className="text-[10px] text-slate-400 block">Required by Medical Council to verify doctor's genuine license.</span>
               </div>
 
-              {/* Medical Qualifications Dropdown */}
-              <div>
-                <label className="text-slate-300 font-bold block mb-1">Select Official Medical Qualification Degree</label>
-                <select
-                  value={docForm.qualificationDegree}
-                  onChange={(e) => setDocForm(prev => ({ ...prev, qualificationDegree: e.target.value }))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs font-semibold"
-                >
-                  {OFFICIAL_QUALIFICATIONS.map((q, idx) => (
-                    <option key={idx} value={q}>{q}</option>
-                  ))}
-                </select>
-              </div>
+              {/* Multi-Degree Qualification Checkbox Selector */}
+              <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <label className="text-slate-300 font-bold block text-xs flex items-center justify-between">
+                  <span>🎓 Select Doctor Qualifications & Degrees (Multi-Select) *</span>
+                  <span className="text-[10px] text-cyan-400 font-semibold">{docForm.selectedQualifications?.length || 0} Degrees Selected</span>
+                </label>
 
-              {docForm.qualificationDegree.startsWith('OTHER') && (
-                <div>
-                  <label className="text-slate-300 font-bold block mb-1">Type Custom Qualification Degree</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. MBBS, Fellowship in Cardiology"
-                    value={customQualificationText}
-                    onChange={(e) => setCustomQualificationText(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-xs"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 max-h-48 overflow-y-auto custom-scrollbar bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+                  {OFFICIAL_QUALIFICATIONS.map((q, idx) => {
+                    const isSelected = docForm.selectedQualifications?.includes(q);
+                    return (
+                      <label
+                        key={idx}
+                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all border ${
+                          isSelected 
+                            ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/40 font-bold' 
+                            : 'text-slate-300 border-slate-900 hover:bg-slate-900'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            setDocForm(prev => {
+                              const current = prev.selectedQualifications || [];
+                              const next = e.target.checked
+                                ? [...current, q]
+                                : current.filter(item => item !== q);
+                              
+                              const joined = next.join(', ');
+                              return {
+                                ...prev,
+                                selectedQualifications: next,
+                                qualificationDegree: joined || 'MBBS'
+                              };
+                            });
+                          }}
+                          className="rounded accent-cyan-500"
+                        />
+                        <span className="text-[11px]">{q}</span>
+                      </label>
+                    );
+                  })}
                 </div>
-              )}
+
+                {docForm.selectedQualifications?.some(q => q.startsWith('OTHER')) && (
+                  <div className="bg-cyan-500/10 p-2.5 rounded-xl border border-cyan-500/30 pt-2">
+                    <label className="text-cyan-300 font-bold block mb-1 text-xs">Type Custom Medical Degree / Fellowship</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Fellowship in Cardiology, FRCS London"
+                      value={customQualificationText}
+                      onChange={(e) => {
+                        setCustomQualificationText(e.target.value);
+                        setDocForm(prev => ({
+                          ...prev,
+                          qualificationDegree: [...(prev.selectedQualifications || []).filter(q => !q.startsWith('OTHER')), e.target.value].join(', ')
+                        }));
+                      }}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white text-xs"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
 
               {/* Specialization Category */}
               <div>
