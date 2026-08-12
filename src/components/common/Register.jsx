@@ -492,6 +492,37 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
+                {/* Hospital Photo / Building Image Upload */}
+                <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-2">
+                  <label className="text-slate-400 font-semibold block text-xs">Upload Hospital Building Photo / Logo *</label>
+                  <div className="flex items-center gap-3">
+                    {hospitalForm.logo && (
+                      <img src={hospitalForm.logo} className="w-12 h-12 rounded-xl object-cover border border-emerald-500/50 shadow" alt="Hospital Preview" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setHospitalForm(prev => ({ ...prev, logo: reader.result, logoFileName: file.name }));
+                            showToast(`🏥 Hospital Photo Uploaded: ${file.name}`, 'success');
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold"
+                    />
+                  </div>
+                  {hospitalForm.logoFileName && (
+                    <span className="text-[10px] text-emerald-400 font-bold block">
+                      ✓ Photo Selected: {hospitalForm.logoFileName}
+                    </span>
+                  )}
+                </div>
+
                 {/* Reg No & Est Year */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
