@@ -968,51 +968,7 @@ export default function UserPortal() {
                 <p className="text-slate-300">💳 <strong>Payment Mode:</strong> {selectedTicket.paymentMethod || 'Online NetBanking / UPI'}</p>
               </div>
 
-              {/* 🏦 Hospital Business NetBanking & UPI Details Box */}
-              {(() => {
-                const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
-                return (
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1 mt-2 text-slate-300">
-                    <p className="text-cyan-400 font-bold flex items-center justify-between">
-                      <span>🏦 HOSPITAL BANK & SETTLEMENT RECEIPT:</span>
-                      <span className="text-[9px] text-emerald-400 font-mono">VERIFIED</span>
-                    </p>
-                    <p><strong>Account Holder:</strong> {hosp.accountHolderName || hosp.hospitalName}</p>
-                    <p><strong>Bank Name:</strong> {hosp.bankName || 'HDFC Bank'} | <strong>IFSC:</strong> {hosp.ifscCode || 'HDFC0000123'}</p>
-                    <p><strong>Account No:</strong> <span className="font-mono text-cyan-300 font-bold">{hosp.bankAccountNo || '99881100223344'}</span></p>
-                    <p><strong>UPI ID:</strong> <span className="font-mono text-amber-300 font-bold">{hosp.upiId || 'paytm.s2zpy5u@pty'}</span></p>
-                  </div>
-                );
-              })()}
 
-              {/* Dynamic QR Code */}
-              <div className="pt-2 flex flex-col items-center">
-                {(() => {
-                  const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
-                  const upiId = hosp.upiId || 'paytm.s2zpy5u@pty';
-                  const feeAmount = selectedTicket.opFee || 100;
-                  const dynamicUpiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(selectedTicket.hospitalName)}&am=${feeAmount}&cu=INR`;
-                  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(dynamicUpiUrl)}`;
-
-                  return (
-                    <div className="flex flex-col items-center space-y-1.5">
-                      <div className="bg-white p-2 rounded-2xl border-2 border-emerald-500/50 shadow-md flex flex-col items-center">
-                        <img
-                          src={qrApiUrl}
-                          className="w-28 h-28 object-contain rounded-xl"
-                          alt="Hospital Dynamic UPI QR Code"
-                        />
-                        <div className="bg-emerald-600 text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full mt-1 shadow">
-                          FIXED PAY AMOUNT: ₹{feeAmount}
-                        </div>
-                      </div>
-                      <span className="text-[9px] text-emerald-400 font-bold text-center">
-                        📱 Scan with GPay / PhonePe / Paytm to Pay Exact ₹{feeAmount}
-                      </span>
-                    </div>
-                  );
-                })()}
-              </div>
             </div>
 
             {/* Action Buttons: PDF Download / Print */}
