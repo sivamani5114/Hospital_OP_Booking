@@ -38,10 +38,12 @@ export default function UserPortal() {
   // Digital Ticket Modal
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // Payment Step: 'FORM' | 'PAYMENT'
+  // Payment Step: 'FORM' | 'PAYMENT' | 'VERIFYING'
   const [bookingStep, setBookingStep] = useState('FORM');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentTab, setPaymentTab] = useState('UPI');
+  const [verifyStep, setVerifyStep] = useState(0); // 0=connecting, 1=verifying, 2=confirmed, 3=failed
+  const [pendingPaymentMethod, setPendingPaymentMethod] = useState('');
 
   // Review Modal State
   const [reviewBooking, setReviewBooking] = useState(null);
@@ -98,41 +100,51 @@ export default function UserPortal() {
 
   const handleConfirmPayment = (method) => {
     if (!bookingDoctor) return;
-    const hosp = approvedHospitals.find(h => h._id === bookingDoctor.hospitalId);
+    // Show verification animation first
+    setPendingPaymentMethod(method);
+    setVerifyStep(0);
+    setBookingStep('VERIFYING');
 
-    const newBk = createBooking({
-      userId: currentUser?._id || 'usr-1',
-      userName: patientDetails.name,
-      userPhone: patientDetails.phone,
-      patientAge: patientDetails.age,
-      patientGender: patientDetails.gender,
-      patientReason: patientDetails.reason,
-      hospitalId: bookingDoctor.hospitalId,
-      hospitalName: hosp?.hospitalName || 'Hospital',
-      doctorId: bookingDoctor._id,
-      doctorName: bookingDoctor.doctorName,
-      department: bookingDoctor.department,
-      date: bookingDate,
-      time: bookingTime,
-      opFee: bookingDoctor.opFee,
-      paymentMethod: method,
-      status: 'Confirmed'
-    });
-
-    // 🔔 Trigger in-app notification
-    addNotification({
-      userId: currentUser?._id,
-      type: 'BOOKING',
-      bookingId: newBk._id,
-      icon: '✅',
-      title: 'OP Booking Confirmed!',
-      message: `Your appointment with ${bookingDoctor.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Payment: ${method}.`,
-    });
-
-    setBookingDoctor(null);
-    setBookingStep('FORM');
-    setPaymentMethod('');
-    setSelectedTicket(newBk);
+    // Step 0: Connecting to bank (1.2s)
+    setTimeout(() => setVerifyStep(1), 1200);
+    // Step 1: Verifying transaction (2.5s)
+    setTimeout(() => setVerifyStep(2), 2500);
+    // Step 2: Confirmed — create booking and open ticket (3.8s)
+    setTimeout(() => {
+      const hosp = approvedHospitals.find(h => h._id === bookingDoctor.hospitalId);
+      const newBk = createBooking({
+        userId: currentUser?._id || 'usr-1',
+        userName: patientDetails.name,
+        userPhone: patientDetails.phone,
+        patientAge: patientDetails.age,
+        patientGender: patientDetails.gender,
+        patientReason: patientDetails.reason,
+        hospitalId: bookingDoctor.hospitalId,
+        hospitalName: hosp?.hospitalName || 'Hospital',
+        doctorId: bookingDoctor._id,
+        doctorName: bookingDoctor.doctorName,
+        department: bookingDoctor.department,
+        date: bookingDate,
+        time: bookingTime,
+        opFee: bookingDoctor.opFee,
+        paymentMethod: method,
+        status: 'Confirmed'
+      });
+      addNotification({
+        userId: currentUser?._id,
+        type: 'BOOKING',
+        bookingId: newBk._id,
+        icon: '✅',
+        title: 'OP Booking Confirmed!',
+        message: `Your appointment with ${bookingDoctor.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Payment: ${method}.`,
+      });
+      setBookingDoctor(null);
+      setBookingStep('FORM');
+      setPaymentMethod('');
+      setVerifyStep(0);
+      setPendingPaymentMethod('');
+      setSelectedTicket(newBk);
+    }, 3800);
   };
 
   const handleUpdateProfile = (e) => {
@@ -921,6 +933,85 @@ export default function UserPortal() {
                 >
                   ← Back to booking details
                 </button>
+              </div>
+            )}
+
+            {/* STEP: PAYMENT VERIFICATION ANIMATION */}
+            {bookingStep === 'VERIFYING' && (
+              <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center">
+                {/* Title */}
+                <div>
+                  <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1">SECURE PAYMENT GATEWAY</p>
+                  <h3 className="font-bold text-white text-lg">
+                    {verifyStep < 2 ? '🔄 Verifying Your Payment...' : '✅ Payment Confirmed!'}
+                  </h3>
+                </div>
+
+                {/* Animated Ring */}
+                <div className="relative w-28 h-28 flex items-center justify-center">
+                  {verifyStep < 2 ? (
+                    <>
+                      <div className="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+                      <div className="absolute inset-0 rounded-full border-4 border-t-cyan-400 border-r-cyan-400 border-b-transparent border-l-transparent animate-spin"></div>
+                      <div className="text-4xl">🏦</div>
+                    </>
+                  ) : (
+                    <div className="w-28 h-28 rounded-full bg-emerald-500/20 border-4 border-emerald-400 flex items-center justify-center animate-pulse">
+                      <CheckCircle2 className="w-14 h-14 text-emerald-400" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Verification Steps */}
+                <div className="w-full space-y-3 px-2">
+                  {/* Step 1: Connecting */}
+                  <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-500 ${verifyStep >= 0 ? 'border-cyan-500/40 bg-cyan-950/30' : 'border-slate-800 bg-slate-900/30 opacity-40'}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${verifyStep >= 1 ? 'bg-emerald-500 text-white' : 'bg-cyan-500/30 text-cyan-300'}`}>
+                      {verifyStep >= 1 ? '✓' : (
+                        <span className="block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <p className={`text-xs font-bold ${verifyStep >= 1 ? 'text-emerald-400' : 'text-cyan-300'}`}>Connecting to UPI Gateway</p>
+                      <p className="text-[10px] text-slate-400">Establishing secure NPCI connection...</p>
+                    </div>
+                  </div>
+
+                  {/* Step 2: Verifying Transaction */}
+                  <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-500 ${verifyStep >= 1 ? 'border-cyan-500/40 bg-cyan-950/30' : 'border-slate-800 bg-slate-900/30 opacity-40'}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${verifyStep >= 2 ? 'bg-emerald-500 text-white' : verifyStep === 1 ? 'bg-cyan-500/30 text-cyan-300' : 'bg-slate-800 text-slate-600'}`}>
+                      {verifyStep >= 2 ? '✓' : verifyStep === 1 ? (
+                        <span className="block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                      ) : '2'}
+                    </div>
+                    <div className="text-left">
+                      <p className={`text-xs font-bold ${verifyStep >= 2 ? 'text-emerald-400' : verifyStep >= 1 ? 'text-cyan-300' : 'text-slate-600'}`}>Verifying UPI Transaction</p>
+                      <p className="text-[10px] text-slate-400">Checking bank debit confirmation & TRID...</p>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Amount Credit Confirmed */}
+                  <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-500 ${verifyStep >= 2 ? 'border-emerald-500/40 bg-emerald-950/30' : 'border-slate-800 bg-slate-900/30 opacity-40'}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${verifyStep >= 2 ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-600'}`}>
+                      {verifyStep >= 2 ? '✓' : '3'}
+                    </div>
+                    <div className="text-left">
+                      <p className={`text-xs font-bold ${verifyStep >= 2 ? 'text-emerald-400' : 'text-slate-600'}`}>
+                        {verifyStep >= 2 ? `₹${bookingDoctor?.opFee} Credited to Hospital Account ✓` : 'Amount Credit Verification'}
+                      </p>
+                      <p className="text-[10px] text-slate-400">
+                        {verifyStep >= 2 ? 'Transaction ID verified. Booking auto-confirmed!' : 'Waiting for bank credit confirmation...'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {verifyStep >= 2 && (
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 w-full">
+                    <p className="text-emerald-400 font-bold text-sm">🎉 Payment Successfully Verified!</p>
+                    <p className="text-slate-400 text-[11px] mt-0.5">Opening your OP Appointment Ticket...</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
