@@ -922,12 +922,19 @@ export default function HospitalPortal() {
                 </h4>
                 <p className="text-[10px] text-slate-400">Please provide all 12 legal certificates & owner verification document uploads below to complete doctor profile registration:</p>
 
-                {/* 👨‍💼 1. Owner Verification Docs (3 Documents) */}
+                {/* 👨‍💼 1. Owner Verification Docs (3 Documents with ID Numbers) */}
                 <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
                   <span className="text-cyan-400 font-bold text-[11px] block">👨‍💼 1. Owner / Authorized Person Verification (3 Docs):</span>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <div>
                       <label className="text-slate-300 text-[10px] font-bold block mb-1">Aadhaar / Govt Photo ID *</label>
+                      <input
+                        type="text"
+                        placeholder="Aadhaar No (e.g. 5566 7788 9900)"
+                        value={docForm.ownerAadhaarNo || ''}
+                        onChange={(e) => setDocForm(prev => ({ ...prev, ownerAadhaarNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-white mb-1 font-mono"
+                      />
                       <input
                         type="file"
                         accept="image/*,.pdf"
@@ -947,6 +954,13 @@ export default function HospitalPortal() {
                     <div>
                       <label className="text-slate-300 text-[10px] font-bold block mb-1">Personal PAN Card *</label>
                       <input
+                        type="text"
+                        placeholder="Personal PAN (e.g. ABCDE1234F)"
+                        value={docForm.ownerPanNo || ''}
+                        onChange={(e) => setDocForm(prev => ({ ...prev, ownerPanNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-white mb-1 font-mono uppercase"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -965,6 +979,13 @@ export default function HospitalPortal() {
                     <div>
                       <label className="text-slate-300 text-[10px] font-bold block mb-1">Authorization Letter *</label>
                       <input
+                        type="text"
+                        placeholder="Letter Ref No (e.g. AUTH/2026/09)"
+                        value={docForm.authLetterNo || ''}
+                        onChange={(e) => setDocForm(prev => ({ ...prev, authLetterNo: e.target.value }))}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-white mb-1 font-mono"
+                      />
+                      <input
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => {
@@ -982,23 +1003,30 @@ export default function HospitalPortal() {
                   </div>
                 </div>
 
-                {/* 🏥 2. Hospital Government Licenses (9 Documents) */}
+                {/* 🏥 2. Hospital Government Licenses (9 Documents with License Numbers) */}
                 <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-emerald-400 font-bold text-[11px] block">🏥 2. Hospital Government Licenses & Compliance (9 Docs):</span>
+                  <span className="text-emerald-400 font-bold text-[11px] block">🏥 2. Hospital Government Licenses & Certificate Numbers (9 Docs):</span>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
                     {[
-                      { label: '1. Hospital Reg Certificate', key: 'hospRegDoc' },
-                      { label: '2. Clinical Establishment Cert', key: 'clinicalCertDoc' },
-                      { label: '3. NABH Certificate', key: 'nabhCertDoc' },
-                      { label: '4. Hospital Business PAN', key: 'hospPanDoc' },
-                      { label: '5. GST Certificate', key: 'gstCertDoc' },
-                      { label: '6. Pharmacy Drug License', key: 'drugLicenseDoc' },
-                      { label: '7. Biomedical Waste Auth', key: 'biomedicalDoc' },
-                      { label: '8. Fire Safety NOC Cert', key: 'fireNocDoc' },
-                      { label: '9. Trade / Municipal License', key: 'tradeLicenseDoc' }
+                      { label: '1. Hospital Reg Certificate', key: 'hospRegDoc', numKey: 'hospRegDocNo', placeholder: 'Reg No (e.g. REG-TS-88492)' },
+                      { label: '2. Clinical Establishment Cert', key: 'clinicalCertDoc', numKey: 'clinicalCertDocNo', placeholder: 'License No (e.g. CEA/TS/2022)' },
+                      { label: '3. NABH Accreditation Cert', key: 'nabhCertDoc', numKey: 'nabhCertDocNo', placeholder: 'NABH No (e.g. NABH-2024-H-199)' },
+                      { label: '4. Hospital Business PAN', key: 'hospPanDoc', numKey: 'hospPanDocNo', placeholder: 'Business PAN (e.g. AABCH1234F)' },
+                      { label: '5. GST Certificate', key: 'gstCertDoc', numKey: 'gstCertDocNo', placeholder: 'GSTIN (e.g. 36AABCH1234F1Z5)' },
+                      { label: '6. Pharmacy Drug License', key: 'drugLicenseDoc', numKey: 'drugLicenseDocNo', placeholder: 'Drug License No (e.g. DL/TS/20)' },
+                      { label: '7. Biomedical Waste Auth', key: 'biomedicalDoc', numKey: 'biomedicalDocNo', placeholder: 'BMWM Auth No (e.g. TSPCB/BMW)' },
+                      { label: '8. Fire Safety NOC Cert', key: 'fireNocDoc', numKey: 'fireNocDocNo', placeholder: 'Fire NOC No (e.g. FIRE/TS/NOC)' },
+                      { label: '9. Trade / Municipal License', key: 'tradeLicenseDoc', numKey: 'tradeLicenseDocNo', placeholder: 'Trade License No (e.g. GHMC/TRADE)' }
                     ].map(item => (
                       <div key={item.key} className="bg-slate-900 p-2 rounded-lg border border-slate-800 space-y-1">
                         <label className="text-slate-300 font-bold block truncate">{item.label} *</label>
+                        <input
+                          type="text"
+                          placeholder={item.placeholder}
+                          value={docForm[item.numKey] || ''}
+                          onChange={(e) => setDocForm(prev => ({ ...prev, [item.numKey]: e.target.value }))}
+                          className="w-full bg-slate-950 border border-slate-800 rounded p-1 text-[10px] text-white font-mono uppercase mb-1"
+                        />
                         <input
                           type="file"
                           accept="image/*,.pdf"
