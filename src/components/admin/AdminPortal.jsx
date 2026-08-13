@@ -492,16 +492,40 @@ export default function AdminPortal() {
                         {d.specialization}
                       </span>
                       <p className="text-[11px] text-slate-300 mt-1 font-semibold">{d.qualification}</p>
-                      <p className="text-[10px] text-emerald-400 font-mono font-bold mt-0.5">
-                        <Award className="w-3 h-3 inline mr-1" /> Reg No: {d.medicalRegistrationNo || 'TSMC/F/88912'}
-                      </p>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-xs text-slate-300 pt-2 border-t border-slate-800">
-                    <span>Fee: ₹{d.opFee}</span>
+
+                  {/* Rich Detailed Information Box */}
+                  <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1.5">
+                    <p className="text-emerald-300 font-mono text-[11px] font-bold flex items-center gap-1">
+                      <Award className="w-3.5 h-3.5 text-emerald-400" /> Reg No: {d.medicalRegistrationNo || 'TSMC/F/88912'}
+                    </p>
+                    {hosp && (
+                      <p className="text-cyan-300 font-bold text-[11px]">
+                        🏥 Hospital: <strong>{hosp.hospitalName}</strong> ({hosp.city})
+                      </p>
+                    )}
+                    <p className="text-slate-300">🗓️ <strong>Days:</strong> {d.availableDays || 'Monday - Saturday'}</p>
+                    <p className="text-slate-300">⏰ <strong>Timing:</strong> {d.availableTime || '09:00 AM - 01:00 PM'}</p>
+                    <p className="text-slate-300">
+                      💰 <strong>Fee:</strong> <strong className="text-emerald-400">₹{d.opFee}</strong> | 🌟 <strong>Exp:</strong> {d.experience || 5} Yrs | 👥 <strong>Max Patients:</strong> {d.maxPatients || 25}/day
+                    </p>
+                  </div>
+
+                  {/* Actions: View Legal Docs & Delete */}
+                  <div className="flex justify-between items-center pt-1">
+                    {hosp && (
+                      <button
+                        onClick={() => setSelectedHospitalDetails(hosp)}
+                        className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-[11px] font-bold flex items-center gap-1"
+                      >
+                        🔍 View 12 Legal Docs
+                      </button>
+                    )}
                     <button
                       onClick={() => deleteDoctor(d._id)}
-                      className="p-2 bg-slate-900 text-rose-400 rounded-xl"
+                      className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800"
+                      title="Delete Doctor"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
