@@ -947,14 +947,31 @@ export default function UserPortal() {
               })()}
 
               <div className="pt-2 flex flex-col items-center">
-                <div className="bg-white p-2 rounded-xl">
-                  <img
-                    src={(hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent((hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0])?.upiId || 'carepulse@ybl')}&pn=${encodeURIComponent(selectedTicket.hospitalName)}&am=${selectedTicket.opFee}`}
-                    className="w-24 h-24 object-contain rounded"
-                    alt="Hospital Payment QR"
-                  />
-                </div>
-                <span className="text-[9px] text-slate-400 mt-1 font-semibold">Scan QR or Use NetBanking for Payment</span>
+                {(() => {
+                  const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
+                  const upiId = hosp.upiId || 'paytm.s2zpy5u@pty';
+                  const feeAmount = selectedTicket.opFee || 100;
+                  const dynamicUpiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(selectedTicket.hospitalName)}&am=${feeAmount}&cu=INR`;
+                  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(dynamicUpiUrl)}`;
+
+                  return (
+                    <div className="flex flex-col items-center space-y-1.5">
+                      <div className="bg-white p-2.5 rounded-2xl border-2 border-emerald-500/50 shadow-md flex flex-col items-center">
+                        <img
+                          src={qrApiUrl}
+                          className="w-32 h-32 object-contain rounded-xl"
+                          alt="Hospital Dynamic UPI QR Code"
+                        />
+                        <div className="bg-emerald-600 text-white font-extrabold text-xs px-3 py-1 rounded-full mt-1.5 shadow">
+                          FIXED PAY AMOUNT: ₹{feeAmount}
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-bold text-center">
+                        📱 Scan with GPay / PhonePe / Paytm to Pay Exact ₹{feeAmount}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
