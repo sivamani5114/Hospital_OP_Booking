@@ -765,7 +765,14 @@ export default function UserPortal() {
                   </div>
 
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={() => {
+                      if (!patientDetails.name || !patientDetails.phone) {
+                        alert('Please enter Patient Full Name and Phone Number.');
+                        return;
+                      }
+                      setBookingStep('PAYMENT');
+                    }}
                     className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer text-sm"
                   >
                     <CreditCard className="w-4 h-4" /> Proceed to Payment (₹{bookingDoctor.opFee}) →
