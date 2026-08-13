@@ -106,7 +106,15 @@ export default function HospitalPortal() {
     city: hospital.city || '',
     hospitalTimings: hospital.hospitalTimings || '',
     opFee: hospital.opFee || 500,
-    emergencyAvailable: hospital.emergencyAvailable ?? true
+    emergencyAvailable: hospital.emergencyAvailable ?? true,
+    accountHolderName: hospital.accountHolderName || '',
+    bankName: hospital.bankName || '',
+    bankAccountNo: hospital.bankAccountNo || '',
+    ifscCode: hospital.ifscCode || '',
+    upiId: hospital.upiId || '',
+    accountType: hospital.accountType || 'Current',
+    upiQrCode: hospital.upiQrCode || '',
+    upiQrCodeName: hospital.upiQrCodeName || ''
   });
 
   const handleFileUpload = (e) => {
@@ -449,6 +457,138 @@ export default function HospitalPortal() {
                     onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalTimings: e.target.value }))}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* 💳 6. Business Bank Account & NetBanking / Dynamic UPI QR Settings */}
+            <div className="bg-slate-900/80 p-4 rounded-2xl border border-cyan-500/40 space-y-4 shadow-lg">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h4 className="font-bold text-cyan-300 text-sm flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-cyan-400" /> 6. Hospital Business Bank Account & Direct NetBanking/UPI Settlement
+                </h4>
+                <span className="bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/30">
+                  INSTANT SETTLEMENT
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">
+                Patient OP consultation booking amounts will be directly credited & settled into this verified Business Bank Account.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Account Holder Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Apollo Health City Pvt Ltd"
+                    value={hospProfileForm.accountHolderName}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-medium"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Bank Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. HDFC Bank / ICICI Bank"
+                    value={hospProfileForm.bankName}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankName: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-medium"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Business Bank Account No *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 99881100223344"
+                    value={hospProfileForm.bankAccountNo}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankAccountNo: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono font-bold"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">IFSC Code *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. HDFC0000123"
+                    value={hospProfileForm.ifscCode}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, ifscCode: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase font-bold"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Official Hospital UPI ID / VPA *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. apollohealth@ybl or abchospital@upi"
+                    value={hospProfileForm.upiId}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, upiId: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-cyan-300 font-mono font-bold"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1">Account Type</label>
+                  <select
+                    value={hospProfileForm.accountType}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, accountType: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="Current">Current Business Account</option>
+                    <option value="Savings">Savings Account</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Live QR Code Generator & NetBanking Upload */}
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <span className="text-emerald-400 font-bold text-xs block flex items-center justify-between">
+                  <span>📱 Live Auto-Generated NetBanking / UPI QR Code Preview</span>
+                  <span className="text-[10px] text-emerald-400 font-mono">AUTOMATIC SYNC</span>
+                </span>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="bg-white p-2.5 rounded-2xl border-2 border-emerald-500/50 shadow-md">
+                    <img
+                      src={hospProfileForm.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent(hospProfileForm.upiId || 'carepulse@ybl')}&pn=${encodeURIComponent(hospProfileForm.hospitalName || 'Hospital')}`}
+                      className="w-28 h-28 object-contain rounded-xl"
+                      alt="Hospital Bank QR Code"
+                    />
+                  </div>
+                  <div className="space-y-1.5 flex-1 text-xs">
+                    <p className="text-white font-bold">{hospProfileForm.hospitalName || 'Hospital Business Account'}</p>
+                    <p className="text-slate-400 font-mono">UPI ID: <strong className="text-cyan-300">{hospProfileForm.upiId || 'carepulse@ybl'}</strong></p>
+                    <p className="text-slate-400">Bank: <strong className="text-slate-200">{hospProfileForm.bankName || 'HDFC Bank'}</strong> (IFSC: {hospProfileForm.ifscCode || 'HDFC0000123'})</p>
+
+                    <div className="pt-1">
+                      <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Custom Standee UPI / NetBanking QR Code Image (Optional)</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHospProfileForm(prev => ({ ...prev, upiQrCode: reader.result, upiQrCodeName: file.name }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                      />
+                      {hospProfileForm.upiQrCodeName && <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">✓ Uploaded Custom QR: {hospProfileForm.upiQrCodeName}</span>}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
