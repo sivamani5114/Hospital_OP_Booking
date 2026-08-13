@@ -1202,23 +1202,51 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              {/* 2. Medical Registration & Degree Certificates */}
+              {/* 2. Doctor Uploaded Medical Registration & Individual Degree Certificates */}
               <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-2">
-                <h4 className="font-bold text-emerald-300 text-xs">🏅 2. Verified Medical License & Degree Certificates</h4>
-                <div className="flex flex-wrap gap-2 text-[11px] pt-1">
-                  {selectedDoctorDetails.medicalRegCertDoc ? (
-                    <a href={selectedDoctorDetails.medicalRegCertDoc} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold">
-                      📄 View Medical Registration License PDF/Img
-                    </a>
-                  ) : (
-                    <span className="text-emerald-400 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">✓ Medical Council Reg No Verified</span>
-                  )}
+                <h4 className="font-bold text-emerald-300 text-xs flex items-center justify-between">
+                  <span>🏅 2. Doctor Uploaded License & Degree Certificates</span>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold">VERIFIED DOCUMENTS</span>
+                </h4>
 
-                  {selectedDoctorDetails.degreeCertDoc && (
-                    <a href={selectedDoctorDetails.degreeCertDoc} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-3 py-1 rounded-lg font-bold">
-                      🎓 View Degree Certificate PDF/Img
-                    </a>
-                  )}
+                <div className="space-y-2 pt-1">
+                  {/* Medical Council Registration License */}
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                    <div>
+                      <span className="text-slate-300 font-bold block">Medical Registration License Certificate</span>
+                      <span className="text-emerald-400 font-mono text-[10px]">No: {selectedDoctorDetails.medicalRegistrationNo || 'TSMC/F/88912'}</span>
+                    </div>
+                    {selectedDoctorDetails.medicalRegCertDoc ? (
+                      <a href={selectedDoctorDetails.medicalRegCertDoc} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg font-bold text-xs shadow">
+                        📄 View License PDF/Img
+                      </a>
+                    ) : (
+                      <span className="text-emerald-400 font-bold text-[10px]">✓ License Verified</span>
+                    )}
+                  </div>
+
+                  {/* Individual Degree Certificates Uploaded by Doctor (MBBS, MD, MS, etc.) */}
+                  <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <span className="text-cyan-400 font-bold block">🎓 Doctor Degree Certificates (Multi-Qualifications):</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+                      {(selectedDoctorDetails.selectedQualifications || (selectedDoctorDetails.qualification ? selectedDoctorDetails.qualification.split(', ') : ['MBBS'])).map(deg => {
+                        const degKey = `cert_${deg.split(' ')[0]}`;
+                        const degDoc = selectedDoctorDetails[degKey] || selectedDoctorDetails.degreeCertDoc;
+                        return (
+                          <div key={deg} className="bg-slate-900 p-2 rounded-lg border border-slate-800 flex justify-between items-center">
+                            <span className="text-slate-300 font-medium truncate">{deg.split(' ')[0]} Certificate</span>
+                            {degDoc ? (
+                              <a href={degDoc} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 hover:bg-cyan-500 text-white px-2 py-0.5 rounded text-[10px] font-bold shrink-0">
+                                🎓 View PDF
+                              </a>
+                            ) : (
+                              <span className="text-slate-500 italic text-[10px]">No Doc</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1259,18 +1287,18 @@ export default function AdminPortal() {
                     <span className="text-emerald-400 font-bold text-[11px] block">🏥 GOVERNMENT LICENSES (9 CERTIFICATES & NUMBERS):</span>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
                       {[
-                        { title: '1. Hospital Reg Cert', key: 'regCertificate', numKey: 'regCertificateNo' },
-                        { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert', numKey: 'clinicalEstablishmentCertNo' },
-                        { title: '3. NABH Certificate', key: 'nabhCertificate', numKey: 'nabhCertificateNo' },
-                        { title: '4. Hospital PAN Card', key: 'hospitalPan', numKey: 'hospitalPanNo' },
-                        { title: '5. GST Certificate', key: 'gstCertificate', numKey: 'gstCertificateNo' },
-                        { title: '6. Pharmacy Drug License', key: 'drugLicense', numKey: 'drugLicenseNo' },
-                        { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth', numKey: 'biomedicalWasteAuthNo' },
-                        { title: '8. Fire Safety NOC', key: 'fireNocCert', numKey: 'fireNocCertNo' },
-                        { title: '9. Trade License', key: 'tradeLicenseCert', numKey: 'tradeLicenseCertNo' }
+                        { title: '1. Hospital Reg Cert', key: 'regCertificate', docKey: 'hospRegDoc', numKey: 'regCertificateNo', docNumKey: 'hospRegDocNo' },
+                        { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert', docKey: 'clinicalCertDoc', numKey: 'clinicalEstablishmentCertNo', docNumKey: 'clinicalCertDocNo' },
+                        { title: '3. NABH Certificate', key: 'nabhCertificate', docKey: 'nabhCertDoc', numKey: 'nabhCertificateNo', docNumKey: 'nabhCertDocNo' },
+                        { title: '4. Hospital PAN Card', key: 'hospitalPan', docKey: 'hospPanDoc', numKey: 'hospitalPanNo', docNumKey: 'hospPanDocNo' },
+                        { title: '5. GST Certificate', key: 'gstCertificate', docKey: 'gstCertDoc', numKey: 'gstCertificateNo', docNumKey: 'gstCertDocNo' },
+                        { title: '6. Pharmacy Drug License', key: 'drugLicense', docKey: 'drugLicenseDoc', numKey: 'drugLicenseNo', docNumKey: 'drugLicenseDocNo' },
+                        { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth', docKey: 'biomedicalDoc', numKey: 'biomedicalWasteAuthNo', docNumKey: 'biomedicalDocNo' },
+                        { title: '8. Fire Safety NOC', key: 'fireNocCert', docKey: 'fireNocDoc', numKey: 'fireNocCertNo', docNumKey: 'fireNocDocNo' },
+                        { title: '9. Trade License', key: 'tradeLicenseCert', docKey: 'tradeLicenseDoc', numKey: 'tradeLicenseCertNo', docNumKey: 'tradeLicenseDocNo' }
                       ].map(doc => {
-                        const certNo = hosp[doc.numKey];
-                        const certFile = hosp[doc.key];
+                        const certNo = selectedDoctorDetails[doc.docNumKey] || hosp[doc.numKey];
+                        const certFile = selectedDoctorDetails[doc.docKey] || hosp[doc.key];
                         return (
                           <div key={doc.key} className="bg-slate-950 p-2 rounded-lg border border-slate-800 space-y-1">
                             <div className="flex justify-between items-center">
