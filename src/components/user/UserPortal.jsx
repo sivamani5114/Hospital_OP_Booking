@@ -673,7 +673,7 @@ export default function UserPortal() {
                   <h3 className="font-bold text-white text-lg">{t('bookingFor')}: {bookingDoctor.doctorName}</h3>
                 </div>
 
-                <form onSubmit={handleProceedToPayment} className="space-y-3 text-xs">
+                <form onSubmit={(e) => { e.preventDefault(); setBookingStep('PAYMENT'); }} className="space-y-3 text-xs">
                   {/* Smart Appointment Slot Picker */}
                   <AppointmentSlotPicker
                     doctorId={bookingDoctor._id}
@@ -718,7 +718,7 @@ export default function UserPortal() {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Age (Years) *</label>
+                        <label className="text-slate-400 font-semibold block mb-1">Age (Years)</label>
                         <input
                           type="number"
                           placeholder="e.g. 28"
@@ -727,12 +727,11 @@ export default function UserPortal() {
                           className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
                           min="1"
                           max="120"
-                          required
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Gender *</label>
+                        <label className="text-slate-400 font-semibold block mb-1">Gender</label>
                         <select
                           value={patientDetails.gender}
                           onChange={(e) => setPatientDetails(prev => ({ ...prev, gender: e.target.value }))}
@@ -746,14 +745,13 @@ export default function UserPortal() {
                     </div>
 
                     <div>
-                      <label className="text-slate-400 font-semibold block mb-1">Symptoms / Reason for Visit *</label>
+                      <label className="text-slate-400 font-semibold block mb-1">Symptoms / Reason for Visit</label>
                       <input
                         type="text"
                         placeholder="e.g. Fever, Cold, Stomach Pain, General Consultation..."
                         value={patientDetails.reason}
                         onChange={(e) => setPatientDetails(prev => ({ ...prev, reason: e.target.value }))}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
-                        required
                       />
                     </div>
                   </div>
@@ -764,34 +762,27 @@ export default function UserPortal() {
                   </div>
 
                   <button
-                    type="button"
-                    onClick={() => {
-                      if (!patientDetails.name || !patientDetails.phone) {
-                        alert('Please fill patient name and phone number.');
-                        return;
-                      }
-                      setBookingStep('PAYMENT');
-                    }}
+                    type="submit"
                     className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <CreditCard className="w-4 h-4" /> {t('proceedPayment')}
+                    <CreditCard className="w-4 h-4" /> {t('proceedPayment')} →
                   </button>
                 </form>
               </>
             )}
 
             {/* Step 2: NetBanking & UPI QR Payment */}
-            {bookingStep === 'PAYMENT' && bookingDoctor && (
-              <div className="space-y-4">
+            {bookingStep === 'PAYMENT' && (
+              <div className="space-y-4 text-xs">
                 <div>
                   <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
                   <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                    <ScanLine className="w-5 h-5 text-cyan-400" /> {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {})?.hospitalName || 'Hospital'} OP Payment
+                    <ScanLine className="w-5 h-5 text-cyan-400" /> {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {})?.hospitalName || 'Apollo Health City'} OP Payment
                   </h3>
                 </div>
 
                 {/* Payment Method Selector Tabs */}
-                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 font-bold">
                   <button
                     type="button"
                     onClick={() => setPaymentTab('UPI')}
@@ -810,7 +801,7 @@ export default function UserPortal() {
 
                 {/* TAB 1: Dynamic Hospital UPI QR Code Area */}
                 {(!paymentTab || paymentTab === 'UPI') && (
-                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
+                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl text-slate-900">
                     <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
                       <img
                         src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR`)}`}
@@ -819,9 +810,9 @@ export default function UserPortal() {
                       />
                     </div>
                     <div className="text-center">
-                      <p className="text-slate-900 font-extrabold text-base">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</p>
-                      <p className="text-slate-700 font-semibold text-xs mt-0.5">Dr. {bookingDoctor?.doctorName}</p>
-                      <p className="text-slate-600 text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
+                      <p className="font-extrabold text-base text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</p>
+                      <p className="font-semibold text-xs text-slate-700 mt-0.5">Dr. {bookingDoctor?.doctorName}</p>
+                      <p className="text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 text-slate-800">
                         UPI ID: {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
                       </p>
                       <p className="text-slate-500 text-[10px] mt-1 font-medium">Pay via GPay / PhonePe / Paytm / BHIM UPI</p>
@@ -835,7 +826,7 @@ export default function UserPortal() {
 
                 {/* TAB 2: Direct NetBanking Details Box */}
                 {paymentTab === 'NETBANKING' && (
-                  <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-3 shadow-xl text-xs">
+                  <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-3 shadow-xl">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                       <span className="text-cyan-300 font-bold text-sm flex items-center gap-1.5">
                         🏦 Hospital Business NetBanking Account
@@ -872,33 +863,36 @@ export default function UserPortal() {
                   </div>
                 )}
 
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 space-y-1">
+                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-slate-300 space-y-1">
                   <div className="flex items-center gap-1.5 font-bold text-cyan-400">
                     <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    🔒 Payments are routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</strong>'s Business Bank Account. Patient bank credentials remain 100% encrypted & protected.
+                    🔒 Payments are routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</strong>'s Business Bank Account.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 pt-1">
                   <button
+                    type="button"
                     onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <CheckCircle2 className="w-4 h-4" /> {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')}
+                    <CheckCircle2 className="w-5 h-5" /> {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')}
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleConfirmPayment('Counter')}
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs"
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs cursor-pointer"
                   >
                     <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')}
                   </button>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setBookingStep('FORM')}
-                  className="w-full text-slate-500 hover:text-slate-300 text-xs py-1"
+                  className="w-full text-slate-500 hover:text-slate-300 text-xs py-1 cursor-pointer"
                 >
                   ← Back to booking details
                 </button>
