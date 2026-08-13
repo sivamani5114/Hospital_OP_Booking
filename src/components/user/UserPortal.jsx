@@ -775,23 +775,25 @@ export default function UserPortal() {
             )}
 
             {/* Step 2: NetBanking & UPI QR Payment */}
-            {bookingStep === 'PAYMENT' && (() => {
-              const targetHosp = hospitals.find(h => h._id === bookingDoctor.hospitalId) || hospitals[0];
-              const displayUpiId = targetHosp?.upiId || 'carepulse@ybl';
-              const displayAccountNo = targetHosp?.bankAccountNo || '99881100223344';
-              const displayIfsc = targetHosp?.ifscCode || 'HDFC0000123';
-              const displayBankName = targetHosp?.bankName || 'HDFC Bank';
-              const displayHolder = targetHosp?.accountHolderName || targetHosp?.hospitalName || 'Hospital Account';
-              const displayQrImage = targetHosp?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${encodeURIComponent(displayUpiId)}&pn=${encodeURIComponent(targetHosp?.hospitalName || 'Hospital')}&am=${bookingDoctor.opFee}`;
+            {bookingStep === 'PAYMENT' && (
+              <div className="space-y-4">
+                {(() => {
+                  const targetHosp = hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {};
+                  const displayUpiId = targetHosp?.upiId || 'carepulse@ybl';
+                  const displayAccountNo = targetHosp?.bankAccountNo || '99881100223344';
+                  const displayIfsc = targetHosp?.ifscCode || 'HDFC0000123';
+                  const displayBankName = targetHosp?.bankName || 'HDFC Bank';
+                  const displayHolder = targetHosp?.accountHolderName || targetHosp?.hospitalName || 'Hospital Account';
+                  const displayQrImage = targetHosp?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${encodeURIComponent(displayUpiId)}&pn=${encodeURIComponent(targetHosp?.hospitalName || 'Hospital')}&am=${bookingDoctor?.opFee || 100}`;
 
-              return (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
-                    <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                      <ScanLine className="w-5 h-5 text-cyan-400" /> {targetHosp?.hospitalName || 'Hospital'} OP Payment
-                    </h3>
-                  </div>
+                  return (
+                    <>
+                      <div>
+                        <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
+                        <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                          <ScanLine className="w-5 h-5 text-cyan-400" /> {targetHosp?.hospitalName || 'Hospital'} OP Payment
+                        </h3>
+                      </div>
 
                   {/* Payment Method Selector Tabs */}
                   <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
@@ -901,9 +903,11 @@ export default function UserPortal() {
                 >
                   ← Back to booking details
                 </button>
+                    </>
+                  );
+                })()}
               </div>
-            );
-          })()}
+            )}
           </div>
         </div>
       )}
