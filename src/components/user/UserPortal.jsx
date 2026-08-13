@@ -89,7 +89,10 @@ export default function UserPortal() {
   });
 
   const handleProceedToPayment = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+    if (!bookingDoctor && doctors && doctors.length > 0) {
+      setBookingDoctor(doctors[0]);
+    }
     setBookingStep('PAYMENT');
   };
 
