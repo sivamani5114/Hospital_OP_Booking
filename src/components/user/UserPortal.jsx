@@ -7,7 +7,7 @@ import { StarDisplay, StarInput } from '../common/StarRating';
 import { 
   Home, Search, Calendar, Building2, Stethoscope, User, LogOut, MapPin, Clock, 
   Ticket, CheckCircle2, QrCode, ArrowRight, X, Edit3, Lock, Sparkles, Filter, 
-  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare
+  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck
 } from 'lucide-react';
 
 export default function UserPortal() {
