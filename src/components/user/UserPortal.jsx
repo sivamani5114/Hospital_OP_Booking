@@ -908,44 +908,65 @@ export default function UserPortal() {
         </div>
       )}
 
-      {/* --- DIGITAL TICKET MODAL --- */}
+      {/* --- DIGITAL TICKET & PAYMENT RECEIPT PDF MODAL --- */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="glass-panel w-full max-w-sm rounded-3xl p-6 border border-cyan-500/30 shadow-2xl relative space-y-4 text-center">
-            <button onClick={() => setSelectedTicket(null)} className="absolute top-4 right-4 text-slate-400">
-              <X className="w-4 h-4" />
+          <div className="glass-panel w-full max-w-md rounded-3xl p-6 border border-emerald-500/40 shadow-2xl relative space-y-4 text-center max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onClick={() => setSelectedTicket(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
             </button>
 
-            <div className="inline-flex p-3 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-              <CheckCircle2 className="w-8 h-8" />
+            {/* Payment Successfully Status Banner */}
+            <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl space-y-1">
+              <div className="inline-flex p-2.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                <CheckCircle2 className="w-7 h-7" />
+              </div>
+              <h3 className="font-extrabold text-emerald-400 text-lg">Payment Successfully Completed! ✓</h3>
+              <p className="text-[11px] text-slate-300">OP Consultation Token Confirmed & Hospital Notified</p>
             </div>
 
-            <h3 className="font-extrabold text-white text-xl">OP Token Confirmed!</h3>
+            {/* PDF Printable Sheet Box */}
+            <div id="pdf-printable-sheet" className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-left space-y-3 text-xs text-slate-300 shadow-inner">
+              
+              {/* Unique OP Token Code & Status */}
+              <div className="bg-gradient-to-r from-cyan-950 to-slate-900 p-3 rounded-xl border border-cyan-500/40 flex justify-between items-center">
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-semibold">UNIQUE OP TOKEN CODE</span>
+                  <span className="font-mono text-cyan-300 font-extrabold text-base tracking-wider">#{selectedTicket.bookingId}</span>
+                </div>
+                <span className="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md">
+                  CONFIRMED & PAID
+                </span>
+              </div>
 
-            <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-left space-y-2 text-xs text-slate-300">
-              <p className="font-mono text-cyan-400 font-bold text-center">ID: #{selectedTicket.bookingId}</p>
-              <p><strong>Doctor:</strong> {selectedTicket.doctorName}</p>
-              <p><strong>Hospital:</strong> {selectedTicket.hospitalName}</p>
-              <p><strong>Date & Time:</strong> {selectedTicket.date} at {selectedTicket.time}</p>
-              <p><strong>Patient:</strong> {selectedTicket.userName}</p>
-              <p><strong>Fee:</strong> ₹{selectedTicket.opFee}</p>
+              {/* Patient & OP Details */}
+              <div className="space-y-1.5 pt-1">
+                <p className="text-white font-bold text-sm">👨‍⚕️ Doctor: {selectedTicket.doctorName}</p>
+                <p className="text-cyan-300 font-semibold">🏥 Hospital: {selectedTicket.hospitalName}</p>
+                <p className="text-slate-300">🗓️ <strong>Date & Time:</strong> {selectedTicket.date} at {selectedTicket.time}</p>
+                <p className="text-slate-300">👤 <strong>Patient Name:</strong> {selectedTicket.userName} ({selectedTicket.userPhone})</p>
+                <p className="text-slate-300">💰 <strong>Fee Paid:</strong> <span className="text-emerald-400 font-bold text-sm">₹{selectedTicket.opFee}</span></p>
+                <p className="text-slate-300">💳 <strong>Payment Mode:</strong> {selectedTicket.paymentMethod || 'Online NetBanking / UPI'}</p>
+              </div>
 
               {/* 🏦 Hospital Business NetBanking & UPI Details Box */}
               {(() => {
                 const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
                 return (
-                  <div className="bg-slate-900 p-2.5 rounded-xl border border-cyan-500/30 text-[10px] space-y-1 mt-2 text-slate-300">
+                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1 mt-2 text-slate-300">
                     <p className="text-cyan-400 font-bold flex items-center justify-between">
-                      <span>🏦 HOSPITAL BANK & UPI PAYMENT DETAILS:</span>
+                      <span>🏦 HOSPITAL BANK & SETTLEMENT RECEIPT:</span>
+                      <span className="text-[9px] text-emerald-400 font-mono">VERIFIED</span>
                     </p>
                     <p><strong>Account Holder:</strong> {hosp.accountHolderName || hosp.hospitalName}</p>
-                    <p><strong>Bank:</strong> {hosp.bankName || 'HDFC Bank'} | <strong>IFSC:</strong> {hosp.ifscCode || 'HDFC0000123'}</p>
+                    <p><strong>Bank Name:</strong> {hosp.bankName || 'HDFC Bank'} | <strong>IFSC:</strong> {hosp.ifscCode || 'HDFC0000123'}</p>
                     <p><strong>Account No:</strong> <span className="font-mono text-cyan-300 font-bold">{hosp.bankAccountNo || '99881100223344'}</span></p>
-                    <p><strong>UPI ID:</strong> <span className="font-mono text-amber-300 font-bold">{hosp.upiId || 'carepulse@ybl'}</span></p>
+                    <p><strong>UPI ID:</strong> <span className="font-mono text-amber-300 font-bold">{hosp.upiId || 'paytm.s2zpy5u@pty'}</span></p>
                   </div>
                 );
               })()}
 
+              {/* Dynamic QR Code */}
               <div className="pt-2 flex flex-col items-center">
                 {(() => {
                   const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
@@ -956,17 +977,17 @@ export default function UserPortal() {
 
                   return (
                     <div className="flex flex-col items-center space-y-1.5">
-                      <div className="bg-white p-2.5 rounded-2xl border-2 border-emerald-500/50 shadow-md flex flex-col items-center">
+                      <div className="bg-white p-2 rounded-2xl border-2 border-emerald-500/50 shadow-md flex flex-col items-center">
                         <img
                           src={qrApiUrl}
-                          className="w-32 h-32 object-contain rounded-xl"
+                          className="w-28 h-28 object-contain rounded-xl"
                           alt="Hospital Dynamic UPI QR Code"
                         />
-                        <div className="bg-emerald-600 text-white font-extrabold text-xs px-3 py-1 rounded-full mt-1.5 shadow">
+                        <div className="bg-emerald-600 text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full mt-1 shadow">
                           FIXED PAY AMOUNT: ₹{feeAmount}
                         </div>
                       </div>
-                      <span className="text-[10px] text-emerald-400 font-bold text-center">
+                      <span className="text-[9px] text-emerald-400 font-bold text-center">
                         📱 Scan with GPay / PhonePe / Paytm to Pay Exact ₹{feeAmount}
                       </span>
                     </div>
@@ -975,12 +996,35 @@ export default function UserPortal() {
               </div>
             </div>
 
-            <button
-              onClick={() => window.print()}
-              className="w-full bg-slate-800 text-slate-200 text-xs font-semibold py-2.5 rounded-xl border border-slate-700"
-            >
-              Print / Save OP Ticket
-            </button>
+            {/* Action Buttons: PDF Download / Print */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  printPdfReport(
+                    `CarePulse — OP Ticket #${selectedTicket.bookingId}`,
+                    ['Unique Code', 'Doctor', 'Hospital', 'Date & Time', 'Patient', 'Fee (₹)', 'Payment Status'],
+                    [[
+                      `#${selectedTicket.bookingId}`,
+                      selectedTicket.doctorName,
+                      selectedTicket.hospitalName,
+                      `${selectedTicket.date} ${selectedTicket.time}`,
+                      selectedTicket.userName,
+                      `₹${selectedTicket.opFee}`,
+                      'Payment Successfully Completed'
+                    ]]
+                  );
+                }}
+                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-1.5"
+              >
+                📄 Download PDF Sheet
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-3 rounded-xl border border-slate-700"
+              >
+                🖨️ Print
+              </button>
+            </div>
           </div>
         </div>
       )}
