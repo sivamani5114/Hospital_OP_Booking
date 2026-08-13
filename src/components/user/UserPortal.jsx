@@ -770,11 +770,11 @@ export default function UserPortal() {
                         alert('Please fill patient name and phone number.');
                         return;
                       }
-                      handleConfirmPayment('Online NetBanking/UPI');
+                      setBookingStep('PAYMENT');
                     }}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <CheckCircle2 className="w-5 h-5" /> Confirm & Book OP Token Instant ✓
+                    <CreditCard className="w-4 h-4" /> {t('proceedPayment')}
                   </button>
                 </form>
               </>
