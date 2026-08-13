@@ -422,7 +422,21 @@ export default function UserPortal() {
                     </div>
 
                     <button
-                      onClick={() => setBookingDoctor(doc)}
+                      onClick={() => {
+                        setPatientDetails(prev => ({
+                          ...prev,
+                          name: prev.name || currentUser?.fullName || '',
+                          phone: prev.phone || currentUser?.phone || ''
+                        }));
+                        if (!bookingDate) {
+                          setBookingDate(new Date().toISOString().split('T')[0]);
+                        }
+                        if (!bookingTime) {
+                          setBookingTime('09:30 AM');
+                        }
+                        setBookingDoctor(doc);
+                        setBookingStep('FORM');
+                      }}
                       className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow flex items-center gap-1.5"
                     >
                       Book OP <ArrowRight className="w-3.5 h-3.5" />
@@ -751,8 +765,8 @@ export default function UserPortal() {
 
                   <button
                     type="submit"
-                    disabled={!bookingDate || !bookingTime || !patientDetails.name || !patientDetails.phone || !patientDetails.age || !patientDetails.reason}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    disabled={!bookingDate || !bookingTime || !patientDetails.name || !patientDetails.phone}
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <CreditCard className="w-4 h-4" /> {t('proceedPayment')}
                   </button>
@@ -1022,7 +1036,19 @@ export default function UserPortal() {
                       <button
                         onClick={() => {
                           setSelectedHospitalModal(null);
+                          setPatientDetails(prev => ({
+                            ...prev,
+                            name: prev.name || currentUser?.fullName || '',
+                            phone: prev.phone || currentUser?.phone || ''
+                          }));
+                          if (!bookingDate) {
+                            setBookingDate(new Date().toISOString().split('T')[0]);
+                          }
+                          if (!bookingTime) {
+                            setBookingTime('09:30 AM');
+                          }
                           setBookingDoctor(doc);
+                          setBookingStep('FORM');
                         }}
                         className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-md flex items-center gap-1"
                       >
