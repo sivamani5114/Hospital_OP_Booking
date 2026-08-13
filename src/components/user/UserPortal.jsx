@@ -770,11 +770,11 @@ export default function UserPortal() {
                         alert('Please fill patient name and phone number.');
                         return;
                       }
-                      setBookingStep('PAYMENT');
+                      handleConfirmPayment('Online NetBanking/UPI');
                     }}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <CreditCard className="w-4 h-4" /> {t('proceedPayment')}
+                    <CheckCircle2 className="w-5 h-5" /> Confirm & Book OP Token Instant ✓
                   </button>
                 </form>
               </>
@@ -930,10 +930,31 @@ export default function UserPortal() {
               <p><strong>Patient:</strong> {selectedTicket.userName}</p>
               <p><strong>Fee:</strong> ₹{selectedTicket.opFee}</p>
 
+              {/* 🏦 Hospital Business NetBanking & UPI Details Box */}
+              {(() => {
+                const hosp = hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0] || {};
+                return (
+                  <div className="bg-slate-900 p-2.5 rounded-xl border border-cyan-500/30 text-[10px] space-y-1 mt-2 text-slate-300">
+                    <p className="text-cyan-400 font-bold flex items-center justify-between">
+                      <span>🏦 HOSPITAL BANK & UPI PAYMENT DETAILS:</span>
+                    </p>
+                    <p><strong>Account Holder:</strong> {hosp.accountHolderName || hosp.hospitalName}</p>
+                    <p><strong>Bank:</strong> {hosp.bankName || 'HDFC Bank'} | <strong>IFSC:</strong> {hosp.ifscCode || 'HDFC0000123'}</p>
+                    <p><strong>Account No:</strong> <span className="font-mono text-cyan-300 font-bold">{hosp.bankAccountNo || '99881100223344'}</span></p>
+                    <p><strong>UPI ID:</strong> <span className="font-mono text-amber-300 font-bold">{hosp.upiId || 'carepulse@ybl'}</span></p>
+                  </div>
+                );
+              })()}
+
               <div className="pt-2 flex flex-col items-center">
                 <div className="bg-white p-2 rounded-xl">
-                  <QrCode className="w-20 h-20 text-slate-950" />
+                  <img
+                    src={(hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent((hospitals.find(h => h._id === selectedTicket.hospitalId) || hospitals[0])?.upiId || 'carepulse@ybl')}&pn=${encodeURIComponent(selectedTicket.hospitalName)}&am=${selectedTicket.opFee}`}
+                    className="w-24 h-24 object-contain rounded"
+                    alt="Hospital Payment QR"
+                  />
                 </div>
+                <span className="text-[9px] text-slate-400 mt-1 font-semibold">Scan QR or Use NetBanking for Payment</span>
               </div>
             </div>
 
