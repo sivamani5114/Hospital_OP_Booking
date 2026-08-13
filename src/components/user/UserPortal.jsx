@@ -781,146 +781,129 @@ export default function UserPortal() {
             )}
 
             {/* Step 2: NetBanking & UPI QR Payment */}
-            {bookingStep === 'PAYMENT' && bookingDoctor && (() => {
-              const targetHosp = hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {
-                hospitalName: 'Apollo Health City',
-                upiId: 'paytm.s2zpy5u@pty',
-                bankAccountNo: '42417133367',
-                ifscCode: 'sbin0008487',
-                bankName: 'State Bank of India',
-                accountHolderName: 'Sukhavasi Sivamani',
-                accountType: 'Current Business Account'
-              };
+            {bookingStep === 'PAYMENT' && bookingDoctor && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
+                  <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                    <ScanLine className="w-5 h-5 text-cyan-400" /> {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {})?.hospitalName || 'Hospital'} OP Payment
+                  </h3>
+                </div>
 
-              const feeAmount = bookingDoctor?.opFee || 100;
-              const upiId = targetHosp?.upiId || 'paytm.s2zpy5u@pty';
-              const dynamicUpiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(targetHosp?.hospitalName || 'Hospital')}&am=${feeAmount}&cu=INR`;
-              const qrApiUrl = targetHosp?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(dynamicUpiUrl)}`;
-
-              return (
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[10px] text-slate-500 font-bold mb-0.5">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
-                    <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                      <ScanLine className="w-5 h-5 text-cyan-400" /> {targetHosp?.hospitalName || 'Hospital'} OP Payment
-                    </h3>
-                  </div>
-
-                  {/* Payment Method Selector Tabs */}
-                  <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentTab('UPI')}
-                      className={`flex-1 py-2 rounded-lg transition-all ${(!paymentTab || paymentTab === 'UPI') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
-                    >
-                      📱 UPI & Scan QR
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentTab('NETBANKING')}
-                      className={`flex-1 py-2 rounded-lg transition-all ${(paymentTab === 'NETBANKING') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
-                    >
-                      🏦 Direct NetBanking
-                    </button>
-                  </div>
-
-                  {/* TAB 1: Dynamic Hospital UPI QR Code Area */}
-                  {(!paymentTab || paymentTab === 'UPI') && (
-                    <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
-                      <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
-                        <img
-                          src={qrApiUrl}
-                          className="w-36 h-36 object-contain rounded-xl"
-                          alt="Hospital UPI QR Code"
-                        />
-                      </div>
-                      <div className="text-center">
-                        <p className="text-slate-900 font-extrabold text-base">{targetHosp?.hospitalName}</p>
-                        <p className="text-slate-700 font-semibold text-xs mt-0.5">Dr. {bookingDoctor?.doctorName}</p>
-                        <p className="text-slate-600 text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
-                          UPI ID: {upiId}
-                        </p>
-                        <p className="text-slate-500 text-[10px] mt-1 font-medium">Pay via GPay / PhonePe / Paytm / BHIM UPI</p>
-                      </div>
-                      <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-5 py-2 text-center w-full">
-                        <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">{t('amount')}</p>
-                        <p className="text-2xl font-extrabold text-cyan-700 font-outfit">₹{feeAmount}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 2: Direct NetBanking Details Box */}
-                  {paymentTab === 'NETBANKING' && (
-                    <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-3 shadow-xl text-xs">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <span className="text-cyan-300 font-bold text-sm flex items-center gap-1.5">
-                          🏦 Hospital Business NetBanking Account
-                        </span>
-                        <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold">DIRECT CREDIT</span>
-                      </div>
-
-                      <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Account Holder:</span>
-                          <span className="text-white font-bold">{targetHosp?.accountHolderName || targetHosp?.hospitalName || 'Hospital Account'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Bank Name:</span>
-                          <span className="text-emerald-400 font-bold">{targetHosp?.bankName || 'State Bank of India'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400">Account Number:</span>
-                          <span className="text-cyan-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{targetHosp?.bankAccountNo || '42417133367'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400">IFSC Code:</span>
-                          <span className="text-amber-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{targetHosp?.ifscCode || 'sbin0008487'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Account Type:</span>
-                          <span className="text-slate-200 font-semibold">{targetHosp?.accountType || 'Current Business Account'}</span>
-                        </div>
-                      </div>
-
-                      <div className="bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl text-[11px] text-cyan-300 text-center">
-                        💳 Perform NEFT / RTGS / IMPS transfer of <strong>₹{feeAmount}</strong> directly into the above bank account.
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 space-y-1">
-                    <div className="flex items-center gap-1.5 font-bold text-cyan-400">
-                      <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
-                    </div>
-                    <p className="text-[11px] text-slate-400">
-                      🔒 Payments are routed directly to <strong>{targetHosp?.hospitalName}</strong>'s Business Bank Account. Patient bank credentials remain 100% encrypted & protected.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-2">
-                    <button
-                      onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle2 className="w-4 h-4" /> {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')}
-                    </button>
-                    <button
-                      onClick={() => handleConfirmPayment('Counter')}
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs"
-                    >
-                      <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')}
-                    </button>
-                  </div>
-
+                {/* Payment Method Selector Tabs */}
+                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
                   <button
-                    onClick={() => setBookingStep('FORM')}
-                    className="w-full text-slate-500 hover:text-slate-300 text-xs py-1"
+                    type="button"
+                    onClick={() => setPaymentTab('UPI')}
+                    className={`flex-1 py-2 rounded-lg transition-all ${(!paymentTab || paymentTab === 'UPI') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
                   >
-                    ← Back to booking details
+                    📱 UPI & Scan QR
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentTab('NETBANKING')}
+                    className={`flex-1 py-2 rounded-lg transition-all ${(paymentTab === 'NETBANKING') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+                  >
+                    🏦 Direct NetBanking
                   </button>
                 </div>
-              );
-            })()}
+
+                {/* TAB 1: Dynamic Hospital UPI QR Code Area */}
+                {(!paymentTab || paymentTab === 'UPI') && (
+                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
+                    <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
+                      <img
+                        src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR`)}`}
+                        className="w-36 h-36 object-contain rounded-xl"
+                        alt="Hospital UPI QR Code"
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-slate-900 font-extrabold text-base">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</p>
+                      <p className="text-slate-700 font-semibold text-xs mt-0.5">Dr. {bookingDoctor?.doctorName}</p>
+                      <p className="text-slate-600 text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
+                        UPI ID: {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
+                      </p>
+                      <p className="text-slate-500 text-[10px] mt-1 font-medium">Pay via GPay / PhonePe / Paytm / BHIM UPI</p>
+                    </div>
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-5 py-2 text-center w-full">
+                      <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">{t('amount')}</p>
+                      <p className="text-2xl font-extrabold text-cyan-700 font-outfit">₹{bookingDoctor?.opFee || 100}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: Direct NetBanking Details Box */}
+                {paymentTab === 'NETBANKING' && (
+                  <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-3 shadow-xl text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <span className="text-cyan-300 font-bold text-sm flex items-center gap-1.5">
+                        🏦 Hospital Business NetBanking Account
+                      </span>
+                      <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold">DIRECT CREDIT</span>
+                    </div>
+
+                    <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Account Holder:</span>
+                        <span className="text-white font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountHolderName || 'Sukhavasi Sivamani'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Bank Name:</span>
+                        <span className="text-emerald-400 font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankName || 'State Bank of India'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">Account Number:</span>
+                        <span className="text-cyan-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankAccountNo || '42417133367'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">IFSC Code:</span>
+                        <span className="text-amber-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.ifscCode || 'sbin0008487'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Account Type:</span>
+                        <span className="text-slate-200 font-semibold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountType || 'Current Business Account'}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl text-[11px] text-cyan-300 text-center">
+                      💳 Perform NEFT / RTGS / IMPS transfer of <strong>₹{bookingDoctor?.opFee || 100}</strong> directly into the above bank account.
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-cyan-400">
+                    <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    🔒 Payments are routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</strong>'s Business Bank Account. Patient bank credentials remain 100% encrypted & protected.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')}
+                  </button>
+                  <button
+                    onClick={() => handleConfirmPayment('Counter')}
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs"
+                  >
+                    <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')}
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setBookingStep('FORM')}
+                  className="w-full text-slate-500 hover:text-slate-300 text-xs py-1"
+                >
+                  ← Back to booking details
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
