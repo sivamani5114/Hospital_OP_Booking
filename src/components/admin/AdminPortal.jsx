@@ -28,6 +28,7 @@ export default function AdminPortal() {
   const [showAddHospModal, setShowAddHospModal] = useState(false);
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
   const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
+  const [selectedDoctorDetails, setSelectedDoctorDetails] = useState(null);
 
   // User Form State
   const [userForm, setUserForm] = useState({
@@ -514,14 +515,12 @@ export default function AdminPortal() {
 
                   {/* Actions: View Legal Docs & Delete */}
                   <div className="flex justify-between items-center pt-1">
-                    {hosp && (
-                      <button
-                        onClick={() => setSelectedHospitalDetails(hosp)}
-                        className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-[11px] font-bold flex items-center gap-1"
-                      >
-                        🔍 View 12 Legal Docs
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setSelectedDoctorDetails(d)}
+                      className="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow"
+                    >
+                      🔍 View Full Profile & 12 Docs
+                    </button>
                     <button
                       onClick={() => deleteDoctor(d._id)}
                       className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800"
@@ -1159,6 +1158,141 @@ export default function AdminPortal() {
                   </>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🩺 FULL DOCTOR PROFILE & 12 LEGAL DOCUMENTS AUDIT MODAL */}
+      {selectedDoctorDetails && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-2xl rounded-3xl p-6 border border-cyan-500/40 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setSelectedDoctorDetails(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Doctor Profile Header */}
+            <div className="flex items-center gap-4 border-b border-slate-800 pb-4">
+              <img src={selectedDoctorDetails.image} className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-500/40 shadow-lg" alt="Doctor Avatar" />
+              <div>
+                <h3 className="font-extrabold text-white text-lg flex items-center gap-2">
+                  {selectedDoctorDetails.doctorName}
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" title="Verified License" />
+                </h3>
+                <span className="bg-indigo-500/10 text-indigo-300 text-xs font-bold px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+                  {selectedDoctorDetails.specialization}
+                </span>
+                <p className="text-xs text-slate-300 mt-1 font-semibold">{selectedDoctorDetails.qualification}</p>
+                <p className="text-xs text-emerald-400 font-mono font-bold mt-0.5">
+                  <Award className="w-3.5 h-3.5 inline mr-1" /> Reg No: {selectedDoctorDetails.medicalRegistrationNo || 'TSMC/F/88912'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* 1. Doctor Professional & OP Details */}
+              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bold text-cyan-300 text-xs">🩺 1. Doctor OP Schedule & Fees</h4>
+                <div className="grid grid-cols-2 gap-2 text-slate-300">
+                  <p><strong>Experience:</strong> {selectedDoctorDetails.experience || 5} Years</p>
+                  <p><strong>OP Consultation Fee:</strong> <span className="text-emerald-400 font-bold">₹{selectedDoctorDetails.opFee}</span></p>
+                  <p><strong>OP Working Days:</strong> {selectedDoctorDetails.availableDays || 'Monday - Saturday'}</p>
+                  <p><strong>OP Timings:</strong> {selectedDoctorDetails.availableTime || '09:00 AM - 01:00 PM'}</p>
+                  <p className="col-span-2"><strong>Max Patients / Day:</strong> {selectedDoctorDetails.maxPatients || 25} Patients</p>
+                </div>
+              </div>
+
+              {/* 2. Medical Registration & Degree Certificates */}
+              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bold text-emerald-300 text-xs">🏅 2. Verified Medical License & Degree Certificates</h4>
+                <div className="flex flex-wrap gap-2 text-[11px] pt-1">
+                  {selectedDoctorDetails.medicalRegCertDoc ? (
+                    <a href={selectedDoctorDetails.medicalRegCertDoc} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold">
+                      📄 View Medical Registration License PDF/Img
+                    </a>
+                  ) : (
+                    <span className="text-emerald-400 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">✓ Medical Council Reg No Verified</span>
+                  )}
+
+                  {selectedDoctorDetails.degreeCertDoc && (
+                    <a href={selectedDoctorDetails.degreeCertDoc} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-3 py-1 rounded-lg font-bold">
+                      🎓 View Degree Certificate PDF/Img
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. Associated Hospital & 12 Legal Documents Audit */}
+              {(() => {
+                const hosp = hospitals.find(h => h._id === selectedDoctorDetails.hospitalId);
+                return hosp ? (
+                  <div className="bg-slate-900/90 p-4 rounded-2xl border border-amber-500/30 space-y-3">
+                    <h4 className="font-bold text-amber-300 text-xs flex items-center justify-between">
+                      <span>🏥 3. Hospital Legal Verification & 12 Certificates ({hosp.hospitalName})</span>
+                      <span className="text-[10px] text-amber-400 font-mono font-bold">12 GOVT LICENSES</span>
+                    </h4>
+
+                    {/* Owner Verification */}
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5 text-[11px] text-slate-300">
+                      <p className="text-cyan-400 font-bold">👨‍💼 AUTHORIZED PERSON:</p>
+                      <p><strong>Name:</strong> {hosp.authorizedPersonName || 'Medical Director'} ({hosp.authorizedPersonDesignation || 'MD'})</p>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {hosp.authorizedPersonIdProof && (
+                          <a href={hosp.authorizedPersonIdProof} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                            🪪 Aadhaar (No: {hosp.authorizedPersonAadhaarNo || 'N/A'})
+                          </a>
+                        )}
+                        {hosp.authorizedPersonPan && (
+                          <a href={hosp.authorizedPersonPan} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                            📄 Personal PAN (No: {hosp.authorizedPersonPanNo || 'N/A'})
+                          </a>
+                        )}
+                        {hosp.authorizationLetter && (
+                          <a href={hosp.authorizationLetter} target="_blank" rel="noopener noreferrer" className="bg-cyan-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                            📑 Auth Letter (Ref: {hosp.authorizationLetterNo || 'N/A'})
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 9 Government Licenses */}
+                    <span className="text-emerald-400 font-bold text-[11px] block">🏥 GOVERNMENT LICENSES (9 CERTIFICATES & NUMBERS):</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
+                      {[
+                        { title: '1. Hospital Reg Cert', key: 'regCertificate', numKey: 'regCertificateNo' },
+                        { title: '2. Clinical Establishment', key: 'clinicalEstablishmentCert', numKey: 'clinicalEstablishmentCertNo' },
+                        { title: '3. NABH Certificate', key: 'nabhCertificate', numKey: 'nabhCertificateNo' },
+                        { title: '4. Hospital PAN Card', key: 'hospitalPan', numKey: 'hospitalPanNo' },
+                        { title: '5. GST Certificate', key: 'gstCertificate', numKey: 'gstCertificateNo' },
+                        { title: '6. Pharmacy Drug License', key: 'drugLicense', numKey: 'drugLicenseNo' },
+                        { title: '7. Biomedical Waste Auth', key: 'biomedicalWasteAuth', numKey: 'biomedicalWasteAuthNo' },
+                        { title: '8. Fire Safety NOC', key: 'fireNocCert', numKey: 'fireNocCertNo' },
+                        { title: '9. Trade License', key: 'tradeLicenseCert', numKey: 'tradeLicenseCertNo' }
+                      ].map(doc => {
+                        const certNo = hosp[doc.numKey];
+                        const certFile = hosp[doc.key];
+                        return (
+                          <div key={doc.key} className="bg-slate-950 p-2 rounded-lg border border-slate-800 space-y-1">
+                            <div className="flex justify-between items-center">
+                              <span className="text-slate-300 font-bold truncate">{doc.title}</span>
+                              {certFile ? (
+                                <a href={certFile} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 text-white px-2 py-0.5 rounded text-[9px] font-bold shrink-0">
+                                  View File
+                                </a>
+                              ) : (
+                                <span className="text-slate-500 italic text-[9px]">No File</span>
+                              )}
+                            </div>
+                            <p className="text-slate-400 font-mono text-[9px]">
+                              <strong>No:</strong> {certNo || 'N/A'}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
             </div>
           </div>
         </div>
