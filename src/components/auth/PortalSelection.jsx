@@ -3,13 +3,13 @@ import { Stethoscope, User, Building2, ShieldCheck, ArrowRight } from 'lucide-re
 
 export default function PortalSelection({ onSelectPortal }) {
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4 relative">
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6 relative">
       
       {/* Glow Effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10"></div>
 
-      <div className="w-full max-w-2xl glass-panel p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-8 text-center">
+      <div className="w-full max-w-2xl glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl space-y-6 sm:space-y-8 text-center">
         
         {/* Branding Header */}
         <div className="space-y-2">
@@ -18,7 +18,7 @@ export default function PortalSelection({ onSelectPortal }) {
               <Stethoscope className="w-8 h-8 text-cyan-400" />
             </div>
           </div>
-          <h1 className="text-3xl font-extrabold text-white font-outfit tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-outfit tracking-tight">
             CarePulse <span className="text-cyan-400">Hospital OP System</span>
           </h1>
           <p className="text-xs text-slate-400 max-w-md mx-auto">
@@ -27,7 +27,7 @@ export default function PortalSelection({ onSelectPortal }) {
         </div>
 
         {/* 3 Separate Portal Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
           
           {/* 1. Patient Portal Entrance */}
           <div 

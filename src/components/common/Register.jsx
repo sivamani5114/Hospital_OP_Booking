@@ -242,8 +242,8 @@ export default function Register({ onGoToLogin }) {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-lg glass-panel p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6">
+      <div className="w-full max-w-lg glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl space-y-5">
         
         {/* Top Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">

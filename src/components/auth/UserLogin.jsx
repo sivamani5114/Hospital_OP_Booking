@@ -25,8 +25,8 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6">
+      <div className="w-full max-w-md glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl space-y-5">
         
         {/* Back Link */}
         <button
@@ -39,10 +39,10 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
 
         {/* Portal Icon & Title */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
-            <User className="w-7 h-7" />
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
+            <User className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
-          <h2 className="text-2xl font-extrabold text-white font-outfit">Patient / User Login</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white font-outfit">Patient / User Login</h2>
           <p className="text-xs text-slate-400">Enter registered phone number and password.</p>
         </div>
 
@@ -84,7 +84,7 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl text-xs shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
           >
             Login to Patient Portal <ArrowRight className="w-4 h-4" />
           </button>
