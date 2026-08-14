@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { sendWhatsAppOtpToUser } from '../../utils/whatsappService';
 import { sendRealFast2SMS } from '../../utils/smsService';
-import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap } from 'lucide-react';
+import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap, Stethoscope } from 'lucide-react';
 
 export default function Register({ onGoToLogin }) {
   const { registerUser, showToast } = useAuth();
@@ -242,20 +242,72 @@ export default function Register({ onGoToLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-3 sm:p-6">
-      <div className="w-full max-w-lg glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl space-y-5">
-        
-        {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div className="min-h-screen flex items-stretch bg-slate-950">
+
+      {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/30 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl -z-10"></div>
+
+        {/* Logo + Brand */}
+        <div>
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+              <Stethoscope className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-white font-extrabold text-lg font-outfit tracking-tight">CarePulse</span>
+          </div>
+
+          <h2 className="text-3xl font-extrabold text-white leading-tight mb-3">
+            Join India's Smartest<br />
+            <span className="text-cyan-400">Hospital OP System</span>
+          </h2>
+          <p className="text-slate-400 text-sm leading-relaxed">
+            Register as a patient or hospital and get instant access to digital OP booking, smart queue management, and real-time tracking.
+          </p>
+        </div>
+
+        {/* Feature highlights */}
+        <div className="space-y-4">
+          {[
+            { icon: '🏥', title: 'Instant OP Token Booking', desc: 'Skip queues with digital tokens' },
+            { icon: '📱', title: 'QR-Based UPI Payments', desc: 'Pay via GPay, PhonePe or Paytm' },
+            { icon: '🔔', title: 'Real-Time Notifications', desc: 'Track your slot & appointment' },
+            { icon: '📄', title: 'Digital PDF Receipts', desc: 'Download OP tickets instantly' },
+          ].map((f, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className="text-xl mt-0.5">{f.icon}</span>
+              <div>
+                <p className="text-white font-semibold text-sm">{f.title}</p>
+                <p className="text-slate-500 text-xs">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom tag */}
+        <div className="text-[11px] text-slate-600">
+          🔒 256-bit SSL Encrypted · NABH Verified Hospitals · Trusted by 10,000+ Patients
+        </div>
+      </div>
+
+      {/* ═══ RIGHT FORM PANEL ═══ */}
+      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+        {/* Top Header strip */}
+        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
           <button
             onClick={onGoToLogin}
             className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Login
           </button>
-          
           <span className="text-xs font-bold text-cyan-400">CarePulse Registration</span>
         </div>
+
+        {/* Form Content */}
+        <div className="flex-1 flex items-start justify-center p-5 sm:p-10">
+          <div className="w-full max-w-xl space-y-5">
 
         {/* Tab Switcher: Patient vs Hospital Registration */}
         <div className="grid grid-cols-2 gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
@@ -1578,7 +1630,8 @@ export default function Register({ onGoToLogin }) {
             )}
           </form>
         )}
-
+          </div>
+        </div>
       </div>
     </div>
   );
