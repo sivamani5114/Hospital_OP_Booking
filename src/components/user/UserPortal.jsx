@@ -701,7 +701,9 @@ export default function UserPortal() {
                   <div className="space-y-2.5 text-xs border-t border-slate-800/80 pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-slate-400 font-semibold">Patient ID:</span>
-                      <span className="font-mono text-cyan-400 font-bold">{currentUser?._id || 'usr-patient'}</span>
+                      <span className="font-mono text-cyan-300 font-extrabold tracking-wider bg-cyan-950/60 px-2.5 py-0.5 rounded-lg border border-cyan-500/30 shadow-sm">
+                        {currentUser?.patientId || ('CP-PAT-' + (currentUser?.phone ? currentUser.phone.slice(-6) : '543210'))}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-slate-400 font-semibold">Total OP Bookings:</span>

@@ -1,6 +1,7 @@
 export const initialUsers = [
   {
     _id: 'usr-1',
+    patientId: 'CP-PAT-543210',
     fullName: 'Siva Kumar',
     phone: '9876543210',
     email: 'siva@gmail.com',

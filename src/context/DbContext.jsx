@@ -96,6 +96,7 @@ export function DbProvider({ children }) {
   const addUser = (userData) => {
     const newUser = {
       _id: `usr-${Date.now()}`,
+      patientId: userData.patientId || ('CP-PAT-' + Math.floor(100000 + Math.random() * 900000)),
       ...userData,
       status: 'ACTIVE',
       createdAt: new Date().toISOString().split('T')[0]
