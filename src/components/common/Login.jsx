@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Stethoscope, Phone, Lock, ArrowRight, UserPlus, ShieldAlert, Sparkles, User, Building2, ShieldCheck } from 'lucide-react';
+import ForgotPasswordModal from '../auth/ForgotPasswordModal';
 
 export default function Login({ onGoToRegister }) {
   const { login } = useAuth();
 
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -64,8 +66,8 @@ export default function Login({ onGoToRegister }) {
               <label className="text-xs text-slate-400 font-semibold">Password</label>
               <button 
                 type="button" 
-                onClick={() => alert('Please contact hospital desk or admin to reset password.')}
-                className="text-[11px] text-cyan-400 hover:underline"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-[11px] text-cyan-400 hover:underline cursor-pointer font-semibold"
               >
                 Forgot Password?
               </button>
@@ -85,12 +87,21 @@ export default function Login({ onGoToRegister }) {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 text-xs transition-all"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 text-xs transition-all cursor-pointer"
           >
             Login to Account <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
+        {/* Forgot Password Modal */}
+        <ForgotPasswordModal
+          isOpen={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+          role="USER"
+          onPasswordResetSuccess={(resetPhone, newPwd) => {
+            setPhone(resetPhone);
+            setPassword(newPwd);
+          }}
         {/* Register Redirect Button */}
         <div className="text-center pt-2 border-t border-slate-800/80">
           <p className="text-xs text-slate-400 mb-2">Don't have an account yet?</p>

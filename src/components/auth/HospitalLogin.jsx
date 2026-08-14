@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Building2, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope } from 'lucide-react';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegister }) {
   const { login } = useAuth();
   
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleBack = () => {
     if (onBackToPortals) onBackToPortals();
@@ -110,7 +112,16 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Password</label>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-emerald-400 hover:text-emerald-300 hover:underline cursor-pointer font-semibold"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                 <input
@@ -126,11 +137,22 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2"
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2 cursor-pointer"
             >
               Login to Hospital Portal <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+
+          {/* Forgot Password Modal */}
+          <ForgotPasswordModal
+            isOpen={showForgotPassword}
+            onClose={() => setShowForgotPassword(false)}
+            role="HOSPITAL"
+            onPasswordResetSuccess={(resetPhone, newPwd) => {
+              setPhone(resetPhone);
+              setPassword(newPwd);
+            }}
+          />
 
           <div className="text-center mt-4 border-t border-slate-800/60 pt-4">
             <button

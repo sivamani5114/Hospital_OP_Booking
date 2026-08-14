@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { User, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope, Calendar, CheckCircle2 } from 'lucide-react';
+import { User, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope, Calendar, CheckCircle2, KeyRound } from 'lucide-react';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister }) {
   const { login } = useAuth();
   
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleBack = () => {
     if (onBackToPortals) onBackToPortals();
@@ -113,7 +115,16 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Password</label>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer font-semibold"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                 <input
@@ -129,11 +140,22 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2"
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2 cursor-pointer"
             >
               Login to Patient Portal <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+
+          {/* Forgot Password Modal */}
+          <ForgotPasswordModal
+            isOpen={showForgotPassword}
+            onClose={() => setShowForgotPassword(false)}
+            role="USER"
+            onPasswordResetSuccess={(resetPhone, newPwd) => {
+              setPhone(resetPhone);
+              setPassword(newPwd);
+            }}
+          />
 
           {/* Demo fill */}
           <div className="text-center mt-4 pb-2 border-t border-slate-800/60 pt-4">

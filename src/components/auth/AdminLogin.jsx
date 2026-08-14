@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck, Phone, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Phone, Lock, ArrowLeft, ArrowRight, KeyRound } from 'lucide-react';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function AdminLogin({ onGoBack, onBackToPortals }) {
   const { login } = useAuth();
   
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleBack = () => {
     if (onBackToPortals) onBackToPortals();
@@ -110,7 +112,16 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Super Admin Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Super Admin Password</label>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer font-semibold"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                 <input
@@ -126,11 +137,22 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform mt-2 cursor-pointer"
             >
               Login to Admin Control Portal <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+
+          {/* Forgot Password Modal */}
+          <ForgotPasswordModal
+            isOpen={showForgotPassword}
+            onClose={() => setShowForgotPassword(false)}
+            role="ADMIN"
+            onPasswordResetSuccess={(resetPhone, newPwd) => {
+              setPhone(resetPhone);
+              setPassword(newPwd);
+            }}
+          />
 
           <div className="text-center mt-4 border-t border-slate-800/60 pt-4">
             <button
