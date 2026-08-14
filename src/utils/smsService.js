@@ -3,7 +3,19 @@
  * Sends Direct Mobile SMS to User Phone SIM Inbox via Fast2SMS
  */
 
-export const FAST2SMS_API_KEY = 'meEBH583i0vD9TVOCRZwcYgjfsNdopG1LXqh6SubrMaWUn4Kl7EtvQq0x8Uw972HfjcaeKbo6WuXhRmP';
+export const DEFAULT_FAST2SMS_API_KEY = 'meEBH583i0vD9TVOCRZwcYgjfsNdopG1LXqh6SubrMaWUn4Kl7EtvQq0x8Uw972HfjcaeKbo6WuXhRmP';
+
+export function getFast2SmsApiKey() {
+  return localStorage.getItem('carepulse_fast2sms_key') || DEFAULT_FAST2SMS_API_KEY;
+}
+
+export function setFast2SmsApiKey(key) {
+  if (key && key.trim()) {
+    localStorage.setItem('carepulse_fast2sms_key', key.trim());
+  } else {
+    localStorage.removeItem('carepulse_fast2sms_key');
+  }
+}
 
 /**
  * Sends real SMS OTP directly to Indian Mobile Numbers via Fast2SMS Gateway
@@ -12,8 +24,9 @@ export const FAST2SMS_API_KEY = 'meEBH583i0vD9TVOCRZwcYgjfsNdopG1LXqh6SubrMaWUn4
  */
 export async function sendRealFast2SMS(recipientPhone, otpCode) {
   const cleanPhone = recipientPhone.replace(/[^0-9]/g, '').slice(-10);
+  const activeKey = getFast2SmsApiKey();
 
-  const directUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=otp&variables_values=${otpCode}&numbers=${cleanPhone}`;
+  const directUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${activeKey}&route=otp&variables_values=${otpCode}&numbers=${cleanPhone}`;
 
   let resultData = null;
 
@@ -33,7 +46,7 @@ export async function sendRealFast2SMS(recipientPhone, otpCode) {
       const postResponse = await fetch('https://www.fast2sms.com/dev/bulkV2', {
         method: 'POST',
         headers: {
-          'authorization': FAST2SMS_API_KEY,
+          'authorization': activeKey,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
