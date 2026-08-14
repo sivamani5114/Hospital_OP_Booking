@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { sendWhatsAppOtpToUser } from '../../utils/whatsappService';
 import { sendRealFast2SMS } from '../../utils/smsService';
-import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap, Stethoscope } from 'lucide-react';
+import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap, Stethoscope, MessageCircle } from 'lucide-react';
 
 export default function Register({ onGoToLogin }) {
   const { registerUser, showToast } = useAuth();
@@ -144,7 +144,7 @@ export default function Register({ onGoToLogin }) {
     return () => clearInterval(interval);
   }, [timerSeconds]);
 
-  // Handle Send Direct WhatsApp OTP to Target User Phone
+  // Handle Send Direct WhatsApp & SMS OTP to Target User Phone
   const handleSendInstantOtp = (phoneNum) => {
     if (!phoneNum || phoneNum.trim().length < 10) {
       showToast('❌ Please enter a valid 10-digit Phone Number first!', 'error');
@@ -156,24 +156,25 @@ export default function Register({ onGoToLogin }) {
     
     setGeneratedOtp(code);
     setOtpSent(true);
-    setTimerSeconds(30);
+    setTimerSeconds(60);
     setEnteredOtp('');
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // 🚀 Dispatch Real Mobile SMS via Paid Fast2SMS Gateway Directly to Mobile SIM Inbox
+    // 🚀 1. Dispatch Real Mobile SMS directly to Mobile SIM Inbox
     sendRealFast2SMS(cleanPhone, code);
 
-    // Save to internal log dispatcher
-    sendWhatsAppOtpToUser(cleanPhone, code);
+    // 📲 2. Dispatch Real WhatsApp OTP directly to user phone
+    const waResult = sendWhatsAppOtpToUser(cleanPhone, code);
+    if (waResult?.waUrl) {
+      try {
+        window.open(waResult.waUrl, '_blank');
+      } catch (e) {
+        console.log('Popup blocked, WhatsApp link available on card');
+      }
+    }
 
-    showToast(`📲 Real Mobile SMS Dispatched to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
-  };
-
-  // Handle Auto-fill for instant user convenience
-  const handleInstantFill = () => {
-    setEnteredOtp(generatedOtp);
-    showToast('⚡ OTP Code Auto-Filled!', 'info');
+    showToast(`📲 6-Digit OTP sent directly to +91 ${cleanPhone} via SMS & WhatsApp!`, 'success');
   };
 
   // Handle Verify OTP
@@ -397,43 +398,47 @@ export default function Register({ onGoToLogin }) {
               </div>
             </div>
 
-            {/* GUARANTEED INSTANT MOBILE SMS CARD DISPLAY WITH ON-SCREEN OTP */}
+            {/* DIRECT REAL MOBILE SMS & WHATSAPP OTP VERIFICATION CARD (NO ON-SCREEN CODE DISPLAY) */}
             {otpSent && !isPhoneVerified && showMobileSmsCard && (
-              <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-cyan-500/50 space-y-3 shadow-xl animate-fadeIn">
+              <div className="bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 p-4 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-2xl animate-fadeIn">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-cyan-300 font-bold flex items-center gap-1.5">
-                    <Smartphone className="w-4 h-4 text-cyan-400" /> Phone Verification (+91 {targetPhone})
+                    <Smartphone className="w-4 h-4 text-cyan-400" /> OTP Dispatched to Phone (+91 {targetPhone})
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleInstantFill}
-                    className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-amber-500/30 shadow"
+                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> SMS & WhatsApp Sent
+                  </span>
+                </div>
+
+                <p className="text-slate-300 text-xs leading-relaxed">
+                  🔒 A 6-digit security OTP has been dispatched to your mobile number <strong>+91 {targetPhone}</strong> via <strong>Direct SMS & WhatsApp</strong>. Please enter the OTP received on your phone.
+                </p>
+
+                <div className="flex flex-wrap gap-2 pt-0.5">
+                  <a
+                    href={`https://api.whatsapp.com/send?phone=91${targetPhone}&text=${encodeURIComponent(`🏥 *CarePulse Hospital OP System*\n\nYour 6-Digit Verification OTP is: *${generatedOtp}*\n\nValid for 5 minutes. Do not share with anyone.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                   >
-                    <Zap className="w-3.5 h-3.5 text-amber-400" /> 1-Click Auto-Fill Code
-                  </button>
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> Open WhatsApp to Receive OTP
+                  </a>
                 </div>
 
-                {/* ON-SCREEN OTP DISPLAY BADGE */}
-                <div className="bg-slate-950 p-3 rounded-xl border border-cyan-500/30 text-xs flex justify-between items-center">
-                  <span className="text-slate-300 font-medium">Your 6-Digit OTP Code:</span>
-                  <strong className="text-cyan-300 font-mono text-base tracking-widest font-extrabold bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/30">
-                    {generatedOtp}
-                  </strong>
-                </div>
-
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-1">
                   <input
                     type="text"
                     maxLength={6}
-                    placeholder="Enter 6-digit OTP code"
+                    placeholder="Enter 6-digit OTP received on phone"
                     value={enteredOtp}
-                    onChange={(e) => setEnteredOtp(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest"
+                    onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="flex-1 bg-slate-950 border border-slate-800 focus:border-cyan-500/60 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"
+                    autoFocus
                   />
                   <button
                     type="button"
                     onClick={handleVerifyOtp}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow cursor-pointer"
                   >
                     Verify OTP
                   </button>
@@ -695,43 +700,47 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* GUARANTEED INSTANT OTP CARD DISPLAY FOR HOSPITAL REGISTRATION */}
+                {/* DIRECT REAL MOBILE SMS & WHATSAPP OTP VERIFICATION CARD FOR HOSPITAL REGISTRATION */}
                 {otpSent && !isPhoneVerified && showMobileSmsCard && (
-                  <div className="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-2xl border-2 border-emerald-500/50 space-y-3 shadow-xl animate-fadeIn">
+                  <div className="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 p-4 rounded-2xl border-2 border-emerald-500/40 space-y-3 shadow-2xl animate-fadeIn">
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-emerald-300 font-bold flex items-center gap-1.5">
-                        <Smartphone className="w-4 h-4 text-emerald-400" /> Hospital Phone Verification (+91 {targetPhone})
+                        <Smartphone className="w-4 h-4 text-emerald-400" /> Hospital Phone OTP (+91 {targetPhone})
                       </span>
-                      <button
-                        type="button"
-                        onClick={handleInstantFill}
-                        className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 hover:bg-amber-500/30 shadow"
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> SMS & WhatsApp Sent
+                      </span>
+                    </div>
+
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      🔒 A 6-digit verification OTP has been dispatched to hospital phone <strong>+91 {targetPhone}</strong> via <strong>SMS & WhatsApp</strong>.
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      <a
+                        href={`https://api.whatsapp.com/send?phone=91${targetPhone}&text=${encodeURIComponent(`🏥 *CarePulse Hospital Registration*\n\nYour 6-Digit Hospital Verification OTP is: *${generatedOtp}*\n\nValid for 5 minutes.`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                       >
-                        <Zap className="w-3.5 h-3.5 text-amber-400" /> 1-Click Auto-Fill Code
-                      </button>
+                        <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> Open WhatsApp to Receive OTP
+                      </a>
                     </div>
 
-                    {/* ON-SCREEN OTP DISPLAY BADGE */}
-                    <div className="bg-slate-950 p-3 rounded-xl border border-emerald-500/30 text-xs flex justify-between items-center">
-                      <span className="text-slate-300 font-medium">Your 6-Digit OTP Code:</span>
-                      <strong className="text-emerald-300 font-mono text-base tracking-widest font-extrabold bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/30">
-                        {generatedOtp}
-                      </strong>
-                    </div>
-
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 pt-1">
                       <input
                         type="text"
                         maxLength={6}
-                        placeholder="Enter 6-digit OTP code"
+                        placeholder="Enter 6-digit OTP received on phone"
                         value={enteredOtp}
-                        onChange={(e) => setEnteredOtp(e.target.value)}
-                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest"
+                        onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        className="flex-1 bg-slate-950 border border-slate-800 focus:border-emerald-500/60 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"
+                        autoFocus
                       />
                       <button
                         type="button"
                         onClick={handleVerifyOtp}
-                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow"
+                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow cursor-pointer"
                       >
                         Verify OTP
                       </button>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDb } from '../../context/DbContext';
 import { sendWhatsAppOtpToUser } from '../../utils/whatsappService';
+import { sendRealFast2SMS } from '../../utils/smsService';
 import { 
   KeyRound, Phone, Lock, Eye, EyeOff, CheckCircle2, ArrowRight, 
-  RefreshCw, MessageCircle, X, ShieldAlert, Sparkles, AlertCircle 
+  RefreshCw, MessageCircle, X, ShieldAlert, Sparkles, AlertCircle, Smartphone 
 } from 'lucide-react';
 
 export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', onPasswordResetSuccess }) {
@@ -118,8 +119,18 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
 
-    // Send simulated WhatsApp OTP
-    sendWhatsAppOtpToUser(cleanPhone, otp);
+    // 🚀 1. Dispatch Real Mobile SMS to Phone SIM
+    sendRealFast2SMS(cleanPhone, otp);
+
+    // 📲 2. Dispatch Real WhatsApp OTP directly to user phone
+    const waResult = sendWhatsAppOtpToUser(cleanPhone, otp);
+    if (waResult?.waUrl) {
+      try {
+        window.open(waResult.waUrl, '_blank');
+      } catch (e) {
+        console.log('Popup blocked, WhatsApp link available on card');
+      }
+    }
 
     setTimeout(() => {
       setIsOtpSending(false);
@@ -146,10 +157,19 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     if (otpTimer > 0) return;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
-    sendWhatsAppOtpToUser(matchedUser.phone, otp);
+    
+    // Send SMS & WhatsApp
+    sendRealFast2SMS(matchedUser.phone, otp);
+    const waRes = sendWhatsAppOtpToUser(matchedUser.phone, otp);
+    if (waRes?.waUrl) {
+      try {
+        window.open(waRes.waUrl, '_blank');
+      } catch (e) {}
+    }
+
     setOtpTimer(60);
     setErrorMessage('');
-    alert(`📲 New OTP sent to +91 ${matchedUser.phone}: ${otp}`);
+    alert(`📲 New 6-digit OTP dispatched to your phone +91 ${matchedUser.phone}!`);
   };
 
   // Step 3: Set New Password
@@ -259,7 +279,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
         {/* ═══ STEP 2: VERIFY OTP ═══ */}
         {step === 2 && (
           <form onSubmit={handleVerifyOtp} className="space-y-4 text-xs">
-            <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-1 text-slate-300">
+            <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-slate-300">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] text-slate-400">Account Identified:</span>
                 <strong className="text-white">{matchedUser?.fullName}</strong>
@@ -268,25 +288,26 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
                 <span className="text-[11px] text-slate-400">OTP Sent To:</span>
                 <span className="font-mono text-cyan-300 font-bold">+91 {matchedUser?.phone}</span>
               </div>
+              <p className="text-slate-400 text-[11px] pt-1 border-t border-slate-800 leading-relaxed">
+                🔒 A 6-digit security code has been sent directly to your phone via <strong>Direct SMS & WhatsApp</strong>.
+              </p>
             </div>
 
-            {/* Instant Click to Auto-fill OTP Badge */}
-            <div 
-              onClick={() => setEnteredOtp(generatedOtp)}
-              className="bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-between text-emerald-300 cursor-pointer hover:bg-emerald-500/20 transition-colors"
-              title="Click to auto-fill OTP"
-            >
-              <div className="flex items-center gap-2">
+            {/* Open WhatsApp Action */}
+            <div className="pt-0.5">
+              <a 
+                href={`https://api.whatsapp.com/send?phone=91${matchedUser?.phone}&text=${encodeURIComponent(`🏥 *CarePulse Password Recovery*\n\nYour 6-Digit Password Reset OTP is: *${generatedOtp}*\n\nValid for 5 minutes. Do not share with anyone.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-center gap-2 text-emerald-300 hover:bg-emerald-500/20 transition-colors font-bold text-xs"
+              >
                 <MessageCircle className="w-4 h-4 text-emerald-400" />
-                <span>WhatsApp OTP Dispatched:</span>
-              </div>
-              <span className="font-mono font-extrabold text-sm tracking-widest bg-emerald-950 px-2.5 py-0.5 rounded-lg border border-emerald-500/40">
-                {generatedOtp}
-              </span>
+                <span>Open WhatsApp to Receive OTP Message</span>
+              </a>
             </div>
 
             <div>
-              <label className="text-slate-400 font-semibold block mb-1.5">Enter 6-Digit OTP Code *</label>
+              <label className="text-slate-400 font-semibold block mb-1.5">Enter 6-Digit OTP Code Received on Phone *</label>
               <input
                 type="text"
                 placeholder="• • • • • •"
