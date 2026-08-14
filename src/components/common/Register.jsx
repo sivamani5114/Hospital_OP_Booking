@@ -161,20 +161,10 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // 🚀 1. Dispatch Real Mobile SMS directly to Mobile SIM Inbox
+    // 🚀 Dispatch Real Mobile SMS directly to Mobile SIM Inbox via Fast2SMS Gateway
     sendRealFast2SMS(cleanPhone, code);
 
-    // 📲 2. Dispatch Real WhatsApp OTP directly to user phone
-    const waResult = sendWhatsAppOtpToUser(cleanPhone, code);
-    if (waResult?.waUrl) {
-      try {
-        window.open(waResult.waUrl, '_blank');
-      } catch (e) {
-        console.log('Popup blocked, WhatsApp link available on card');
-      }
-    }
-
-    showToast(`📲 6-Digit OTP sent directly to +91 ${cleanPhone} via SMS & WhatsApp!`, 'success');
+    showToast(`📲 6-Digit SMS OTP dispatched directly to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
   };
 
   // Handle Verify OTP
@@ -398,38 +388,27 @@ export default function Register({ onGoToLogin }) {
               </div>
             </div>
 
-            {/* DIRECT REAL MOBILE SMS & WHATSAPP OTP VERIFICATION CARD (NO ON-SCREEN CODE DISPLAY) */}
+            {/* DIRECT REAL MOBILE SMS OTP VERIFICATION CARD (FAST2SMS GATEWAY) */}
             {otpSent && !isPhoneVerified && showMobileSmsCard && (
               <div className="bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 p-4 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-2xl animate-fadeIn">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-cyan-300 font-bold flex items-center gap-1.5">
-                    <Smartphone className="w-4 h-4 text-cyan-400" /> OTP Dispatched to Phone (+91 {targetPhone})
+                    <Smartphone className="w-4 h-4 text-cyan-400" /> SMS Sent to Mobile (+91 {targetPhone})
                   </span>
                   <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> SMS & WhatsApp Sent
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Real SMS Dispatched
                   </span>
                 </div>
 
                 <p className="text-slate-300 text-xs leading-relaxed">
-                  🔒 A 6-digit security OTP has been dispatched to your mobile number <strong>+91 {targetPhone}</strong> via <strong>Direct SMS & WhatsApp</strong>. Please enter the OTP received on your phone.
+                  🔒 A 6-digit security OTP has been sent directly to your phone SIM inbox (<strong>+91 {targetPhone}</strong>) via <strong>Fast2SMS Gateway</strong>. Please check your SMS messages and enter the code below.
                 </p>
-
-                <div className="flex flex-wrap gap-2 pt-0.5">
-                  <a
-                    href={`https://api.whatsapp.com/send?phone=91${targetPhone}&text=${encodeURIComponent(`🏥 *CarePulse Hospital OP System*\n\nYour 6-Digit Verification OTP is: *${generatedOtp}*\n\nValid for 5 minutes. Do not share with anyone.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> Open WhatsApp to Receive OTP
-                  </a>
-                </div>
 
                 <div className="flex gap-2 pt-1">
                   <input
                     type="text"
                     maxLength={6}
-                    placeholder="Enter 6-digit OTP received on phone"
+                    placeholder="Enter 6-digit SMS OTP code"
                     value={enteredOtp}
                     onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     className="flex-1 bg-slate-950 border border-slate-800 focus:border-cyan-500/60 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"
@@ -700,38 +679,27 @@ export default function Register({ onGoToLogin }) {
                   </div>
                 </div>
 
-                {/* DIRECT REAL MOBILE SMS & WHATSAPP OTP VERIFICATION CARD FOR HOSPITAL REGISTRATION */}
+                {/* DIRECT REAL MOBILE SMS OTP VERIFICATION CARD FOR HOSPITAL REGISTRATION */}
                 {otpSent && !isPhoneVerified && showMobileSmsCard && (
                   <div className="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 p-4 rounded-2xl border-2 border-emerald-500/40 space-y-3 shadow-2xl animate-fadeIn">
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-emerald-300 font-bold flex items-center gap-1.5">
-                        <Smartphone className="w-4 h-4 text-emerald-400" /> Hospital Phone OTP (+91 {targetPhone})
+                        <Smartphone className="w-4 h-4 text-emerald-400" /> SMS Sent to Hospital Phone (+91 {targetPhone})
                       </span>
                       <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> SMS & WhatsApp Sent
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Real SMS Dispatched
                       </span>
                     </div>
 
                     <p className="text-slate-300 text-xs leading-relaxed">
-                      🔒 A 6-digit verification OTP has been dispatched to hospital phone <strong>+91 {targetPhone}</strong> via <strong>SMS & WhatsApp</strong>.
+                      🔒 A 6-digit verification code has been dispatched directly to your hospital mobile SIM (<strong>+91 {targetPhone}</strong>) via <strong>Fast2SMS Gateway</strong>. Please check your SMS inbox and enter the code below.
                     </p>
-
-                    <div className="flex flex-wrap gap-2 pt-0.5">
-                      <a
-                        href={`https://api.whatsapp.com/send?phone=91${targetPhone}&text=${encodeURIComponent(`🏥 *CarePulse Hospital Registration*\n\nYour 6-Digit Hospital Verification OTP is: *${generatedOtp}*\n\nValid for 5 minutes.`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> Open WhatsApp to Receive OTP
-                      </a>
-                    </div>
 
                     <div className="flex gap-2 pt-1">
                       <input
                         type="text"
                         maxLength={6}
-                        placeholder="Enter 6-digit OTP received on phone"
+                        placeholder="Enter 6-digit SMS OTP code"
                         value={enteredOtp}
                         onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         className="flex-1 bg-slate-950 border border-slate-800 focus:border-emerald-500/60 rounded-xl p-2.5 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"

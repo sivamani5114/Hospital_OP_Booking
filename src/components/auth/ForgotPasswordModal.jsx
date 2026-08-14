@@ -119,18 +119,8 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
 
-    // 🚀 1. Dispatch Real Mobile SMS to Phone SIM
+    // 🚀 Dispatch Real Mobile SMS directly to Phone SIM via Fast2SMS Gateway
     sendRealFast2SMS(cleanPhone, otp);
-
-    // 📲 2. Dispatch Real WhatsApp OTP directly to user phone
-    const waResult = sendWhatsAppOtpToUser(cleanPhone, otp);
-    if (waResult?.waUrl) {
-      try {
-        window.open(waResult.waUrl, '_blank');
-      } catch (e) {
-        console.log('Popup blocked, WhatsApp link available on card');
-      }
-    }
 
     setTimeout(() => {
       setIsOtpSending(false);
@@ -158,18 +148,12 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
     
-    // Send SMS & WhatsApp
+    // Send Real Mobile SMS via Fast2SMS Gateway
     sendRealFast2SMS(matchedUser.phone, otp);
-    const waRes = sendWhatsAppOtpToUser(matchedUser.phone, otp);
-    if (waRes?.waUrl) {
-      try {
-        window.open(waRes.waUrl, '_blank');
-      } catch (e) {}
-    }
 
     setOtpTimer(60);
     setErrorMessage('');
-    alert(`📲 New 6-digit OTP dispatched to your phone +91 ${matchedUser.phone}!`);
+    alert(`📲 New 6-digit SMS OTP dispatched to your mobile SIM +91 ${matchedUser.phone}!`);
   };
 
   // Step 3: Set New Password
@@ -289,21 +273,8 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
                 <span className="font-mono text-cyan-300 font-bold">+91 {matchedUser?.phone}</span>
               </div>
               <p className="text-slate-400 text-[11px] pt-1 border-t border-slate-800 leading-relaxed">
-                🔒 A 6-digit security code has been sent directly to your phone via <strong>Direct SMS & WhatsApp</strong>.
+                🔒 A 6-digit security code has been sent directly to your phone SIM inbox (<strong>+91 {matchedUser?.phone}</strong>) via <strong>Fast2SMS Gateway</strong>. Please check your SMS messages and enter the code below.
               </p>
-            </div>
-
-            {/* Open WhatsApp Action */}
-            <div className="pt-0.5">
-              <a 
-                href={`https://api.whatsapp.com/send?phone=91${matchedUser?.phone}&text=${encodeURIComponent(`🏥 *CarePulse Password Recovery*\n\nYour 6-Digit Password Reset OTP is: *${generatedOtp}*\n\nValid for 5 minutes. Do not share with anyone.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-center gap-2 text-emerald-300 hover:bg-emerald-500/20 transition-colors font-bold text-xs"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-400" />
-                <span>Open WhatsApp to Receive OTP Message</span>
-              </a>
             </div>
 
             <div>
