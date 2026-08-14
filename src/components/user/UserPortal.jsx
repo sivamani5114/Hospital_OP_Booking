@@ -677,304 +677,344 @@ export default function UserPortal() {
 
       {/* --- TAB 5: PROFILE --- */}
       {activeTab === 'PROFILE' && (
-        <div className="max-w-2xl mx-auto space-y-6">
-
-          {/* 1. MAIN PROFILE CARD */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl relative space-y-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-6 items-stretch">
             
-            {/* Header with Avatar & Edit Action */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-cyan-500/25 border-2 border-cyan-400/30">
-                  {currentUser?.fullName?.[0]?.toUpperCase() || 'P'}
-                </div>
+            {/* ═══ LEFT PANEL: Patient Card + Stats + Danger Zone ═══ */}
+            <div className="lg:w-[360px] flex-shrink-0 flex flex-col gap-5">
+              
+              {/* Identity & Status Card */}
+              <div className="glass-panel p-6 rounded-3xl border border-slate-800 shadow-2xl space-y-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-extrabold text-white font-outfit">{currentUser?.fullName}</h3>
-                    <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Verified Patient
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5">CarePulse Patient ID: <span className="font-mono text-cyan-400">{currentUser?._id || 'usr-patient'}</span></p>
-                </div>
-              </div>
-
-              {!isEditingProfile && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditingProfile(true)}
-                  className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:border-cyan-500/60 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-sm"
-                >
-                  <Edit className="w-4 h-4 text-cyan-400" /> Edit Profile Details
-                </button>
-              )}
-            </div>
-
-            {/* READ-ONLY VIEW MODE */}
-            {!isEditingProfile && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-                  
-                  {/* Phone Number */}
-                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-cyan-400" /> Phone Number (Login ID)
-                    </span>
-                    <p className="font-mono text-sm font-extrabold text-white">{currentUser?.phone || 'N/A'}</p>
-                    <p className="text-[10px] text-emerald-400">✓ Verified Mobile Account</p>
-                  </div>
-
-                  {/* Email */}
-                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-cyan-400" /> Email Address
-                    </span>
-                    <p className="text-sm font-semibold text-white truncate">{currentUser?.email || 'Not specified'}</p>
-                    <p className="text-[10px] text-slate-500">For appointment notifications</p>
-                  </div>
-
-                  {/* Date of Birth */}
-                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <CalendarIcon className="w-3.5 h-3.5 text-cyan-400" /> Date of Birth
-                    </span>
-                    <p className="text-sm font-semibold text-white">{currentUser?.dateOfBirth || 'Not specified'}</p>
-                  </div>
-
-                  {/* Gender */}
-                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-cyan-400" /> Gender
-                    </span>
-                    <p className="text-sm font-semibold text-white">{currentUser?.gender || 'Not specified'}</p>
-                  </div>
-
-                  {/* Address */}
-                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1 sm:col-span-2">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Residential Address
-                    </span>
-                    <p className="text-xs font-semibold text-slate-200">{currentUser?.address || 'Not specified'}</p>
-                  </div>
-
-                  {/* Account Stats */}
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800/80 sm:col-span-2 flex justify-between items-center text-slate-300">
+                  <div className="flex items-center gap-3.5 mb-5">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-cyan-500/25 border-2 border-cyan-400/30">
+                      {currentUser?.fullName?.[0]?.toUpperCase() || 'P'}
+                    </div>
                     <div>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Total OP Appointments</span>
-                      <span className="text-base font-extrabold text-cyan-400">{userBookings.length} Bookings</span>
+                      <h3 className="text-lg font-extrabold text-white font-outfit">{currentUser?.fullName}</h3>
+                      <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 mt-1">
+                        <CheckCircle2 className="w-3 h-3" /> Verified Patient
+                      </span>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Member Since</span>
-                      <span className="text-xs font-semibold text-slate-300">{currentUser?.createdAt || 'Active Member'}</span>
+                  </div>
+
+                  <div className="space-y-2.5 text-xs border-t border-slate-800/80 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 font-semibold">Patient ID:</span>
+                      <span className="font-mono text-cyan-400 font-bold">{currentUser?._id || 'usr-patient'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 font-semibold">Total OP Bookings:</span>
+                      <span className="text-white font-extrabold bg-slate-900 px-2.5 py-0.5 rounded-lg border border-slate-800">{userBookings.length} Bookings</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 font-semibold">Account Status:</span>
+                      <span className="text-emerald-400 font-bold">Active & Verified ✓</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 font-semibold">Member Since:</span>
+                      <span className="text-slate-300">{currentUser?.createdAt || 'Active Member'}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-cyan-950/20 border border-cyan-500/20 p-3.5 rounded-2xl flex items-center justify-between text-xs text-cyan-300">
-                  <span>💡 Want to update your name, email, or address?</span>
-                  <button
-                    onClick={() => setIsEditingProfile(true)}
-                    className="underline font-bold hover:text-cyan-200 cursor-pointer"
-                  >
-                    Click Edit Details →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* EDIT MODE FORM (Only visible when Edit Profile is clicked) */}
-            {isEditingProfile && (
-              <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs">
-                <div className="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded-2xl flex items-center justify-between">
-                  <span className="text-cyan-400 font-bold flex items-center gap-1.5">
-                    <Edit className="w-4 h-4" /> Edit Mode Active — Modify your information below
-                  </span>
+                {!isEditingProfile && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setProfileForm({
-                        fullName: currentUser?.fullName || '',
-                        phone: currentUser?.phone || '',
-                        email: currentUser?.email || '',
-                        dateOfBirth: currentUser?.dateOfBirth || '',
-                        gender: currentUser?.gender || 'Male',
-                        address: currentUser?.address || '',
-                        newPassword: ''
-                      });
-                      setIsEditingProfile(false);
-                    }}
-                    className="text-slate-400 hover:text-white text-xs underline cursor-pointer"
+                    onClick={() => setIsEditingProfile(true)}
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 cursor-pointer transition-all active:scale-[0.98] mt-4"
                   >
-                    Cancel
+                    <Edit className="w-4 h-4" /> Edit Profile Details
                   </button>
-                </div>
+                )}
+              </div>
 
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    value={profileForm.fullName}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, fullName: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
-                    required
-                  />
+              {/* Danger Zone — Separate Delete Account Box */}
+              <div className="glass-panel p-5 rounded-3xl border border-rose-500/30 bg-gradient-to-br from-slate-950 via-rose-950/10 to-slate-950 shadow-xl space-y-3">
+                <div className="flex items-center gap-2 text-rose-400 font-bold text-xs">
+                  <Trash2 className="w-4 h-4" /> Danger Zone · Delete Account
                 </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Permanently delete your account and all associated consultation history.
+                </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Phone Number (Login ID)</label>
-                    <input
-                      type="text"
-                      value={profileForm.phone}
-                      readOnly
-                      className="w-full bg-slate-950/50 border border-slate-800/80 rounded-xl p-3 text-slate-500 font-mono text-xs cursor-not-allowed"
-                    />
-                    <span className="text-[10px] text-slate-500 block mt-1">Phone number cannot be changed</span>
+                {!showDeleteConfirm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/60 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete My Patient Account
+                  </button>
+                ) : (
+                  <div className="bg-rose-950/40 border border-rose-500/50 p-3.5 rounded-2xl space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-rose-300 font-bold text-[11px]">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                      Permanently delete this account?
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      This action cannot be undone. All OP tickets will be erased.
+                    </p>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleDeleteAccount}
+                        className="flex-1 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-extrabold py-2 rounded-xl text-[11px] shadow-lg flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 className="w-3 h-3" /> Yes, Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-700 cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* ═══ RIGHT PANEL: Details Grid (Read-Only) OR Edit Form ═══ */}
+            <div className="flex-1 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl flex flex-col justify-between">
+              
+              {/* READ-ONLY VIEW */}
+              {!isEditingProfile ? (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div>
+                      <h4 className="text-lg font-extrabold text-white flex items-center gap-2 font-outfit">
+                        <User className="w-5 h-5 text-cyan-400" /> Patient Personal Information
+                      </h4>
+                      <p className="text-xs text-slate-400 mt-0.5">CarePulse registered patient medical profile</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingProfile(true)}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Edit className="w-3.5 h-3.5 text-cyan-400" /> Edit Details
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    
+                    {/* Full Name */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-cyan-400" /> Full Name
+                      </span>
+                      <p className="text-sm font-extrabold text-white">{currentUser?.fullName || 'N/A'}</p>
+                    </div>
+
+                    {/* Phone Number */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-cyan-400" /> Phone Number (Login ID)
+                      </span>
+                      <p className="font-mono text-sm font-extrabold text-white">{currentUser?.phone || 'N/A'}</p>
+                      <p className="text-[10px] text-emerald-400">✓ Verified Mobile Account</p>
+                    </div>
+
+                    {/* Email */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-cyan-400" /> Email Address
+                      </span>
+                      <p className="text-sm font-semibold text-white truncate">{currentUser?.email || 'Not specified'}</p>
+                      <p className="text-[10px] text-slate-500">For booking notifications</p>
+                    </div>
+
+                    {/* Date of Birth */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <CalendarIcon className="w-3.5 h-3.5 text-cyan-400" /> Date of Birth
+                      </span>
+                      <p className="text-sm font-semibold text-white">{currentUser?.dateOfBirth || 'Not specified'}</p>
+                    </div>
+
+                    {/* Gender */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-cyan-400" /> Gender
+                      </span>
+                      <p className="text-sm font-semibold text-white">{currentUser?.gender || 'Not specified'}</p>
+                    </div>
+
+                    {/* Account Security */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Security Status
+                      </span>
+                      <p className="text-sm font-semibold text-emerald-400">Password Protected 🔒</p>
+                    </div>
+
+                    {/* Address */}
+                    <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1 sm:col-span-2">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Residential Address
+                      </span>
+                      <p className="text-xs font-semibold text-slate-200">{currentUser?.address || 'Not specified'}</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-cyan-950/20 border border-cyan-500/20 p-4 rounded-2xl flex items-center justify-between text-xs text-cyan-300">
+                    <span>💡 Need to change your name, email, address or password?</span>
+                    <button
+                      onClick={() => setIsEditingProfile(true)}
+                      className="font-bold underline hover:text-cyan-200 cursor-pointer"
+                    >
+                      Open Edit Form →
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* EDIT MODE FORM */
+                <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                      <span className="text-cyan-400 font-bold flex items-center gap-1.5 text-base font-outfit">
+                        <Edit className="w-4 h-4" /> Edit Patient Information
+                      </span>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Modify fields and click Save Changes</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileForm({
+                          fullName: currentUser?.fullName || '',
+                          phone: currentUser?.phone || '',
+                          email: currentUser?.email || '',
+                          dateOfBirth: currentUser?.dateOfBirth || '',
+                          gender: currentUser?.gender || 'Male',
+                          address: currentUser?.address || '',
+                          newPassword: ''
+                        });
+                        setIsEditingProfile(false);
+                      }}
+                      className="text-slate-400 hover:text-white text-xs underline cursor-pointer"
+                    >
+                      Cancel
+                    </button>
                   </div>
 
                   <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Email Address *</label>
+                    <label className="text-slate-400 font-semibold block mb-1">Full Name *</label>
                     <input
-                      type="email"
-                      value={profileForm.email}
-                      onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                      type="text"
+                      value={profileForm.fullName}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, fullName: e.target.value }))}
                       className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
                       required
                     />
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Phone Number (Login ID)</label>
+                      <input
+                        type="text"
+                        value={profileForm.phone}
+                        readOnly
+                        className="w-full bg-slate-950/50 border border-slate-800/80 rounded-xl p-3 text-slate-500 font-mono text-xs cursor-not-allowed"
+                      />
+                      <span className="text-[10px] text-slate-500 block mt-1">Phone number is locked as unique login ID</span>
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Date of Birth</label>
+                      <input
+                        type="date"
+                        value={profileForm.dateOfBirth}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-semibold block mb-1">Gender</label>
+                      <select
+                        value={profileForm.gender}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, gender: e.target.value }))}
+                        className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Date of Birth</label>
+                    <label className="text-slate-400 font-semibold block mb-1">Residential Address</label>
                     <input
-                      type="date"
-                      value={profileForm.dateOfBirth}
-                      onChange={(e) => setProfileForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      type="text"
+                      placeholder="Enter full street, area, city..."
+                      value={profileForm.address}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
                       className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Gender</label>
-                    <select
-                      value={profileForm.gender}
-                      onChange={(e) => setProfileForm(prev => ({ ...prev, gender: e.target.value }))}
+                  <div className="pt-2 border-t border-slate-800">
+                    <label className="text-slate-400 font-semibold block mb-1">Change Password (Leave blank to keep current)</label>
+                    <input
+                      type="password"
+                      placeholder="Enter new password (optional)"
+                      value={profileForm.newPassword}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, newPassword: e.target.value }))}
                       className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                    />
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Residential Address</label>
-                  <input
-                    type="text"
-                    placeholder="Enter full street, area, city..."
-                    value={profileForm.address}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
-                  />
-                </div>
+                  {/* Form Action Buttons */}
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 text-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-4 h-4" /> Save Profile Changes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileForm({
+                          fullName: currentUser?.fullName || '',
+                          phone: currentUser?.phone || '',
+                          email: currentUser?.email || '',
+                          dateOfBirth: currentUser?.dateOfBirth || '',
+                          gender: currentUser?.gender || 'Male',
+                          address: currentUser?.address || '',
+                          newPassword: ''
+                        });
+                        setIsEditingProfile(false);
+                      }}
+                      className="px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3.5 rounded-xl text-xs border border-slate-700 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
 
-                <div className="pt-2 border-t border-slate-800">
-                  <label className="text-slate-400 font-semibold block mb-1">Change Password (Leave blank to keep existing)</label>
-                  <input
-                    type="password"
-                    placeholder="Enter new password (optional)"
-                    value={profileForm.newPassword}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
-                  />
-                </div>
-
-                {/* Form Action Buttons */}
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 text-xs flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <CheckCircle2 className="w-4 h-4" /> Save Profile Changes
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setProfileForm({
-                        fullName: currentUser?.fullName || '',
-                        phone: currentUser?.phone || '',
-                        email: currentUser?.email || '',
-                        dateOfBirth: currentUser?.dateOfBirth || '',
-                        gender: currentUser?.gender || 'Male',
-                        address: currentUser?.address || '',
-                        newPassword: ''
-                      });
-                      setIsEditingProfile(false);
-                    }}
-                    className="px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3.5 rounded-xl text-xs border border-slate-700 cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-
-          {/* 2. DANGER ZONE — SEPARATE DELETE ACCOUNT CARD */}
-          <div className="glass-panel p-6 rounded-3xl border border-rose-500/30 bg-gradient-to-br from-slate-950 via-rose-950/10 to-slate-950 shadow-2xl space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <Trash2 className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-base font-extrabold text-white">Danger Zone · Delete Patient Account</h4>
-                <p className="text-xs text-slate-400">Permanently remove your profile and all OP bookings</p>
-              </div>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Once you delete your account, all your medical OP token history, consultation records, and personal account data will be permanently erased. This action <strong className="text-rose-400">cannot be undone</strong>.
-            </p>
-
-            {!showDeleteConfirm ? (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/60 font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer"
-              >
-                <Trash2 className="w-4 h-4" /> Delete My Patient Account
-              </button>
-            ) : (
-              <div className="bg-rose-950/40 border border-rose-500/50 p-4 rounded-2xl space-y-3">
-                <div className="flex items-center gap-2 text-rose-300 font-bold text-xs">
-                  <AlertTriangle className="w-4 h-4 text-rose-400" />
-                  Are you absolutely sure you want to delete this account?
-                </div>
-                <p className="text-[11px] text-slate-300">
-                  Account: <strong>{currentUser?.fullName} ({currentUser?.phone})</strong> will be removed permanently.
-                </p>
-                <div className="flex gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={handleDeleteAccount}
-                    className="bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/30 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Trash2 className="w-4 h-4" /> Yes, Permanently Delete
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-slate-700 cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-
         </div>
       )}
 
