@@ -859,16 +859,6 @@ export default function UserPortal() {
                       <p className="text-xs font-semibold text-slate-200">{currentUser?.address || 'Not specified'}</p>
                     </div>
                   </div>
-
-                  <div className="bg-cyan-950/20 border border-cyan-500/20 p-4 rounded-2xl flex items-center justify-between text-xs text-cyan-300">
-                    <span>💡 Need to change your name, email, address or password?</span>
-                    <button
-                      onClick={() => setIsEditingProfile(true)}
-                      className="font-bold underline hover:text-cyan-200 cursor-pointer"
-                    >
-                      Open Edit Form →
-                    </button>
-                  </div>
                 </div>
               ) : (
                 /* EDIT MODE FORM */
