@@ -8,12 +8,13 @@ import { StarDisplay, StarInput } from '../common/StarRating';
 import { 
   Home, Search, Calendar, Building2, Stethoscope, User, LogOut, MapPin, Clock, 
   Ticket, CheckCircle2, QrCode, ArrowRight, X, Edit3, Lock, Sparkles, Filter, 
-  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck, Copy
+  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck, Copy,
+  Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert
 } from 'lucide-react';
 
 export default function UserPortal() {
-  const { currentUser, logout, setCurrentUser } = useAuth();
-  const { hospitals, doctors, bookings, createBooking, updateBookingStatus, addReview, getReviewsByDoctor, hasUserReviewedBooking, addNotification } = useDb();
+  const { currentUser, logout, setCurrentUser, showToast } = useAuth();
+  const { hospitals, doctors, bookings, createBooking, updateBookingStatus, addReview, getReviewsByDoctor, hasUserReviewedBooking, addNotification, updateUser, deleteUser } = useDb();
   const { t } = useLanguage();
 
   // Navigation Tab State: 'HOME' | 'SEARCH' | 'BOOKINGS' | 'HOSPITALS' | 'DOCTORS' | 'PROFILE'
@@ -76,7 +77,9 @@ export default function UserPortal() {
   // Hospital View Doctors Modal State
   const [selectedHospitalModal, setSelectedHospitalModal] = useState(null);
 
-  // Profile Edit Form State
+  // Profile State: Read-Only vs Edit Mode & Delete Account
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [profileForm, setProfileForm] = useState({
     fullName: currentUser?.fullName || '',
     phone: currentUser?.phone || '',
@@ -86,6 +89,21 @@ export default function UserPortal() {
     address: currentUser?.address || '',
     newPassword: ''
   });
+
+  // Sync profile form when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      setProfileForm({
+        fullName: currentUser.fullName || '',
+        phone: currentUser.phone || '',
+        email: currentUser.email || '',
+        dateOfBirth: currentUser.dateOfBirth || '',
+        gender: currentUser.gender || 'Male',
+        address: currentUser.address || '',
+        newPassword: ''
+      });
+    }
+  }, [currentUser]);
 
   // Only APPROVED hospitals are visible to regular users! (Req #13)
   const approvedHospitals = hospitals.filter(h => h.status === 'APPROVED');
@@ -198,7 +216,26 @@ export default function UserPortal() {
       ...(profileForm.newPassword ? { password: profileForm.newPassword } : {})
     };
     setCurrentUser(updated);
-    alert('✅ Profile updated successfully!');
+    if (updateUser && currentUser?._id) {
+      updateUser(currentUser._id, updated);
+    }
+    setIsEditingProfile(false);
+    if (showToast) {
+      showToast('✅ Profile updated successfully!', 'success');
+    } else {
+      alert('✅ Profile updated successfully!');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (!currentUser?._id) return;
+    deleteUser(currentUser._id);
+    logout();
+    if (showToast) {
+      showToast('🗑️ Your CarePulse Patient Account has been permanently deleted.', 'info');
+    } else {
+      alert('Your account has been deleted.');
+    }
   };
 
   const handleSubmitReview = () => {
@@ -640,74 +677,304 @@ export default function UserPortal() {
 
       {/* --- TAB 5: PROFILE --- */}
       {activeTab === 'PROFILE' && (
-        <div className="max-w-xl mx-auto glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <User className="w-5 h-5 text-cyan-400" /> Patient Profile Settings
-          </h3>
+        <div className="max-w-2xl mx-auto space-y-6">
 
-          <form onSubmit={handleUpdateProfile} className="space-y-3 text-xs">
-            <div>
-              <label className="text-slate-400 font-semibold block mb-1">Full Name</label>
-              <input
-                type="text"
-                value={profileForm.fullName}
-                onChange={(e) => setProfileForm(prev => ({ ...prev, fullName: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                required
-              />
+          {/* 1. MAIN PROFILE CARD */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl relative space-y-6">
+            
+            {/* Header with Avatar & Edit Action */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-cyan-500/25 border-2 border-cyan-400/30">
+                  {currentUser?.fullName?.[0]?.toUpperCase() || 'P'}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-extrabold text-white font-outfit">{currentUser?.fullName}</h3>
+                    <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Verified Patient
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">CarePulse Patient ID: <span className="font-mono text-cyan-400">{currentUser?._id || 'usr-patient'}</span></p>
+                </div>
+              </div>
+
+              {!isEditingProfile && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingProfile(true)}
+                  className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:border-cyan-500/60 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+                >
+                  <Edit className="w-4 h-4 text-cyan-400" /> Edit Profile Details
+                </button>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-slate-400 font-semibold block mb-1">Phone (Read-only)</label>
-                <input
-                  type="text"
-                  value={profileForm.phone}
-                  readOnly
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-500"
-                />
+            {/* READ-ONLY VIEW MODE */}
+            {!isEditingProfile && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                  
+                  {/* Phone Number */}
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-cyan-400" /> Phone Number (Login ID)
+                    </span>
+                    <p className="font-mono text-sm font-extrabold text-white">{currentUser?.phone || 'N/A'}</p>
+                    <p className="text-[10px] text-emerald-400">✓ Verified Mobile Account</p>
+                  </div>
+
+                  {/* Email */}
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-cyan-400" /> Email Address
+                    </span>
+                    <p className="text-sm font-semibold text-white truncate">{currentUser?.email || 'Not specified'}</p>
+                    <p className="text-[10px] text-slate-500">For appointment notifications</p>
+                  </div>
+
+                  {/* Date of Birth */}
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <CalendarIcon className="w-3.5 h-3.5 text-cyan-400" /> Date of Birth
+                    </span>
+                    <p className="text-sm font-semibold text-white">{currentUser?.dateOfBirth || 'Not specified'}</p>
+                  </div>
+
+                  {/* Gender */}
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-cyan-400" /> Gender
+                    </span>
+                    <p className="text-sm font-semibold text-white">{currentUser?.gender || 'Not specified'}</p>
+                  </div>
+
+                  {/* Address */}
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-1 sm:col-span-2">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Residential Address
+                    </span>
+                    <p className="text-xs font-semibold text-slate-200">{currentUser?.address || 'Not specified'}</p>
+                  </div>
+
+                  {/* Account Stats */}
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800/80 sm:col-span-2 flex justify-between items-center text-slate-300">
+                    <div>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Total OP Appointments</span>
+                      <span className="text-base font-extrabold text-cyan-400">{userBookings.length} Bookings</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Member Since</span>
+                      <span className="text-xs font-semibold text-slate-300">{currentUser?.createdAt || 'Active Member'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-cyan-950/20 border border-cyan-500/20 p-3.5 rounded-2xl flex items-center justify-between text-xs text-cyan-300">
+                  <span>💡 Want to update your name, email, or address?</span>
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="underline font-bold hover:text-cyan-200 cursor-pointer"
+                  >
+                    Click Edit Details →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* EDIT MODE FORM (Only visible when Edit Profile is clicked) */}
+            {isEditingProfile && (
+              <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs">
+                <div className="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded-2xl flex items-center justify-between">
+                  <span className="text-cyan-400 font-bold flex items-center gap-1.5">
+                    <Edit className="w-4 h-4" /> Edit Mode Active — Modify your information below
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileForm({
+                        fullName: currentUser?.fullName || '',
+                        phone: currentUser?.phone || '',
+                        email: currentUser?.email || '',
+                        dateOfBirth: currentUser?.dateOfBirth || '',
+                        gender: currentUser?.gender || 'Male',
+                        address: currentUser?.address || '',
+                        newPassword: ''
+                      });
+                      setIsEditingProfile(false);
+                    }}
+                    className="text-slate-400 hover:text-white text-xs underline cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    value={profileForm.fullName}
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, fullName: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Phone Number (Login ID)</label>
+                    <input
+                      type="text"
+                      value={profileForm.phone}
+                      readOnly
+                      className="w-full bg-slate-950/50 border border-slate-800/80 rounded-xl p-3 text-slate-500 font-mono text-xs cursor-not-allowed"
+                    />
+                    <span className="text-[10px] text-slate-500 block mt-1">Phone number cannot be changed</span>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Email Address *</label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Date of Birth</label>
+                    <input
+                      type="date"
+                      value={profileForm.dateOfBirth}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Gender</label>
+                    <select
+                      value={profileForm.gender}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, gender: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Residential Address</label>
+                  <input
+                    type="text"
+                    placeholder="Enter full street, area, city..."
+                    value={profileForm.address}
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-slate-800">
+                  <label className="text-slate-400 font-semibold block mb-1">Change Password (Leave blank to keep existing)</label>
+                  <input
+                    type="password"
+                    placeholder="Enter new password (optional)"
+                    value={profileForm.newPassword}
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl p-3 text-white text-xs outline-none"
+                  />
+                </div>
+
+                {/* Form Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 text-xs flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Save Profile Changes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileForm({
+                        fullName: currentUser?.fullName || '',
+                        phone: currentUser?.phone || '',
+                        email: currentUser?.email || '',
+                        dateOfBirth: currentUser?.dateOfBirth || '',
+                        gender: currentUser?.gender || 'Male',
+                        address: currentUser?.address || '',
+                        newPassword: ''
+                      });
+                      setIsEditingProfile(false);
+                    }}
+                    className="px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3.5 rounded-xl text-xs border border-slate-700 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* 2. DANGER ZONE — SEPARATE DELETE ACCOUNT CARD */}
+          <div className="glass-panel p-6 rounded-3xl border border-rose-500/30 bg-gradient-to-br from-slate-950 via-rose-950/10 to-slate-950 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <label className="text-slate-400 font-semibold block mb-1">Email</label>
-                <input
-                  type="email"
-                  value={profileForm.email}
-                  onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                  required
-                />
+                <h4 className="text-base font-extrabold text-white">Danger Zone · Delete Patient Account</h4>
+                <p className="text-xs text-slate-400">Permanently remove your profile and all OP bookings</p>
               </div>
             </div>
 
-            <div>
-              <label className="text-slate-400 font-semibold block mb-1">Address</label>
-              <input
-                type="text"
-                value={profileForm.address}
-                onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-                required
-              />
-            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Once you delete your account, all your medical OP token history, consultation records, and personal account data will be permanently erased. This action <strong className="text-rose-400">cannot be undone</strong>.
+            </p>
 
-            <div className="pt-2 border-t border-slate-800">
-              <label className="text-slate-400 font-semibold block mb-1">Change Password (Optional)</label>
-              <input
-                type="password"
-                placeholder="Enter new password"
-                value={profileForm.newPassword}
-                onChange={(e) => setProfileForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
-              />
-            </div>
+            {!showDeleteConfirm ? (
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/60 font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" /> Delete My Patient Account
+              </button>
+            ) : (
+              <div className="bg-rose-950/40 border border-rose-500/50 p-4 rounded-2xl space-y-3">
+                <div className="flex items-center gap-2 text-rose-300 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-rose-400" />
+                  Are you absolutely sure you want to delete this account?
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  Account: <strong>{currentUser?.fullName} ({currentUser?.phone})</strong> will be removed permanently.
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    className="bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/30 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" /> Yes, Permanently Delete
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-slate-700 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
-            <button
-              type="submit"
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 rounded-xl"
-            >
-              Update Profile Details
-            </button>
-          </form>
         </div>
       )}
 
