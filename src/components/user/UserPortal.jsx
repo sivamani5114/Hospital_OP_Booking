@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { printOpTicketReceipt, printPdfReport } from '../../utils/exportUtils';
 import AppointmentSlotPicker from '../common/AppointmentSlotPicker';
 import { StarDisplay, StarInput } from '../common/StarRating';
 import { 
   Home, Search, Calendar, Building2, Stethoscope, User, LogOut, MapPin, Clock, 
   Ticket, CheckCircle2, QrCode, ArrowRight, X, Edit3, Lock, Sparkles, Filter, 
-  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck
+  CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck, Copy
 } from 'lucide-react';
 
 export default function UserPortal() {
@@ -44,6 +45,28 @@ export default function UserPortal() {
   const [paymentTab, setPaymentTab] = useState('UPI');
   const [verifyStep, setVerifyStep] = useState(0); // 0=connecting, 1=verifying, 2=confirmed, 3=failed
   const [pendingPaymentMethod, setPendingPaymentMethod] = useState('');
+  const [txnRefNumber, setTxnRefNumber] = useState('DUP' + Math.floor(1000000 + Math.random() * 9000000));
+  const [paymentTimer, setPaymentTimer] = useState(300);
+
+  // 5-minute countdown timer for UPI QR Code
+  useEffect(() => {
+    let interval = null;
+    if (bookingStep === 'PAYMENT') {
+      setPaymentTimer(300);
+      interval = setInterval(() => {
+        setPaymentTimer(prev => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [bookingStep]);
+
+  const formatTimer = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
 
   // Review Modal State
   const [reviewBooking, setReviewBooking] = useState(null);
@@ -95,6 +118,7 @@ export default function UserPortal() {
     if (!bookingDoctor && doctors && doctors.length > 0) {
       setBookingDoctor(doctors[0]);
     }
+    setTxnRefNumber('DUP' + Math.floor(1000000 + Math.random() * 9000000));
     setBookingStep('PAYMENT');
   };
 
@@ -112,6 +136,7 @@ export default function UserPortal() {
     // Step 2: Confirmed — create booking and open ticket (3.8s)
     setTimeout(() => {
       const hosp = approvedHospitals.find(h => h._id === bookingDoctor.hospitalId);
+      const generatedRef = txnRefNumber || ('DUP' + Math.floor(1000000 + Math.random() * 9000000));
       const newBk = createBooking({
         userId: currentUser?._id || 'usr-1',
         userName: patientDetails.name,
@@ -128,6 +153,7 @@ export default function UserPortal() {
         time: bookingTime,
         opFee: bookingDoctor.opFee,
         paymentMethod: method,
+        referenceNumber: generatedRef,
         status: 'Confirmed'
       });
       addNotification({
@@ -136,7 +162,7 @@ export default function UserPortal() {
         bookingId: newBk._id,
         icon: '✅',
         title: 'OP Booking Confirmed!',
-        message: `Your appointment with ${bookingDoctor.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Payment: ${method}.`,
+        message: `Your appointment with ${bookingDoctor.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Ref: ${generatedRef}. Payment: ${method}.`,
       });
       setBookingDoctor(null);
       setBookingStep('FORM');
@@ -849,26 +875,53 @@ export default function UserPortal() {
                     </button>
                   </div>
 
-                  {/* UPI QR */}
+                  {/* UPI QR Code Area */}
                   {(!paymentTab || paymentTab === 'UPI') && (
-                    <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
-                      <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
+                    <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-2.5 shadow-xl text-slate-900">
+                      
+                      {/* Top Header: Reference Number & Transaction Amount */}
+                      <div className="w-full flex justify-between items-center pb-2 border-b border-slate-200 text-[11px]">
+                        <div>
+                          <span className="text-slate-500 font-semibold block text-[10px]">Reference Number :</span>
+                          <span className="font-mono font-extrabold text-slate-900 tracking-wider text-xs">{txnRefNumber}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-slate-500 font-semibold block text-[10px]">Transaction Amount:</span>
+                          <span className="font-extrabold text-cyan-700 text-sm">₹ {Number(bookingDoctor?.opFee || 0).toLocaleString('en-IN')}.00</span>
+                        </div>
+                      </div>
+
+                      {/* Centered QR Code Image */}
+                      <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/40 shadow-md my-0.5">
                         <img
-                          src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR`)}`}
-                          className="w-40 h-40 object-contain rounded-xl"
+                          src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR&tr=${txnRefNumber}`)}`}
+                          className="w-36 h-36 object-contain rounded-xl"
                           alt="UPI QR Code"
                         />
                       </div>
-                      <div className="text-center">
-                        <p className="font-extrabold text-sm text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</p>
-                        <p className="text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 text-slate-700">
-                          {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
+
+                      {/* "Please Scan the code" Title */}
+                      <p className="font-bold text-slate-800 text-xs tracking-wide">Please Scan the code</p>
+
+                      {/* Animated Progress Bar & Timer */}
+                      <div className="w-full space-y-1">
+                        <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all duration-1000"
+                            style={{ width: `${(paymentTimer / 300) * 100}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-[11px] text-slate-600 font-semibold text-center">
+                          Time Left to Scan & Pay : <span className="font-mono font-bold text-cyan-700">{formatTimer(paymentTimer)}</span>
                         </p>
-                        <p className="text-slate-500 text-[10px] mt-1">GPay / PhonePe / Paytm / BHIM</p>
                       </div>
-                      <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-4 py-2 text-center w-full">
-                        <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">Consultation Fee</p>
-                        <p className="text-2xl font-extrabold text-cyan-700">₹{bookingDoctor?.opFee}</p>
+
+                      {/* Hospital Branding & UPI ID */}
+                      <div className="text-center pt-1.5 border-t border-slate-100 w-full">
+                        <p className="font-extrabold text-xs text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</p>
+                        <p className="text-[10px] font-mono font-bold mt-0.5 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-slate-700 inline-block">
+                          UPI ID: {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -1053,14 +1106,24 @@ export default function UserPortal() {
             <div id="pdf-printable-sheet" className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-left space-y-3 text-xs text-slate-300 shadow-inner">
               
               {/* Unique OP Token Code & Status */}
-              <div className="bg-gradient-to-r from-cyan-950 to-slate-900 p-3 rounded-xl border border-cyan-500/40 flex justify-between items-center">
-                <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold">UNIQUE OP TOKEN CODE</span>
-                  <span className="font-mono text-cyan-300 font-extrabold text-base tracking-wider">#{selectedTicket.bookingId}</span>
+              <div className="bg-gradient-to-r from-cyan-950 to-slate-900 p-3 rounded-xl border border-cyan-500/40 space-y-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block font-semibold">UNIQUE OP TOKEN CODE</span>
+                    <span className="font-mono text-cyan-300 font-extrabold text-base tracking-wider">#{selectedTicket.bookingId}</span>
+                  </div>
+                  <span className="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md">
+                    CONFIRMED & PAID
+                  </span>
                 </div>
-                <span className="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-md">
-                  CONFIRMED & PAID
-                </span>
+                
+                {/* Transaction Reference Number */}
+                <div className="border-t border-slate-800/80 pt-2 flex justify-between items-center text-[11px]">
+                  <span className="text-slate-400 font-semibold">Transaction Reference Number:</span>
+                  <span className="font-mono text-emerald-400 font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800 tracking-wider">
+                    {selectedTicket.referenceNumber || ('DUP' + (selectedTicket.bookingId ? selectedTicket.bookingId.replace(/\D/g, '') : '2904329'))}
+                  </span>
+                </div>
               </div>
 
               {/* Patient & OP Details */}
@@ -1073,34 +1136,23 @@ export default function UserPortal() {
                 <p className="text-slate-300">💳 <strong>Payment Mode:</strong> {selectedTicket.paymentMethod || 'Online NetBanking / UPI'}</p>
               </div>
 
-
             </div>
 
             {/* Action Buttons: PDF Download / Print */}
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  printPdfReport(
-                    `CarePulse — OP Ticket #${selectedTicket.bookingId}`,
-                    ['Unique Code', 'Doctor', 'Hospital', 'Date & Time', 'Patient', 'Fee (₹)', 'Payment Status'],
-                    [[
-                      `#${selectedTicket.bookingId}`,
-                      selectedTicket.doctorName,
-                      selectedTicket.hospitalName,
-                      `${selectedTicket.date} ${selectedTicket.time}`,
-                      selectedTicket.userName,
-                      `₹${selectedTicket.opFee}`,
-                      'Payment Successfully Completed'
-                    ]]
-                  );
+                  printOpTicketReceipt(selectedTicket);
                 }}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-1.5"
+                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs py-3 rounded-xl shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 📄 Download PDF Sheet
               </button>
               <button
-                onClick={() => window.print()}
-                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-3 rounded-xl border border-slate-700"
+                onClick={() => {
+                  printOpTicketReceipt(selectedTicket);
+                }}
+                className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-3 rounded-xl border border-slate-700 cursor-pointer"
               >
                 🖨️ Print
               </button>

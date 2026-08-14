@@ -80,3 +80,88 @@ export function printPdfReport(title, headers, rows) {
   win.focus();
   setTimeout(() => { win.print(); }, 500);
 }
+
+/**
+ * Print a dedicated, beautiful OP Digital Ticket PDF Receipt with Reference Number
+ * @param {object} ticket - Booking ticket object
+ */
+export function printOpTicketReceipt(ticket) {
+  const refNo = ticket.referenceNumber || ('DUP' + (ticket.bookingId ? ticket.bookingId.replace(/\D/g, '') : '2904329'));
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>CarePulse OP Ticket — ${ticket.bookingId}</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; padding: 30px; color: #1e293b; background: #f8fafc; }
+        .ticket-box { border: 2px solid #06b6d4; border-radius: 20px; padding: 28px; max-width: 620px; margin: 0 auto; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.06); position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 18px; margin-bottom: 20px; }
+        .brand { font-size: 22px; font-weight: 900; color: #0891b2; letter-spacing: -0.5px; }
+        .brand span { color: #0f172a; }
+        .status-badge { background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 9999px; border: 1px solid #86efac; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ref-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .ref-title { font-size: 10px; color: #15803d; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .ref-code { font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: 900; color: #166534; letter-spacing: 1px; }
+        .token-title { font-size: 10px; color: #0891b2; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .token-code { font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: 900; color: #0e7490; letter-spacing: 1px; }
+        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+        .details-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .details-table tr:nth-child(even) td { background: #f8fafc; }
+        .details-table td.label { color: #64748b; font-weight: 600; width: 42%; }
+        .details-table td.val { color: #0f172a; font-weight: 700; }
+        .details-table td.amount { color: #059669; font-size: 16px; font-weight: 900; }
+        .footer { text-align: center; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 11px; color: #64748b; line-height: 1.5; }
+        @media print {
+          body { padding: 0; background: #fff; }
+          .ticket-box { box-shadow: none; border-color: #0891b2; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="ticket-box">
+        <div class="header">
+          <div>
+            <div class="brand">CarePulse <span>OP Ticket</span></div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 3px;">Hospital OP Appointment & Digital Pass</div>
+          </div>
+          <div class="status-badge">✓ Confirmed & Paid</div>
+        </div>
+
+        <div class="ref-box">
+          <div>
+            <div class="ref-title">Transaction Reference Number</div>
+            <div class="ref-code">${refNo}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="token-title">Unique OP Token Code</div>
+            <div class="token-code">#${ticket.bookingId}</div>
+          </div>
+        </div>
+
+        <table class="details-table">
+          <tr><td class="label">👨‍⚕️ Consulting Doctor</td><td class="val">${ticket.doctorName} (${ticket.department || 'General'})</td></tr>
+          <tr><td class="label">🏥 Hospital Name</td><td class="val">${ticket.hospitalName}</td></tr>
+          <tr><td class="label">🗓️ Appointment Date</td><td class="val">${ticket.date}</td></tr>
+          <tr><td class="label">⏰ Appointment Time</td><td class="val">${ticket.time}</td></tr>
+          <tr><td class="label">👤 Patient Full Name</td><td class="val">${ticket.userName}</td></tr>
+          <tr><td class="label">📞 Patient Phone</td><td class="val">${ticket.userPhone}</td></tr>
+          <tr><td class="label">💰 OP Consultation Fee</td><td class="val amount">₹${ticket.opFee} (Paid Online)</td></tr>
+          <tr><td class="label">💳 Payment Method</td><td class="val">${ticket.paymentMethod || 'UPI QR / NetBanking'}</td></tr>
+        </table>
+
+        <div class="footer">
+          🔒 <strong>Official Verified Digital OP Pass</strong><br/>
+          Present this ticket at the hospital OP counter on arrival. Generated on ${new Date().toLocaleString('en-IN')}
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 500);
+}
