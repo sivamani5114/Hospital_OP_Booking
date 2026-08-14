@@ -6,7 +6,8 @@ import { downloadCsv, printPdfReport } from '../../utils/exportUtils';
 import { getWaOtpLogs, ADMIN_PHONE_NUMBER } from '../../utils/whatsappService';
 import { 
   ShieldCheck, Users, Building2, Stethoscope, Calendar, Settings, 
-  LogOut, Plus, CheckCircle, XCircle, Trash2, Edit3, Lock, Search, AlertCircle, X, ShieldAlert, Image as ImageIcon, Upload, Award, Smartphone, Send, MessageCircle, FileText, FileSpreadsheet 
+  LogOut, Plus, CheckCircle, XCircle, Trash2, Edit3, Lock, Search, AlertCircle, X, ShieldAlert, Image as ImageIcon, Upload, Award, Smartphone, Send, MessageCircle, FileText, FileSpreadsheet,
+  Phone, Mail, MapPin, CheckCircle2, Clock, Eye, Activity, User, Sparkles, Receipt, Hash
 } from 'lucide-react';
 import { ALL_DOCTOR_CATEGORIES, OFFICIAL_QUALIFICATIONS, PRESET_AVATARS } from '../hospital/HospitalPortal';
 
@@ -23,10 +24,19 @@ export default function AdminPortal() {
   // Navigation Tab State: 'DASHBOARD' | 'USERS' | 'HOSPITALS' | 'DOCTORS' | 'BOOKINGS' | 'DISPATCHER'
   const [activeTab, setActiveTab] = useState('DASHBOARD');
 
+  // Search & Filter States
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState('ALL');
+  const [hospSearchQuery, setHospSearchQuery] = useState('');
+  const [hospStatusFilter, setHospStatusFilter] = useState('ALL');
+  const [doctorSearchQuery, setDoctorSearchQuery] = useState('');
+  const [doctorSpecialtyFilter, setDoctorSpecialtyFilter] = useState('ALL');
+
   // Modal States
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showAddHospModal, setShowAddHospModal] = useState(false);
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
+  const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
   const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
   const [selectedDoctorDetails, setSelectedDoctorDetails] = useState(null);
 
@@ -298,240 +308,485 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* --- USERS --- */}
+      {/* --- USERS (PATIENTS & ACCOUNTS FULL DETAILS) --- */}
       {activeTab === 'USERS' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-400" /> User Accounts Control (CRUD)
-            </h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 font-outfit">
+                <Users className="w-5 h-5 text-cyan-400" /> Patient & User Accounts Full Directory ({users.length})
+              </h3>
+              <p className="text-xs text-slate-400">Complete registered patient profiles, contact details & OP consultation history</p>
+            </div>
             <button
               onClick={() => setShowAddUserModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer"
             >
-              <Plus className="w-4 h-4" /> Add User Account
+              <Plus className="w-4 h-4" /> Add Patient Account
             </button>
           </div>
 
-          <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+          {/* Search & Filter Bar */}
+          <div className="glass-panel p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search patient by name, phone, email, patient ID, or city..."
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                className="w-full bg-slate-900/90 border border-slate-800 focus:border-cyan-500/40 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={userRoleFilter}
+                onChange={(e) => setUserRoleFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="ALL">All Roles ({users.length})</option>
+                <option value="USER">Patients Only ({users.filter(u => u.role === 'USER').length})</option>
+                <option value="HOSPITAL">Hospital Desks ({users.filter(u => u.role === 'HOSPITAL').length})</option>
+                <option value="ADMIN">Super Admins ({users.filter(u => u.role === 'ADMIN').length})</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Users Table with Full Patient Details */}
+          <div className="glass-panel rounded-2xl border border-slate-800 overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[850px]">
+              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold text-[10px]">
                 <tr>
-                  <th className="p-3.5">User Details</th>
+                  <th className="p-3.5">Patient Details & ID</th>
                   <th className="p-3.5">Contact Phone & Email</th>
-                  <th className="p-3.5">Role</th>
-                  <th className="p-3.5">Account Status</th>
+                  <th className="p-3.5">DOB / Age / Gender</th>
+                  <th className="p-3.5">Residential Address</th>
+                  <th className="p-3.5 text-center">OP Bookings</th>
+                  <th className="p-3.5">Status & Role</th>
                   <th className="p-3.5 text-right">Admin Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800 text-slate-200">
-                {users.map(u => (
-                  <tr key={u._id} className="hover:bg-slate-900/50">
-                    <td className="p-3.5">
-                      <strong className="text-white block">{u.fullName}</strong>
-                      <span className="text-[11px] text-slate-400">{u.address}</span>
-                    </td>
-                    <td className="p-3.5">{u.phone} • {u.email}</td>
-                    <td className="p-3.5 font-bold text-cyan-400">{u.role}</td>
-                    <td className="p-3.5 font-bold">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                        u.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                      }`}>
-                        {u.status}
-                      </span>
-                    </td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => toggleUserStatus(u._id)}
-                        className="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-[11px]"
-                      >
-                        {u.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          const pwd = prompt('Enter new password for user:', 'newpass123');
-                          if (pwd) resetUserPassword(u._id, pwd);
-                        }}
-                        className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg text-[11px]"
-                      >
-                        Reset Password
-                      </button>
-                      <button
-                        onClick={() => deleteUser(u._id)}
-                        className="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {users
+                  .filter(u => {
+                    const matchesRole = userRoleFilter === 'ALL' || u.role === userRoleFilter;
+                    const patId = u.patientId || ('CP-PAT-' + (u.phone ? u.phone.slice(-6) : '543210'));
+                    const q = userSearchQuery.toLowerCase();
+                    const matchesSearch = !userSearchQuery || 
+                      u.fullName?.toLowerCase().includes(q) ||
+                      u.phone?.includes(q) ||
+                      u.email?.toLowerCase().includes(q) ||
+                      u.address?.toLowerCase().includes(q) ||
+                      patId.toLowerCase().includes(q);
+                    return matchesRole && matchesSearch;
+                  })
+                  .map(u => {
+                    const patId = u.patientId || ('CP-PAT-' + (u.phone ? u.phone.slice(-6) : '543210'));
+                    const userOpBookings = bookings.filter(b => b.userId === u._id || b.userPhone === u.phone);
+                    
+                    return (
+                      <tr key={u._id} className="hover:bg-slate-900/60 transition-colors">
+                        {/* Name & ID */}
+                        <td className="p-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-xs shadow shrink-0">
+                              {u.fullName?.[0]?.toUpperCase() || 'P'}
+                            </div>
+                            <div>
+                              <strong className="text-white block font-semibold">{u.fullName}</strong>
+                              <span className="font-mono text-cyan-300 font-bold text-[10px] bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-500/30">
+                                {patId}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Phone & Email */}
+                        <td className="p-3.5 space-y-0.5">
+                          <div className="font-mono text-white font-bold flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-cyan-400 shrink-0" /> +91 {u.phone}
+                          </div>
+                          <div className="text-slate-400 text-[11px] flex items-center gap-1 truncate max-w-[180px]">
+                            <Mail className="w-3 h-3 text-slate-500 shrink-0" /> {u.email || 'No email registered'}
+                          </div>
+                        </td>
+
+                        {/* DOB & Gender */}
+                        <td className="p-3.5">
+                          <div className="text-slate-300 font-medium">{u.dateOfBirth || 'Not specified'}</div>
+                          <span className="text-[10px] text-slate-400">{u.gender || 'Male'}</span>
+                        </td>
+
+                        {/* Address */}
+                        <td className="p-3.5 max-w-[160px]">
+                          <div className="text-slate-300 text-[11px] truncate flex items-start gap-1">
+                            <MapPin className="w-3 h-3 text-cyan-400 shrink-0 mt-0.5" />
+                            <span className="truncate">{u.address || 'Address not provided'}</span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 block mt-0.5">Joined: {u.createdAt || 'Active'}</span>
+                        </td>
+
+                        {/* Total Bookings */}
+                        <td className="p-3.5 text-center">
+                          <span className="bg-slate-900 text-cyan-400 font-extrabold px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+                            {userOpBookings.length} OP
+                          </span>
+                        </td>
+
+                        {/* Role & Status */}
+                        <td className="p-3.5 space-y-1">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold block w-fit ${
+                            u.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          }`}>
+                            {u.status || 'ACTIVE'}
+                          </span>
+                          <span className="text-[10px] font-semibold text-slate-400 block">
+                            Role: <strong className="text-cyan-400">{u.role}</strong>
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="p-3.5 text-right space-x-1.5 min-w-[200px]">
+                          <button
+                            onClick={() => setSelectedPatientDetails(u)}
+                            className="px-2.5 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            title="View Full Profile & Appointment History"
+                          >
+                            <Eye className="w-3 h-3" /> Full Profile
+                          </button>
+                          <button
+                            onClick={() => toggleUserStatus(u._id)}
+                            className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] cursor-pointer"
+                            title="Suspend or Activate Account"
+                          >
+                            {u.status === 'ACTIVE' ? 'Suspend' : 'Activate'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              const pwd = prompt('Enter new password for patient account:', 'password123');
+                              if (pwd) {
+                                resetUserPassword(u._id, pwd);
+                                alert('✅ Password updated successfully for user!');
+                              }
+                            }}
+                            className="p-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg inline-block cursor-pointer"
+                            title="Reset Password"
+                          >
+                            <Lock className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete account: ${u.fullName} (${u.phone})?`)) {
+                                deleteUser(u._id);
+                              }
+                            }}
+                            className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg inline-block cursor-pointer"
+                            title="Delete Account"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* --- HOSPITALS --- */}
+      {/* --- HOSPITALS (FULL DETAILS & COMPREHENSIVE DIRECTORY) --- */}
       {activeTab === 'HOSPITALS' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-indigo-400" /> Hospital Approvals & CRUD Control
-            </h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 font-outfit">
+                <Building2 className="w-5 h-5 text-indigo-400" /> Hospital Directory, Licenses & Approvals ({hospitals.length})
+              </h3>
+              <p className="text-xs text-slate-400">Complete hospital listings, government licenses, banking setups & booking controls</p>
+            </div>
             <button
               onClick={() => setShowAddHospModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Add Hospital
             </button>
           </div>
 
-          <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+          {/* Search & Status Filter */}
+          <div className="glass-panel p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search hospital by name, city, area, address, phone or reg no..."
+                value={hospSearchQuery}
+                onChange={(e) => setHospSearchQuery(e.target.value)}
+                className="w-full bg-slate-900/90 border border-slate-800 focus:border-indigo-500/40 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={hospStatusFilter}
+                onChange={(e) => setHospStatusFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="ALL">All Status ({hospitals.length})</option>
+                <option value="APPROVED">Approved Only ({hospitals.filter(h => h.status === 'APPROVED').length})</option>
+                <option value="PENDING">Pending Approval ({hospitals.filter(h => h.status === 'PENDING').length})</option>
+                <option value="SUSPENDED">Suspended ({hospitals.filter(h => h.status === 'SUSPENDED').length})</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="glass-panel rounded-2xl border border-slate-800 overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[900px]">
+              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold text-[10px]">
                 <tr>
                   <th className="p-3.5">Hospital Name & City</th>
-                  <th className="p-3.5">Address & Phone</th>
+                  <th className="p-3.5">Contact Phone & Email</th>
+                  <th className="p-3.5">Address & Facilities</th>
                   <th className="p-3.5">Base OP Fee</th>
+                  <th className="p-3.5 text-center">Doctors / Bookings</th>
                   <th className="p-3.5">Approval Status</th>
                   <th className="p-3.5 text-right">Admin Approval & Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800 text-slate-200">
-                {hospitals.map(h => (
-                  <tr key={h._id} className="hover:bg-slate-900/50">
-                    <td className="p-3.5">
-                      <strong className="text-white block">{h.hospitalName}</strong>
-                      <span className="text-[11px] text-cyan-400">{h.city} ({h.area})</span>
-                    </td>
-                    <td className="p-3.5">{h.address} • {h.phone}</td>
-                    <td className="p-3.5 font-bold text-emerald-400">₹{h.opFee}</td>
-                    <td className="p-3.5 font-bold">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] ${
-                        h.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                        h.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
-                        'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                      }`}>
-                        {h.status}
-                      </span>
-                    </td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => setSelectedHospitalDetails(h)}
-                        className="px-2.5 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-lg text-[11px] font-bold"
-                      >
-                        🔍 View All Reg Details & Docs
-                      </button>
-                      {h.status === 'PENDING' && (
-                        <>
+                {hospitals
+                  .filter(h => {
+                    const matchesStatus = hospStatusFilter === 'ALL' || h.status === hospStatusFilter;
+                    const q = hospSearchQuery.toLowerCase();
+                    const matchesSearch = !hospSearchQuery ||
+                      h.hospitalName?.toLowerCase().includes(q) ||
+                      h.city?.toLowerCase().includes(q) ||
+                      h.area?.toLowerCase().includes(q) ||
+                      h.address?.toLowerCase().includes(q) ||
+                      h.phone?.includes(q) ||
+                      h.regCertificateNo?.toLowerCase().includes(q);
+                    return matchesStatus && matchesSearch;
+                  })
+                  .map(h => {
+                    const hospDocs = doctors.filter(d => d.hospitalId === h._id);
+                    const hospBookings = bookings.filter(b => b.hospitalId === h._id || b.hospitalName === h.hospitalName);
+
+                    return (
+                      <tr key={h._id} className="hover:bg-slate-900/50 transition-colors">
+                        <td className="p-3.5">
+                          <div className="flex items-center gap-3">
+                            <img src={h.logo || 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=120'} className="w-10 h-10 rounded-xl object-cover border border-slate-700 shadow shrink-0" />
+                            <div>
+                              <strong className="text-white block font-semibold">{h.hospitalName}</strong>
+                              <span className="text-[11px] text-cyan-400">{h.city} ({h.area})</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3.5 space-y-0.5">
+                          <div className="font-mono text-white font-bold flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-indigo-400 shrink-0" /> +91 {h.phone}
+                          </div>
+                          <div className="text-slate-400 text-[11px] truncate max-w-[160px]">{h.email}</div>
+                        </td>
+                        <td className="p-3.5 max-w-[180px]">
+                          <div className="text-slate-300 text-[11px] truncate">{h.address || h.area}</div>
+                          <span className="text-[10px] text-slate-500 block mt-0.5">
+                            {(h.facilities || ['Emergency 24/7', 'Pharmacy']).slice(0, 2).join(', ')}...
+                          </span>
+                        </td>
+                        <td className="p-3.5 font-bold text-emerald-400">
+                          ₹{h.opFee}
+                          <span className="text-[10px] text-slate-400 block font-normal">Base Fee</span>
+                        </td>
+                        <td className="p-3.5 text-center">
+                          <div className="inline-flex gap-1.5 text-[11px]">
+                            <span className="bg-indigo-500/10 text-indigo-300 px-2 py-0.5 rounded font-bold border border-indigo-500/20">{hospDocs.length} Docs</span>
+                            <span className="bg-cyan-500/10 text-cyan-300 px-2 py-0.5 rounded font-bold border border-cyan-500/20">{hospBookings.length} OP</span>
+                          </div>
+                        </td>
+                        <td className="p-3.5 font-bold">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] ${
+                            h.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                            h.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
+                            'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                          }`}>
+                            {h.status}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right space-x-1.5 min-w-[210px]">
                           <button
-                            onClick={() => approveHospital(h._id)}
-                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px]"
+                            onClick={() => setSelectedHospitalDetails(h)}
+                            className="px-2.5 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
                           >
-                            Approve
+                            <Eye className="w-3 h-3" /> Full Docs & Profile
+                          </button>
+                          {h.status === 'PENDING' && (
+                            <>
+                              <button
+                                onClick={() => approveHospital(h._id)}
+                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] cursor-pointer"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const reason = prompt('Enter Rejection Reason for Hospital:', 'Registration Certificate Verification Failed.');
+                                  if (reason) rejectHospital(h._id, reason);
+                                }}
+                                className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[11px] cursor-pointer"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => toggleHospitalStatus(h._id)}
+                            className="px-2 py-1 bg-slate-800 text-slate-300 hover:text-white rounded-lg text-[11px] cursor-pointer"
+                          >
+                            {h.status === 'APPROVED' ? 'Suspend' : 'Activate'}
                           </button>
                           <button
                             onClick={() => {
-                              const reason = prompt('Enter Rejection Reason for Hospital (e.g. Invalid Registration Certificate / Invalid License):', 'Registration Certificate Verification Failed.');
-                              if (reason) rejectHospital(h._id, reason);
+                              if (confirm(`Are you sure you want to delete hospital: ${h.hospitalName}?`)) {
+                                deleteHospital(h._id);
+                              }
                             }}
-                            className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[11px]"
+                            className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg inline-block cursor-pointer"
                           >
-                            Reject & Send Reason
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                        </>
-                      )}
-                      <button
-                        onClick={() => toggleHospitalStatus(h._id)}
-                        className="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-[11px]"
-                      >
-                        Suspend/Activate
-                      </button>
-                      <button
-                        onClick={() => deleteHospital(h._id)}
-                        className="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* --- DOCTORS --- */}
+      {/* --- DOCTORS (FULL DETAILS & COMPREHENSIVE DIRECTORY) --- */}
       {activeTab === 'DOCTORS' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Stethoscope className="w-5 h-5 text-indigo-400" /> Verified Doctors Directory
-            </h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 font-outfit">
+                <Stethoscope className="w-5 h-5 text-indigo-400" /> Verified Doctors Directory ({doctors.length})
+              </h3>
+              <p className="text-xs text-slate-400">Complete medical licenses, qualification degrees, hospital affiliations & consultation schedules</p>
+            </div>
             <button
               onClick={() => setShowAddDoctorModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 cursor-pointer"
             >
-              <Plus className="w-4 h-4" /> Add Verified Doctor (Reg. ID & Degree)
+              <Plus className="w-4 h-4" /> Add Verified Doctor
             </button>
           </div>
 
+          {/* Search & Specialty Filter */}
+          <div className="glass-panel p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search doctor by name, specialty, registration number, qualification or hospital..."
+                value={doctorSearchQuery}
+                onChange={(e) => setDoctorSearchQuery(e.target.value)}
+                className="w-full bg-slate-900/90 border border-slate-800 focus:border-indigo-500/40 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={doctorSpecialtyFilter}
+                onChange={(e) => setDoctorSpecialtyFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="ALL">All Specialties ({doctors.length})</option>
+                {ALL_DOCTOR_CATEGORIES.map(spec => (
+                  <option key={spec} value={spec}>{spec}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {doctors.map(d => {
-              const hosp = hospitals.find(h => h._id === d.hospitalId);
-              return (
-                <div key={d._id} className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
-                  <div className="flex gap-4 items-center">
-                    <img src={d.image} className="w-16 h-16 rounded-2xl object-cover border border-slate-700 shadow" />
+            {doctors
+              .filter(d => {
+                const matchesSpec = doctorSpecialtyFilter === 'ALL' || d.specialization === doctorSpecialtyFilter;
+                const hosp = hospitals.find(h => h._id === d.hospitalId);
+                const q = doctorSearchQuery.toLowerCase();
+                const matchesSearch = !doctorSearchQuery ||
+                  d.doctorName?.toLowerCase().includes(q) ||
+                  d.specialization?.toLowerCase().includes(q) ||
+                  d.qualification?.toLowerCase().includes(q) ||
+                  d.medicalRegistrationNo?.toLowerCase().includes(q) ||
+                  hosp?.hospitalName?.toLowerCase().includes(q) ||
+                  hosp?.city?.toLowerCase().includes(q);
+                return matchesSpec && matchesSearch;
+              })
+              .map(d => {
+                const hosp = hospitals.find(h => h._id === d.hospitalId);
+                const doctorBookings = bookings.filter(b => b.doctorId === d._id || b.doctorName === d.doctorName);
+
+                return (
+                  <div key={d._id} className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center gap-1">
-                        <h4 className="font-bold text-white text-sm">{d.doctorName}</h4>
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" title="Verified License" />
+                      <div className="flex gap-4 items-center">
+                        <img src={d.image} className="w-16 h-16 rounded-2xl object-cover border border-slate-700 shadow shrink-0" />
+                        <div>
+                          <div className="flex items-center gap-1">
+                            <h4 className="font-bold text-white text-sm">{d.doctorName}</h4>
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" title="Verified Medical License" />
+                          </div>
+                          <span className="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20 inline-block mt-0.5">
+                            {d.specialization}
+                          </span>
+                          <p className="text-[11px] text-slate-300 mt-1 font-semibold">{d.qualification}</p>
+                        </div>
                       </div>
-                      <span className="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
-                        {d.specialization}
-                      </span>
-                      <p className="text-[11px] text-slate-300 mt-1 font-semibold">{d.qualification}</p>
+
+                      {/* Rich Detailed Information Box */}
+                      <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1.5 mt-3">
+                        <p className="text-emerald-300 font-mono text-[11px] font-bold flex items-center gap-1">
+                          <Award className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Reg No: {d.medicalRegistrationNo || 'TSMC/F/88912'}
+                        </p>
+                        {hosp && (
+                          <p className="text-cyan-300 font-bold text-[11px] truncate">
+                            🏥 <strong>{hosp.hospitalName}</strong> ({hosp.city})
+                          </p>
+                        )}
+                        <p className="text-slate-300">🗓️ <strong>Days:</strong> {d.availableDays || 'Monday - Saturday'}</p>
+                        <p className="text-slate-300">⏰ <strong>Timing:</strong> {d.availableTime || '09:00 AM - 01:00 PM'}</p>
+                        <div className="flex justify-between items-center pt-1 border-t border-slate-800 text-[11px]">
+                          <span>💰 Fee: <strong className="text-emerald-400">₹{d.opFee}</strong></span>
+                          <span>🌟 Exp: <strong>{d.experience || 5} Yrs</strong></span>
+                          <span className="text-cyan-400 font-bold">{doctorBookings.length} Consultations</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions: View Legal Docs & Delete */}
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                      <button
+                        onClick={() => setSelectedDoctorDetails(d)}
+                        className="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" /> Full Profile & 12 Docs
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to delete doctor profile: ${d.doctorName}?`)) {
+                            deleteDoctor(d._id);
+                          }
+                        }}
+                        className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800 cursor-pointer"
+                        title="Delete Doctor"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-
-                  {/* Rich Detailed Information Box */}
-                  <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1.5">
-                    <p className="text-emerald-300 font-mono text-[11px] font-bold flex items-center gap-1">
-                      <Award className="w-3.5 h-3.5 text-emerald-400" /> Reg No: {d.medicalRegistrationNo || 'TSMC/F/88912'}
-                    </p>
-                    {hosp && (
-                      <p className="text-cyan-300 font-bold text-[11px]">
-                        🏥 Hospital: <strong>{hosp.hospitalName}</strong> ({hosp.city})
-                      </p>
-                    )}
-                    <p className="text-slate-300">🗓️ <strong>Days:</strong> {d.availableDays || 'Monday - Saturday'}</p>
-                    <p className="text-slate-300">⏰ <strong>Timing:</strong> {d.availableTime || '09:00 AM - 01:00 PM'}</p>
-                    <p className="text-slate-300">
-                      💰 <strong>Fee:</strong> <strong className="text-emerald-400">₹{d.opFee}</strong> | 🌟 <strong>Exp:</strong> {d.experience || 5} Yrs | 👥 <strong>Max Patients:</strong> {d.maxPatients || 25}/day
-                    </p>
-                  </div>
-
-                  {/* Actions: View Legal Docs & Delete */}
-                  <div className="flex justify-between items-center pt-1">
-                    <button
-                      onClick={() => setSelectedDoctorDetails(d)}
-                      className="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow"
-                    >
-                      🔍 View Full Profile & 12 Docs
-                    </button>
-                    <button
-                      onClick={() => deleteDoctor(d._id)}
-                      className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800"
-                      title="Delete Doctor"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       )}
@@ -946,6 +1201,183 @@ export default function AdminPortal() {
                 Verify & Add Qualified Doctor Profile
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 👤 FULL PATIENT PROFILE & OP CONSULTATION HISTORY MODAL */}
+      {selectedPatientDetails && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-3xl rounded-3xl p-6 border border-cyan-500/40 shadow-2xl relative space-y-5 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelectedPatientDetails(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Patient Header */}
+            <div className="flex items-center gap-4 border-b border-slate-800 pb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-cyan-500/30 border-2 border-cyan-400/30 shrink-0">
+                {selectedPatientDetails.fullName?.[0]?.toUpperCase() || 'P'}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-white text-xl font-outfit">{selectedPatientDetails.fullName}</h3>
+                  <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Verified Patient
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="font-mono text-cyan-300 font-extrabold text-xs bg-cyan-950/70 px-2.5 py-0.5 rounded-lg border border-cyan-500/30">
+                    {selectedPatientDetails.patientId || ('CP-PAT-' + (selectedPatientDetails.phone ? selectedPatientDetails.phone.slice(-6) : '543210'))}
+                  </span>
+                  <span className="text-xs text-slate-400">CarePulse Unique Patient ID</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 1. Patient Profile Details Grid */}
+            <div className="space-y-2">
+              <h4 className="font-bold text-cyan-300 text-xs flex items-center gap-1.5">
+                <User className="w-4 h-4" /> 1. Personal & Contact Information
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs">
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-cyan-400" /> Phone (Login ID)
+                  </span>
+                  <p className="font-mono font-bold text-white text-sm">+91 {selectedPatientDetails.phone}</p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block flex items-center gap-1">
+                    <Mail className="w-3 h-3 text-cyan-400" /> Email Address
+                  </span>
+                  <p className="font-semibold text-white truncate">{selectedPatientDetails.email || 'Not specified'}</p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-cyan-400" /> Date of Birth & Gender
+                  </span>
+                  <p className="font-semibold text-white">{selectedPatientDetails.dateOfBirth || 'N/A'} • {selectedPatientDetails.gender || 'Male'}</p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1 sm:col-span-2">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-cyan-400" /> Residential Address
+                  </span>
+                  <p className="font-semibold text-slate-200">{selectedPatientDetails.address || 'Address not registered'}</p>
+                </div>
+
+                <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-cyan-400" /> Account Status
+                  </span>
+                  <p className="font-bold text-emerald-400">{selectedPatientDetails.status || 'ACTIVE'} ({selectedPatientDetails.role})</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Patient OP Booking & Consultation History */}
+            {(() => {
+              const patientBookings = bookings.filter(b => b.userId === selectedPatientDetails._id || b.userPhone === selectedPatientDetails.phone);
+
+              return (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-bold text-cyan-300 text-xs flex items-center gap-1.5">
+                      <Receipt className="w-4 h-4 text-cyan-400" /> 2. OP Appointments & Medical History ({patientBookings.length} Consultations)
+                    </h4>
+                  </div>
+
+                  {patientBookings.length > 0 ? (
+                    <div className="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-x-auto max-h-60 overflow-y-auto">
+                      <table className="w-full text-left text-xs min-w-[600px]">
+                        <thead className="bg-slate-950 text-slate-400 text-[10px] uppercase font-semibold border-b border-slate-800 sticky top-0">
+                          <tr>
+                            <th className="p-2.5">Booking / Token</th>
+                            <th className="p-2.5">Hospital & Doctor</th>
+                            <th className="p-2.5">Date & Slot</th>
+                            <th className="p-2.5">Fee Paid</th>
+                            <th className="p-2.5">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/80 text-slate-200">
+                          {patientBookings.map(b => (
+                            <tr key={b._id} className="hover:bg-slate-950/40">
+                              <td className="p-2.5">
+                                <div className="font-mono text-cyan-400 font-bold">#{b.bookingId}</div>
+                                {b.txnRefNumber && <span className="font-mono text-[9px] text-slate-400 block">Ref: {b.txnRefNumber}</span>}
+                              </td>
+                              <td className="p-2.5">
+                                <strong className="text-white block">{b.doctorName}</strong>
+                                <span className="text-[11px] text-slate-400">{b.hospitalName}</span>
+                              </td>
+                              <td className="p-2.5">
+                                <div>{b.date}</div>
+                                <span className="text-[10px] text-cyan-400 font-bold">{b.time}</span>
+                              </td>
+                              <td className="p-2.5 font-bold text-emerald-400">₹{b.opFee}</td>
+                              <td className="p-2.5">
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  b.status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                  b.status === 'Completed' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+                                  'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                                }`}>
+                                  {b.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-center text-xs text-slate-400">
+                      No OP booking consultations on record yet for this patient.
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* 3. Direct Admin Controls */}
+            <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-2 justify-end">
+              <button
+                onClick={() => {
+                  const pwd = prompt(`Enter new password for ${selectedPatientDetails.fullName}:`, 'password123');
+                  if (pwd) {
+                    resetUserPassword(selectedPatientDetails._id, pwd);
+                    alert('✅ Password reset successfully!');
+                  }
+                }}
+                className="px-3.5 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              >
+                <Lock className="w-3.5 h-3.5" /> Reset Password
+              </button>
+              <button
+                onClick={() => {
+                  toggleUserStatus(selectedPatientDetails._id);
+                  setSelectedPatientDetails(prev => ({ ...prev, status: prev.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE' }));
+                }}
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-bold cursor-pointer"
+              >
+                {selectedPatientDetails.status === 'ACTIVE' ? 'Suspend Account' : 'Activate Account'}
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm(`Permanently delete patient account ${selectedPatientDetails.fullName}?`)) {
+                    deleteUser(selectedPatientDetails._id);
+                    setSelectedPatientDetails(null);
+                  }
+                }}
+                className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete Account
+              </button>
+            </div>
           </div>
         </div>
       )}
