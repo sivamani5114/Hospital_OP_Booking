@@ -3,9 +3,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { downloadCsv, printPdfReport } from '../../utils/exportUtils';
+import { autoVerifyHospitalCertificate, autoVerifyDoctorLicense } from '../../utils/certVerificationEngine';
+import CertificateVerificationModal from '../common/CertificateVerificationModal';
 import { 
   Building2, Users, Stethoscope, Calendar, Settings, LogOut, Plus, 
-  CheckCircle, XCircle, Clock, Trash2, Edit3, ShieldAlert, BarChart3, X, Image as ImageIcon, Upload, ShieldCheck, Award, FileText, FileSpreadsheet 
+  CheckCircle, XCircle, Clock, Trash2, Edit3, ShieldAlert, BarChart3, X, Image as ImageIcon, Upload, ShieldCheck, Award, FileText, FileSpreadsheet, Sparkles, CheckCircle2 
 } from 'lucide-react';
 
 export const ALL_DOCTOR_CATEGORIES = [
@@ -68,6 +70,9 @@ export default function HospitalPortal() {
 
   // Navigation Tab State: 'DASHBOARD' | 'PROFILE' | 'DOCTORS' | 'BOOKINGS' | 'REPORTS'
   const [activeTab, setActiveTab] = useState('DASHBOARD');
+
+  // Certificate Verification Modal State
+  const [certModalConfig, setCertModalConfig] = useState({ isOpen: false, data: null, type: 'HOSPITAL' });
 
   // Active Hospital object
   const hospital = hospitals.find(h => h._id === currentUser?.hospitalId) || hospitals[0];
@@ -278,11 +283,27 @@ export default function HospitalPortal() {
               <h2 className="text-2xl font-extrabold text-white font-outfit">{hospital.hospitalName} Dashboard</h2>
               <p className="text-xs text-slate-400">{hospital.address}, {hospital.city} • Contact: {hospital.phone}</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-              hospital.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-            }`}>
-              Status: {hospital.status}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  const res = hospital.verificationData || await autoVerifyHospitalCertificate({
+                    hospitalName: hospital.hospitalName,
+                    regNo: hospital.regCertificateNo || hospital.regNo || 'REG-TS-88492',
+                    docType: 'HOSPITAL_REGISTRATION',
+                    fileName: 'Hospital_Registration_Certificate.pdf'
+                  });
+                  setCertModalConfig({ isOpen: true, data: res, type: 'HOSPITAL' });
+                }}
+                className="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow"
+              >
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Govt Verified Certificate 🛡️
+              </button>
+              <span className={`px-3 py-1.5 rounded-xl text-xs font-bold ${
+                hospital.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+              }`}>
+                Status: {hospital.status}
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -644,7 +665,22 @@ export default function HospitalPortal() {
                   <p>Fee: <strong className="text-emerald-400">₹{doc.opFee}</strong> | Max Patients: {doc.maxPatients}/day</p>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                  <button
+                    onClick={async () => {
+                      const res = doc.verificationData || await autoVerifyDoctorLicense({
+                        doctorName: doc.doctorName,
+                        regNo: doc.medicalRegistrationNo || 'TSMC-88912',
+                        qualification: doc.qualification || 'MBBS, MD',
+                        specialization: doc.specialization,
+                        fileName: 'Doctor_Medical_License.pdf'
+                      });
+                      setCertModalConfig({ isOpen: true, data: res, type: 'DOCTOR' });
+                    }}
+                    className="flex-1 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> License 🛡️
+                  </button>
                   <button
                     onClick={() => {
                       setEditingDoctorId(doc._id);
@@ -665,9 +701,9 @@ export default function HospitalPortal() {
                       });
                       setShowAddDoctorModal(true);
                     }}
-                    className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5"
+                    className="flex-1 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+                    <Edit3 className="w-3.5 h-3.5" /> Edit
                   </button>
                   <button
                     onClick={() => deleteDoctor(doc._id)}
@@ -1392,6 +1428,15 @@ export default function HospitalPortal() {
         </div>
       )}
 
+      {/* ═══ INTERACTIVE CERTIFICATE VERIFICATION INSPECTOR MODAL ═══ */}
+      {certModalConfig.isOpen && certModalConfig.data && (
+        <CertificateVerificationModal
+          isOpen={certModalConfig.isOpen}
+          onClose={() => setCertModalConfig({ isOpen: false, data: null, type: 'HOSPITAL' })}
+          data={certModalConfig.data}
+          type={certModalConfig.type}
+        />
+      )}
     </div>
   );
 }

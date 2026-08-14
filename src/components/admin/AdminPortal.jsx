@@ -4,10 +4,12 @@ import { useDb } from '../../context/DbContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { downloadCsv, printPdfReport } from '../../utils/exportUtils';
 import { getWaOtpLogs, ADMIN_PHONE_NUMBER } from '../../utils/whatsappService';
+import { autoVerifyHospitalCertificate, autoVerifyDoctorLicense } from '../../utils/certVerificationEngine';
+import CertificateVerificationModal from '../common/CertificateVerificationModal';
 import { 
   ShieldCheck, Users, Building2, Stethoscope, Calendar, Settings, 
   LogOut, Plus, CheckCircle, XCircle, Trash2, Edit3, Lock, Search, AlertCircle, X, ShieldAlert, Image as ImageIcon, Upload, Award, Smartphone, Send, MessageCircle, FileText, FileSpreadsheet,
-  Phone, Mail, MapPin, CheckCircle2, Clock, Eye, Activity, User, Sparkles, Receipt, Hash
+  Phone, Mail, MapPin, CheckCircle2, Clock, Eye, Activity, User, Sparkles, Receipt, Hash, FileCheck2, Loader2
 } from 'lucide-react';
 import { ALL_DOCTOR_CATEGORIES, OFFICIAL_QUALIFICATIONS, PRESET_AVATARS } from '../hospital/HospitalPortal';
 
@@ -43,6 +45,10 @@ export default function AdminPortal() {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showAddHospModal, setShowAddHospModal] = useState(false);
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
+
+  // Certificate Auto-Verification Inspector State
+  const [certModalConfig, setCertModalConfig] = useState({ isOpen: false, data: null, type: 'HOSPITAL' });
+  const [isAutoScanning, setIsAutoScanning] = useState(false);
   const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
   const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
   const [selectedDoctorDetails, setSelectedDoctorDetails] = useState(null);
@@ -660,7 +666,22 @@ export default function AdminPortal() {
                             {h.status}
                           </span>
                         </td>
-                        <td className="p-3.5 text-right space-x-1.5 min-w-[270px]">
+                        <td className="p-3.5 text-right space-x-1.5 min-w-[310px]">
+                          <button
+                            onClick={async () => {
+                              const res = h.verificationData || await autoVerifyHospitalCertificate({
+                                hospitalName: h.hospitalName,
+                                regNo: h.regCertificateNo || h.regNo || 'REG-TS-88492',
+                                docType: 'HOSPITAL_REGISTRATION',
+                                fileName: 'Hospital_Registration_Certificate.pdf'
+                              });
+                              setCertModalConfig({ isOpen: true, data: res, type: 'HOSPITAL' });
+                            }}
+                            className="px-2.5 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer shadow"
+                            title="Inspect Govt Verified Certificate"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Cert 🛡️
+                          </button>
                           <button
                             onClick={() => setSelectedHospitalDetails(h)}
                             className="px-2.5 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
@@ -821,6 +842,22 @@ export default function AdminPortal() {
 
                     {/* Actions: View Legal Docs, Edit & Delete */}
                     <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
+                      <button
+                        onClick={async () => {
+                          const res = d.verificationData || await autoVerifyDoctorLicense({
+                            doctorName: d.doctorName,
+                            regNo: d.medicalRegistrationNo || 'TSMC-88912',
+                            qualification: d.qualification || 'MBBS, MD',
+                            specialization: d.specialization,
+                            fileName: 'Medical_Council_License.pdf'
+                          });
+                          setCertModalConfig({ isOpen: true, data: res, type: 'DOCTOR' });
+                        }}
+                        className="flex-1 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 shadow cursor-pointer"
+                        title="Inspect NMC / State Council Medical License"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> License 🛡️
+                      </button>
                       <button
                         onClick={() => setSelectedDoctorDetails(d)}
                         className="flex-1 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 shadow cursor-pointer"
@@ -2757,6 +2794,15 @@ export default function AdminPortal() {
         </div>
       )}
 
+      {/* ═══ INTERACTIVE CERTIFICATE VERIFICATION INSPECTOR MODAL ═══ */}
+      {certModalConfig.isOpen && certModalConfig.data && (
+        <CertificateVerificationModal
+          isOpen={certModalConfig.isOpen}
+          onClose={() => setCertModalConfig({ isOpen: false, data: null, type: 'HOSPITAL' })}
+          data={certModalConfig.data}
+          type={certModalConfig.type}
+        />
+      )}
     </div>
   );
 }

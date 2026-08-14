@@ -3,13 +3,24 @@ import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
 import { sendWhatsAppOtpToUser } from '../../utils/whatsappService';
 import { sendRealFast2SMS } from '../../utils/smsService';
-import { User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, KeyRound, Send, Smartphone, Sparkles, Zap, Stethoscope, MessageCircle } from 'lucide-react';
+import { autoVerifyHospitalCertificate } from '../../utils/certVerificationEngine';
+import CertificateVerificationModal from '../common/CertificateVerificationModal';
+import { 
+  User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, Building2, CheckCircle2, 
+  KeyRound, Send, Smartphone, Sparkles, Zap, Stethoscope, MessageCircle, 
+  Award, ShieldCheck, Loader2, FileCheck2
+} from 'lucide-react';
 
 export default function Register({ onGoToLogin }) {
   const { registerUser, showToast } = useAuth();
   const { registerHospitalSelf } = useDb();
 
   const [regType, setRegType] = useState('PATIENT'); // PATIENT | HOSPITAL
+
+  // Certificate Auto-Verification State
+  const [isVerifyingCert, setIsVerifyingCert] = useState(false);
+  const [certVerificationData, setCertVerificationData] = useState(null);
+  const [showCertVerificationModal, setShowCertVerificationModal] = useState(false);
 
   // OTP Verification State
   const [otpSent, setOtpSent] = useState(false);
@@ -182,6 +193,31 @@ export default function Register({ onGoToLogin }) {
       showToast('✅ Phone Number Verified Successfully via OTP!', 'success');
     } else {
       showToast('❌ Invalid OTP! Please enter the correct 6-digit code.', 'error');
+    }
+  };
+
+  // Handle Auto Certificate Verification
+  const handleAutoVerifyHospitalCert = async (fileObj, customRegNo) => {
+    setIsVerifyingCert(true);
+    showToast('🔍 AI Scanner: Authenticating Hospital Registration Certificate...', 'info');
+    try {
+      const res = await autoVerifyHospitalCertificate({
+        hospitalName: hospitalForm.hospitalName,
+        regNo: customRegNo || hospitalForm.regCertificateNo,
+        docType: 'HOSPITAL_REGISTRATION',
+        fileName: fileObj ? fileObj.name : hospitalForm.regCertificateName
+      });
+      setCertVerificationData(res);
+      setHospitalForm(prev => ({
+        ...prev,
+        verificationStatus: 'AUTO_VERIFIED',
+        verificationData: res
+      }));
+      showToast(res.message, 'success');
+    } catch (err) {
+      console.error('Cert verification error:', err);
+    } finally {
+      setIsVerifyingCert(false);
     }
   };
 
@@ -981,15 +1017,58 @@ export default function Register({ onGoToLogin }) {
                     <span className="text-[10px] text-emerald-400 font-semibold font-mono">GOVT LICENSES</span>
                   </h4>
 
+                  {/* LIVE AUTO-VERIFICATION SCANNER & CERTIFICATE BANNER */}
+                  {isVerifyingCert && (
+                    <div className="bg-cyan-950/50 border border-cyan-500/50 p-3 rounded-2xl flex items-center gap-2.5 text-cyan-300 text-xs animate-pulse shadow-lg">
+                      <Loader2 className="w-4 h-4 animate-spin text-cyan-400 shrink-0" />
+                      <span>🔍 <strong>AI Engine Active:</strong> Scanning Govt Health Registry & Authenticating Official Seal...</span>
+                    </div>
+                  )}
+
+                  {certVerificationData && !isVerifyingCert && (
+                    <div className="bg-gradient-to-r from-emerald-950/60 via-slate-900 to-emerald-950/60 border-2 border-emerald-500/50 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-xl animate-fadeIn">
+                      <div className="flex items-center gap-2.5">
+                        <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
+                        <div>
+                          <strong className="text-emerald-300 block font-bold">
+                            {certVerificationData.badge} ({certVerificationData.confidenceScore}% Genuine Authenticated)
+                          </strong>
+                          <span className="text-[10px] text-slate-400">
+                            {certVerificationData.details.issuingAuthority} · <span className="font-mono text-cyan-300 font-bold">{certVerificationData.verificationId}</span>
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowCertVerificationModal(true)}
+                        className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer shrink-0 shadow"
+                      >
+                        <Award className="w-3.5 h-3.5 text-emerald-400" /> Inspect Verified Certificate 🛡️
+                      </button>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* 1. Hospital Registration Certificate (Compulsory) */}
-                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1">
-                      <label className="text-slate-300 font-bold block text-[11px]">1. Hospital Registration Certificate * (Compulsory)</label>
+                    {/* 1. Hospital Registration Certificate (Compulsory with Instant AI Verification) */}
+                    <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <label className="text-slate-300 font-bold block text-[11px]">1. Hospital Registration Certificate * (Auto-Verified)</label>
+                        {certVerificationData ? (
+                          <span className="text-[10px] text-emerald-400 font-extrabold flex items-center gap-0.5">
+                            <CheckCircle2 className="w-3 h-3" /> VERIFIED
+                          </span>
+                        ) : null}
+                      </div>
                       <input
                         type="text"
                         placeholder="Registration / License Number (e.g. REG-TS-88492)"
                         value={hospitalForm.regCertificateNo}
-                        onChange={(e) => setHospitalForm(prev => ({ ...prev, regCertificateNo: e.target.value }))}
+                        onChange={(e) => {
+                          setHospitalForm(prev => ({ ...prev, regCertificateNo: e.target.value }));
+                          if (e.target.value.length >= 5) {
+                            handleAutoVerifyHospitalCert(null, e.target.value);
+                          }
+                        }}
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white font-mono"
                       />
                       <input
@@ -1002,13 +1081,25 @@ export default function Register({ onGoToLogin }) {
                             reader.onloadend = () => {
                               setHospitalForm(prev => ({ ...prev, regCertificate: reader.result, regCertificateName: file.name }));
                               showToast(`📄 Hospital Reg Certificate: ${file.name}`, 'success');
+                              handleAutoVerifyHospitalCert(file, hospitalForm.regCertificateNo);
                             };
                             reader.readAsDataURL(file);
                           }
                         }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold cursor-pointer"
                       />
-                      {hospitalForm.regCertificateName && <span className="text-[10px] text-emerald-400 font-bold block">✓ {hospitalForm.regCertificateName}</span>}
+                      {hospitalForm.regCertificateName && (
+                        <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold pt-0.5">
+                          <span>✓ {hospitalForm.regCertificateName}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleAutoVerifyHospitalCert(null, hospitalForm.regCertificateNo)}
+                            className="text-cyan-400 hover:underline cursor-pointer flex items-center gap-1"
+                          >
+                            ⚡ Re-Verify Scan
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {/* 2. Clinical Establishment Registration */}
@@ -1615,6 +1706,16 @@ export default function Register({ onGoToLogin }) {
           </div>
         </div>
       </div>
+
+      {/* Interactive Certificate Verification Modal */}
+      {showCertVerificationModal && certVerificationData && (
+        <CertificateVerificationModal
+          isOpen={showCertVerificationModal}
+          onClose={() => setShowCertVerificationModal(false)}
+          data={certVerificationData}
+          type="HOSPITAL"
+        />
+      )}
     </div>
   );
 }
