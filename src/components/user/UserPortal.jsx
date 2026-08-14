@@ -674,271 +674,267 @@ export default function UserPortal() {
 
       {/* --- BOOKING MODAL (Step 1: Details → Step 2: UPI Payment) --- */}
       {bookingDoctor && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="glass-panel w-full max-w-lg rounded-3xl p-6 border border-cyan-500/30 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="glass-panel w-full max-w-4xl rounded-3xl border border-cyan-500/30 shadow-2xl relative overflow-hidden max-h-[95vh] flex flex-col">
+            {/* Modal close button */}
             <button
               onClick={() => { setBookingDoctor(null); setBookingStep('FORM'); }}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white z-10 p-1 rounded-full hover:bg-slate-800"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white z-20 p-1.5 rounded-full hover:bg-slate-800"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* STEP 1: PATIENT & APPOINTMENT DETAILS FORM */}
+            {/* STEP 1: HORIZONTAL SPLIT — Left: Doctor Info | Right: Booking Form */}
             {bookingStep === 'FORM' && (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[10px] text-cyan-400 font-bold mb-0.5 tracking-wider">STEP 1 OF 2: APPOINTMENT & PATIENT DETAILS</p>
-                  <h3 className="font-bold text-white text-lg">{t('bookingFor')}: {bookingDoctor.doctorName}</h3>
+              <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+
+                {/* LEFT PANEL: Doctor & Hospital Info */}
+                <div className="lg:w-[300px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/20 to-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 p-6 flex flex-col gap-5">
+                  <div>
+                    <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-3">STEP 1 OF 2 · APPOINTMENT</p>
+                    {/* Doctor Card */}
+                    <div className="bg-slate-950/60 rounded-2xl border border-cyan-500/20 p-4 space-y-3">
+                      <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl">
+                        👨‍⚕️
+                      </div>
+                      <div>
+                        <p className="font-extrabold text-white text-base">{bookingDoctor.doctorName}</p>
+                        <p className="text-cyan-400 text-xs font-semibold">{bookingDoctor.specialization}</p>
+                        <p className="text-slate-400 text-xs mt-1">{bookingDoctor.department}</p>
+                      </div>
+                      <div className="border-t border-slate-800 pt-3 space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Hospital:</span>
+                          <span className="text-slate-200 font-semibold text-right max-w-[140px]">{(hospitals.find(h => h._id === bookingDoctor.hospitalId) || hospitals[0])?.hospitalName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Experience:</span>
+                          <span className="text-slate-200 font-semibold">{bookingDoctor.experience || 'N/A'} yrs</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-1">
+                          <span className="text-slate-400">OP Fee:</span>
+                          <span className="text-xl font-extrabold text-cyan-400">₹{bookingDoctor.opFee}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info badges */}
+                  <div className="space-y-2 text-[11px]">
+                    <div className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Instant OP Token Confirmation</div>
+                    <div className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Digital PDF Ticket Download</div>
+                    <div className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> UPI QR Payment — No Card Needed</div>
+                    <div className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Real-Time Queue Updates</div>
+                  </div>
                 </div>
 
-                <form onSubmit={handleProceedToPayment} className="space-y-3 text-xs">
-                  {/* Smart Appointment Slot Picker */}
-                  <AppointmentSlotPicker
-                    doctorId={bookingDoctor._id}
-                    existingBookings={bookings}
-                    selectedDate={bookingDate}
-                    selectedTime={bookingTime}
-                    onDateChange={setBookingDate}
-                    onTimeChange={setBookingTime}
-                  />
+                {/* RIGHT PANEL: Booking Form */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
+                  <h3 className="font-bold text-white text-lg">Patient & Appointment Details</h3>
 
-                  {/* Comprehensive Patient Details Form */}
-                  <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
-                    <h4 className="font-bold text-white text-xs flex items-center gap-1.5">
-                      <User className="w-4 h-4 text-cyan-400" /> Patient Details (For Hospital Records)
-                    </h4>
+                  <form onSubmit={handleProceedToPayment} className="space-y-4 text-xs">
+                    <AppointmentSlotPicker
+                      doctorId={bookingDoctor._id}
+                      existingBookings={bookings}
+                      selectedDate={bookingDate}
+                      selectedTime={bookingTime}
+                      onDateChange={setBookingDate}
+                      onTimeChange={setBookingTime}
+                    />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Patient Full Name *</label>
-                        <input
-                          type="text"
-                          placeholder="Enter patient name..."
-                          value={patientDetails.name}
-                          onChange={(e) => setPatientDetails(prev => ({ ...prev, name: e.target.value }))}
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
-                          required
-                        />
+                    <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+                      <h4 className="font-bold text-white text-xs flex items-center gap-1.5">
+                        <User className="w-4 h-4 text-cyan-400" /> Patient Details (For Hospital Records)
+                      </h4>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-slate-400 font-semibold block mb-1">Patient Full Name *</label>
+                          <input type="text" placeholder="Enter patient name..." value={patientDetails.name}
+                            onChange={(e) => setPatientDetails(prev => ({ ...prev, name: e.target.value }))}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" required />
+                        </div>
+                        <div>
+                          <label className="text-slate-400 font-semibold block mb-1">Phone Number *</label>
+                          <input type="tel" placeholder="10-digit phone..." value={patientDetails.phone}
+                            onChange={(e) => setPatientDetails(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" required />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-slate-400 font-semibold block mb-1">Age (Years)</label>
+                          <input type="number" placeholder="e.g. 28" value={patientDetails.age} min="1" max="120"
+                            onChange={(e) => setPatientDetails(prev => ({ ...prev, age: e.target.value }))}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" />
+                        </div>
+                        <div>
+                          <label className="text-slate-400 font-semibold block mb-1">Gender</label>
+                          <select value={patientDetails.gender} onChange={(e) => setPatientDetails(prev => ({ ...prev, gender: e.target.value }))}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Phone Number *</label>
-                        <input
-                          type="tel"
-                          placeholder="Enter 10-digit phone number..."
-                          value={patientDetails.phone}
-                          onChange={(e) => setPatientDetails(prev => ({ ...prev, phone: e.target.value }))}
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Age (Years)</label>
-                        <input
-                          type="number"
-                          placeholder="e.g. 28"
-                          value={patientDetails.age}
-                          onChange={(e) => setPatientDetails(prev => ({ ...prev, age: e.target.value }))}
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
-                          min="1"
-                          max="120"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-slate-400 font-semibold block mb-1">Gender</label>
-                        <select
-                          value={patientDetails.gender}
-                          onChange={(e) => setPatientDetails(prev => ({ ...prev, gender: e.target.value }))}
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                        >
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Other">Other</option>
-                        </select>
+                        <label className="text-slate-400 font-semibold block mb-1">Symptoms / Reason for Visit</label>
+                        <input type="text" placeholder="e.g. Fever, Cold, General Consultation..." value={patientDetails.reason}
+                          onChange={(e) => setPatientDetails(prev => ({ ...prev, reason: e.target.value }))}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="text-slate-400 font-semibold block mb-1">Symptoms / Reason for Visit</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Fever, Cold, Stomach Pain, General Consultation..."
-                        value={patientDetails.reason}
-                        onChange={(e) => setPatientDetails(prev => ({ ...prev, reason: e.target.value }))}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <span className="text-slate-400 font-semibold">{t('fee')}:</span>
-                    <span className="text-lg font-extrabold text-cyan-400">₹{bookingDoctor.opFee}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!patientDetails.name || !patientDetails.phone) {
-                        alert('Please enter Patient Full Name and Phone Number.');
-                        return;
-                      }
-                      setBookingStep('PAYMENT');
-                    }}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer text-sm"
-                  >
-                    <CreditCard className="w-4 h-4" /> Proceed to Payment (₹{bookingDoctor.opFee}) →
-                  </button>
-                </form>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!patientDetails.name || !patientDetails.phone) {
+                          alert('Please enter Patient Full Name and Phone Number.');
+                          return;
+                        }
+                        setBookingStep('PAYMENT');
+                      }}
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer text-sm"
+                    >
+                      <CreditCard className="w-4 h-4" /> Proceed to Payment (₹{bookingDoctor.opFee}) →
+                    </button>
+                  </form>
+                </div>
               </div>
             )}
 
             {/* STEP 2: NETBANKING & UPI QR PAYMENT SECTION */}
             {bookingStep === 'PAYMENT' && (
-              <div className="space-y-4 text-xs">
-                <div>
-                  <p className="text-[10px] text-cyan-400 font-bold mb-0.5 tracking-wider">STEP 2 OF 2: SECURE NETBANKING & UPI PAYMENT</p>
-                  <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                    <ScanLine className="w-5 h-5 text-cyan-400" /> {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0] || {})?.hospitalName || 'Apollo Health City'} OP Payment
-                  </h3>
-                </div>
+              <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
 
-                {/* Doctor & Fee Summary Card */}
-                <div className="bg-slate-900/90 p-3 rounded-2xl border border-slate-800 flex items-center justify-between">
+                {/* LEFT PANEL: QR Code + Hospital Info */}
+                <div className="lg:w-[340px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/20 to-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 p-6 flex flex-col gap-4">
                   <div>
-                    <p className="font-bold text-white text-sm">Dr. {bookingDoctor?.doctorName}</p>
-                    <p className="text-slate-400">{bookingDoctor?.specialization} | Date: {bookingDate}</p>
+                    <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1">STEP 2 OF 2 · SECURE PAYMENT</p>
+                    <h3 className="font-bold text-white text-base flex items-center gap-2">
+                      <ScanLine className="w-4 h-4 text-cyan-400" /> Scan & Pay
+                    </h3>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block font-semibold">Total OP Fee</span>
-                    <span className="text-lg font-extrabold text-cyan-400">₹{bookingDoctor?.opFee}</span>
+
+                  {/* Payment Tabs */}
+                  <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+                    <button type="button" onClick={() => setPaymentTab('UPI')}
+                      className={`flex-1 py-2 rounded-lg transition-all ${(!paymentTab || paymentTab === 'UPI') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}>
+                      📱 UPI QR
+                    </button>
+                    <button type="button" onClick={() => setPaymentTab('NETBANKING')}
+                      className={`flex-1 py-2 rounded-lg transition-all ${paymentTab === 'NETBANKING' ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}>
+                      🏦 NetBanking
+                    </button>
                   </div>
-                </div>
 
-                {/* Payment Method Selector Tabs */}
-                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentTab('UPI')}
-                    className={`flex-1 py-2 rounded-lg transition-all ${(!paymentTab || paymentTab === 'UPI') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    📱 UPI & Scan QR
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentTab('NETBANKING')}
-                    className={`flex-1 py-2 rounded-lg transition-all ${(paymentTab === 'NETBANKING') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    🏦 Direct NetBanking
-                  </button>
-                </div>
-
-                {/* TAB 1: Dynamic Hospital UPI QR Code Area */}
-                {(!paymentTab || paymentTab === 'UPI') && (
-                  <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl text-slate-900">
-                    <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
-                      <img
-                        src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR`)}`}
-                        className="w-36 h-36 object-contain rounded-xl"
-                        alt="Hospital UPI QR Code"
-                      />
+                  {/* UPI QR */}
+                  {(!paymentTab || paymentTab === 'UPI') && (
+                    <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl">
+                      <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/30">
+                        <img
+                          src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR`)}`}
+                          className="w-40 h-40 object-contain rounded-xl"
+                          alt="UPI QR Code"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-extrabold text-sm text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</p>
+                        <p className="text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 text-slate-700">
+                          {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
+                        </p>
+                        <p className="text-slate-500 text-[10px] mt-1">GPay / PhonePe / Paytm / BHIM</p>
+                      </div>
+                      <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-4 py-2 text-center w-full">
+                        <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">Consultation Fee</p>
+                        <p className="text-2xl font-extrabold text-cyan-700">₹{bookingDoctor?.opFee}</p>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <p className="font-extrabold text-base text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</p>
-                      <p className="font-semibold text-xs text-slate-700 mt-0.5">Dr. {bookingDoctor?.doctorName}</p>
-                      <p className="text-xs font-mono font-bold mt-1 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 text-slate-800">
-                        UPI ID: {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
+                  )}
+
+                  {/* NetBanking */}
+                  {paymentTab === 'NETBANKING' && (
+                    <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-2.5 text-xs">
+                      <p className="text-cyan-300 font-bold">🏦 Hospital Business NetBanking</p>
+                      <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300">
+                        <div className="flex justify-between"><span className="text-slate-400">Account Holder:</span><span className="text-white font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountHolderName || 'Sukhavasi Sivamani'}</span></div>
+                        <div className="flex justify-between"><span className="text-slate-400">Bank:</span><span className="text-emerald-400 font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankName || 'SBI'}</span></div>
+                        <div className="flex justify-between"><span className="text-slate-400">Account No:</span><span className="text-cyan-300 font-mono font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankAccountNo || '42417133367'}</span></div>
+                        <div className="flex justify-between"><span className="text-slate-400">IFSC:</span><span className="text-amber-300 font-mono font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.ifscCode || 'sbin0008487'}</span></div>
+                      </div>
+                      <p className="text-[11px] text-cyan-300 text-center">Transfer ₹{bookingDoctor?.opFee} via NEFT/RTGS/IMPS</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT PANEL: Patient Summary + Payment Action */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-4 justify-between">
+                  <div className="space-y-4">
+                    {/* Patient + Doctor summary */}
+                    <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-4 space-y-2.5 text-xs">
+                      <p className="text-white font-bold text-sm">Booking Summary</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
+                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">DOCTOR</p>
+                          <p className="text-white font-bold text-xs">{bookingDoctor?.doctorName}</p>
+                          <p className="text-cyan-400 text-[10px]">{bookingDoctor?.specialization}</p>
+                        </div>
+                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
+                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">PATIENT</p>
+                          <p className="text-white font-bold text-xs">{patientDetails.name}</p>
+                          <p className="text-slate-400 text-[10px]">{patientDetails.phone}</p>
+                        </div>
+                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
+                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">DATE & TIME</p>
+                          <p className="text-white font-bold text-xs">{bookingDate}</p>
+                          <p className="text-slate-400 text-[10px]">{bookingTime}</p>
+                        </div>
+                        <div className="bg-cyan-950/40 rounded-xl p-2.5 border border-cyan-500/30">
+                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">OP FEE</p>
+                          <p className="text-cyan-400 font-extrabold text-lg">₹{bookingDoctor?.opFee}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Security note */}
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-slate-300 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-cyan-400 text-xs">
+                        <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        🔒 Payments routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</strong>'s verified bank account.
                       </p>
-                      <p className="text-slate-500 text-[10px] mt-1 font-medium">Pay via GPay / PhonePe / Paytm / BHIM UPI</p>
-                    </div>
-                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl px-5 py-2 text-center w-full">
-                      <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider">DOCTOR CONSULTATION FEE</p>
-                      <p className="text-2xl font-extrabold text-cyan-700 font-outfit">₹{bookingDoctor?.opFee}</p>
                     </div>
                   </div>
-                )}
 
-                {/* TAB 2: Direct NetBanking Details Box */}
-                {paymentTab === 'NETBANKING' && (
-                  <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-3 shadow-xl">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                      <span className="text-cyan-300 font-bold text-sm flex items-center gap-1.5">
-                        🏦 Hospital Business NetBanking Account
-                      </span>
-                      <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold">DIRECT CREDIT</span>
-                    </div>
-
-                    <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Account Holder:</span>
-                        <span className="text-white font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountHolderName || 'Sukhavasi Sivamani'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Bank Name:</span>
-                        <span className="text-emerald-400 font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankName || 'State Bank of India'}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-400">Account Number:</span>
-                        <span className="text-cyan-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankAccountNo || '42417133367'}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-400">IFSC Code:</span>
-                        <span className="text-amber-300 font-mono font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.ifscCode || 'sbin0008487'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Account Type:</span>
-                        <span className="text-slate-200 font-semibold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountType || 'Current Business Account'}</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl text-[11px] text-cyan-300 text-center">
-                      💳 Perform NEFT / RTGS / IMPS transfer of <strong>₹{bookingDoctor?.opFee}</strong> directly into the above bank account.
-                    </div>
+                  {/* Action Buttons */}
+                  <div className="space-y-2 pt-2">
+                    <button type="button"
+                      onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer text-sm">
+                      <CheckCircle2 className="w-5 h-5" />
+                      {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')} (₹{bookingDoctor?.opFee})
+                    </button>
+                    <button type="button"
+                      onClick={() => handleConfirmPayment('Counter')}
+                      className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs cursor-pointer">
+                      <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')} (₹{bookingDoctor?.opFee})
+                    </button>
+                    <button type="button" onClick={() => setBookingStep('FORM')}
+                      className="w-full text-slate-500 hover:text-slate-300 text-xs py-1 cursor-pointer text-center">
+                      ← Back to booking details
+                    </button>
                   </div>
-                )}
-
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-slate-300 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-cyan-400">
-                    <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    🔒 Payments are routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Apollo Health City'}</strong>'s Business Bank Account.
-                  </p>
                 </div>
-
-                <div className="grid grid-cols-1 gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <CheckCircle2 className="w-5 h-5" /> {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')} (₹{bookingDoctor?.opFee})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleConfirmPayment('Counter')}
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs cursor-pointer"
-                  >
-                    <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')} (₹{bookingDoctor?.opFee})
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setBookingStep('FORM')}
-                  className="w-full text-slate-500 hover:text-slate-300 text-xs py-1 cursor-pointer"
-                >
-                  ← Back to booking details
-                </button>
               </div>
             )}
 
             {/* STEP: PAYMENT VERIFICATION ANIMATION */}
             {bookingStep === 'VERIFYING' && (
-              <div className="flex flex-col items-center justify-center py-8 space-y-6 text-center">
+              <div className="flex flex-col items-center justify-center py-10 px-6 space-y-6 text-center min-h-[400px]">
                 {/* Title */}
                 <div>
                   <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1">SECURE PAYMENT GATEWAY</p>
