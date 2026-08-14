@@ -694,9 +694,27 @@ export default function UserPortal() {
                     <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-3">STEP 1 OF 2 · APPOINTMENT</p>
                     {/* Doctor Card */}
                     <div className="bg-slate-950/60 rounded-2xl border border-cyan-500/20 p-4 space-y-3">
-                      <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl">
-                        👨‍⚕️
-                      </div>
+                      {/* Doctor Photo */}
+                      {bookingDoctor.image ? (
+                        <div className="relative w-20 h-20">
+                          <img
+                            src={bookingDoctor.image}
+                            alt={bookingDoctor.doctorName}
+                            className="w-20 h-20 rounded-2xl object-cover border-2 border-cyan-500/50 shadow-lg shadow-cyan-500/20"
+                            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                          />
+                          <div className="hidden w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-700 items-center justify-center text-white font-extrabold text-2xl border-2 border-cyan-500/50 shadow-lg">
+                            {bookingDoctor.doctorName?.[0]?.toUpperCase()}
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-slate-950 flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-700 flex items-center justify-center text-white font-extrabold text-2xl border-2 border-cyan-500/50 shadow-lg shadow-cyan-500/20">
+                          {bookingDoctor.doctorName?.[0]?.toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <p className="font-extrabold text-white text-base">{bookingDoctor.doctorName}</p>
                         <p className="text-cyan-400 text-xs font-semibold">{bookingDoctor.specialization}</p>
