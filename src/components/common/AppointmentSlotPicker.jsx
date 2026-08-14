@@ -6,10 +6,10 @@ const MORNING_SLOTS = ['08:00 AM', '08:30 AM', '09:00 AM', '09:30 AM', '10:00 AM
 const AFTERNOON_SLOTS = ['12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM'];
 const EVENING_SLOTS = ['04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM', '06:00 PM', '06:30 PM', '07:00 PM'];
 
-function getNext7Days() {
+function getNext14Days() {
   const days = [];
   const today = new Date();
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 14; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     days.push({
@@ -49,7 +49,7 @@ function SlotButton({ slot, bookedSlots, selected, onSelect }) {
 }
 
 export default function AppointmentSlotPicker({ doctorId, existingBookings = [], selectedDate, selectedTime, onDateChange, onTimeChange }) {
-  const days = getNext7Days();
+  const days = getNext14Days();
   const [dayOffset, setDayOffset] = useState(0);
 
   // Get already booked time slots for selected date + doctor
@@ -63,17 +63,20 @@ export default function AppointmentSlotPicker({ doctorId, existingBookings = [],
 
   return (
     <div className="space-y-4">
-      {/* Date Selector Strip */}
+      {/* Date Selector Strip (2 Weeks Advance Window) */}
       <div>
-        <label className="text-slate-400 font-semibold block mb-2 text-xs">📅 Select Appointment Date</label>
+        <div className="flex justify-between items-center mb-2">
+          <label className="text-slate-400 font-semibold text-xs">📅 Select Appointment Date (Next 2 Weeks)</label>
+          <span className="text-[10px] text-cyan-400 font-mono">14 Days Advance Window</span>
+        </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setDayOffset(Math.max(0, dayOffset - 1))}
             disabled={dayOffset === 0}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30"
+            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30 hover:border-cyan-500/40 hover:text-white cursor-pointer"
           >
-            <ChevronLeft className="w-3 h-3" />
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
 
           <div className="flex-1 grid grid-cols-4 gap-1.5 overflow-hidden">
@@ -82,11 +85,11 @@ export default function AppointmentSlotPicker({ doctorId, existingBookings = [],
                 key={d.dateStr}
                 type="button"
                 onClick={() => { onDateChange(d.dateStr); onTimeChange(''); }}
-                className={`p-2 rounded-xl text-center transition-all border ${
+                className={`p-2 rounded-xl text-center transition-all border cursor-pointer ${
                   selectedDate === d.dateStr
                     ? 'bg-cyan-500 border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
                     : d.isWeekend
-                      ? 'bg-slate-900 border-amber-500/20 text-amber-400'
+                      ? 'bg-slate-900 border-amber-500/20 text-amber-400 hover:border-amber-500/40'
                       : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-cyan-500/30'
                 }`}
               >
@@ -98,11 +101,11 @@ export default function AppointmentSlotPicker({ doctorId, existingBookings = [],
 
           <button
             type="button"
-            onClick={() => setDayOffset(Math.min(3, dayOffset + 1))}
-            disabled={dayOffset >= 3}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30"
+            onClick={() => setDayOffset(Math.min(days.length - 4, dayOffset + 1))}
+            disabled={dayOffset >= days.length - 4}
+            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30 hover:border-cyan-500/40 hover:text-white cursor-pointer"
           >
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

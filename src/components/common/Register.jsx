@@ -1337,14 +1337,17 @@ export default function Register({ onGoToLogin }) {
                   </div>
 
                   <div>
-                    <label className="text-slate-400 font-semibold block mb-1">Same-Day OP Booking</label>
+                    <label className="text-slate-400 font-semibold block mb-1">Advance OP Booking Window</label>
                     <select
                       value={hospitalForm.sameDayBooking}
                       onChange={(e) => setHospitalForm(prev => ({ ...prev, sameDayBooking: e.target.value }))}
                       className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                     >
-                      <option value="Yes">Allowed (Same Day)</option>
-                      <option value="No">1 Day Advance Only</option>
+                      <option value="Yes">Allowed (Same Day Booking)</option>
+                      <option value="1_DAY">1 Day Advance Only</option>
+                      <option value="3_DAYS">3 Days Advance</option>
+                      <option value="1_WEEK">1 Week Advance (7 Days)</option>
+                      <option value="2_WEEKS">Max 2 Weeks Advance (14 Days)</option>
                     </select>
                   </div>
                 </div>
