@@ -115,6 +115,19 @@ export default function UserPortal() {
 
   const handleProceedToPayment = (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    if (!patientDetails.name || !patientDetails.name.trim()) {
+      alert('Please enter Patient Full Name.');
+      return;
+    }
+    const cleanPhone = (patientDetails.phone || '').replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      alert('Please enter a valid 10-digit Mobile Number.');
+      return;
+    }
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      alert('Please enter a valid 10-digit Indian Mobile Number (starting with 6, 7, 8, or 9).');
+      return;
+    }
     if (!bookingDoctor && doctors && doctors.length > 0) {
       setBookingDoctor(doctors[0]);
     }
@@ -799,10 +812,37 @@ export default function UserPortal() {
                             className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" required />
                         </div>
                         <div>
-                          <label className="text-slate-400 font-semibold block mb-1">Phone Number *</label>
-                          <input type="tel" placeholder="10-digit phone..." value={patientDetails.phone}
-                            onChange={(e) => setPatientDetails(prev => ({ ...prev, phone: e.target.value }))}
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600" required />
+                          <label className="text-slate-400 font-semibold block mb-1">
+                            Phone Number * <span className="text-[10px] text-cyan-400 font-normal">(10 Digits Only)</span>
+                          </label>
+                          <input 
+                            type="tel" 
+                            inputMode="numeric"
+                            maxLength={10}
+                            placeholder="Enter 10-digit phone number..." 
+                            value={patientDetails.phone}
+                            onChange={(e) => {
+                              const numbersOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+                              setPatientDetails(prev => ({ ...prev, phone: numbersOnly }));
+                            }}
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:border-cyan-500/60 outline-none font-mono" 
+                            required 
+                          />
+                          {patientDetails.phone && patientDetails.phone.length > 0 && patientDetails.phone.length < 10 && (
+                            <p className="text-[10px] text-amber-400 mt-1 font-medium">
+                              ⚠️ Enter complete 10 digits ({10 - patientDetails.phone.length} remaining)
+                            </p>
+                          )}
+                          {patientDetails.phone && patientDetails.phone.length === 10 && !/^[6-9]/.test(patientDetails.phone) && (
+                            <p className="text-[10px] text-rose-400 mt-1 font-medium">
+                              ⚠️ Number must start with 6, 7, 8, or 9
+                            </p>
+                          )}
+                          {patientDetails.phone && patientDetails.phone.length === 10 && /^[6-9]\d{9}$/.test(patientDetails.phone) && (
+                            <p className="text-[10px] text-emerald-400 mt-1 font-medium flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> Valid 10-digit Mobile Number
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -835,8 +875,17 @@ export default function UserPortal() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (!patientDetails.name || !patientDetails.phone) {
-                          alert('Please enter Patient Full Name and Phone Number.');
+                        if (!patientDetails.name || !patientDetails.name.trim()) {
+                          alert('Please enter Patient Full Name.');
+                          return;
+                        }
+                        const cleanPhone = (patientDetails.phone || '').replace(/\D/g, '');
+                        if (!cleanPhone || cleanPhone.length !== 10) {
+                          alert('Please enter a valid 10-digit Mobile Number.');
+                          return;
+                        }
+                        if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+                          alert('Please enter a valid 10-digit Indian Mobile Number (starting with 6, 7, 8, or 9).');
                           return;
                         }
                         setBookingStep('PAYMENT');
