@@ -119,8 +119,10 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
 
-    // 🚀 Dispatch Real Mobile SMS directly to Phone SIM via Fast2SMS Gateway
-    sendRealFast2SMS(cleanPhone, otp);
+    // 🚀 Dispatch Real SMS via Fast2SMS Dual-Route Gateway
+    sendRealFast2SMS(cleanPhone, otp, (statusMsg, success) => {
+      setErrorMessage(success ? '' : `⚠️ ${statusMsg}`);
+    });
 
     setTimeout(() => {
       setIsOtpSending(false);
@@ -147,13 +149,13 @@ export default function ForgotPasswordModal({ isOpen, onClose, role = 'USER', on
     if (otpTimer > 0) return;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
-    
-    // Send Real Mobile SMS via Fast2SMS Gateway
-    sendRealFast2SMS(matchedUser.phone, otp);
-
     setOtpTimer(60);
-    setErrorMessage('');
-    alert(`📲 New 6-digit SMS OTP dispatched to your mobile SIM +91 ${matchedUser.phone}!`);
+    setErrorMessage('📲 Resending OTP...');
+
+    // Resend via Fast2SMS Dual-Route Gateway
+    sendRealFast2SMS(matchedUser.phone, otp, (statusMsg, success) => {
+      setErrorMessage(success ? `✅ ${statusMsg}` : `⚠️ ${statusMsg}`);
+    });
   };
 
   // Step 3: Set New Password

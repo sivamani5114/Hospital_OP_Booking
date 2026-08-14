@@ -1,32 +1,31 @@
 /**
- * Fast2SMS Real Mobile SMS Gateway
- * All calls go through our Vercel serverless /api/send-otp endpoint
- * to avoid browser CORS restrictions.
+ * Fast2SMS Real Mobile SMS Gateway - Frontend Service
+ * Routes through Vercel serverless /api/send-otp to bypass browser CORS.
+ * Backend tries OTP Route first, auto-falls back to Quick SMS Route.
  */
-
-export const DEFAULT_FAST2SMS_API_KEY = 'meEBH583i0vD9TVOCRZwcYgjfsNdopG1LXqh6SubrMaWUn4Kl7EtvQq0x8Uw972HfjcaeKbo6WuXhRmP';
 
 /**
- * Sends real SMS OTP to Indian Mobile Numbers via Fast2SMS.
- * Routes through /api/send-otp (Vercel serverless) to bypass CORS.
+ * Send real SMS OTP to Indian mobile via Fast2SMS (dual-route).
+ * Shows live Fast2SMS response status in toast/callback.
  *
- * @param {string} recipientPhone - 10-digit Mobile Number
- * @param {string} otpCode - 6-digit OTP Code
+ * @param {string} recipientPhone - 10-digit mobile number
+ * @param {string} otpCode       - 6-digit OTP code
+ * @param {Function} [onStatus]  - optional callback(msg, success) for live status toast
  */
-export async function sendRealFast2SMS(recipientPhone, otpCode) {
+export async function sendRealFast2SMS(recipientPhone, otpCode, onStatus) {
   const cleanPhone = recipientPhone.replace(/[^0-9]/g, '').slice(-10);
 
-  // Log record start
   const logRecord = {
     id: `sms-${Date.now()}`,
     recipient: cleanPhone,
     code: otpCode,
     status: 'PENDING',
+    route: '-',
+    requestId: '-',
     timestamp: new Date().toLocaleTimeString()
   };
 
   try {
-    // Call our Vercel serverless endpoint (server-side avoids CORS)
     const response = await fetch('/api/send-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,19 +33,31 @@ export async function sendRealFast2SMS(recipientPhone, otpCode) {
     });
 
     const data = await response.json();
-    console.log('OTP API Response:', data);
+    console.log('[SMS Service] API Response:', data);
 
-    logRecord.status = data.success ? 'SENT_REAL_SMS' : 'API_FAILED';
-    logRecord.responseMsg = data.message;
+    if (data.success) {
+      logRecord.status = 'SENT';
+      logRecord.route = data.route || 'otp';
+      logRecord.requestId = data.requestId || 'OK';
+      if (onStatus) onStatus(`✅ Fast2SMS: ${data.message}`, true);
+    } else {
+      logRecord.status = 'FAILED';
+      logRecord.route = data.route || 'unknown';
+      const errMsg = data.message || 'Fast2SMS delivery failed';
+      console.warn('[SMS Service] Delivery failed:', errMsg);
+      if (onStatus) onStatus(`⚠️ Fast2SMS Status: ${errMsg}`, false);
+    }
   } catch (err) {
-    console.error('OTP send error:', err);
+    console.error('[SMS Service] Network error:', err);
     logRecord.status = 'NETWORK_ERROR';
-    logRecord.responseMsg = err.message;
+    if (onStatus) onStatus(`❌ SMS Network Error: ${err.message}`, false);
   }
 
-  // Save to admin audit logs
-  const existing = JSON.parse(localStorage.getItem('op_admin_otp_logs') || '[]');
-  localStorage.setItem('op_admin_otp_logs', JSON.stringify([logRecord, ...existing]));
+  // Save to admin audit log
+  try {
+    const existing = JSON.parse(localStorage.getItem('op_admin_otp_logs') || '[]');
+    localStorage.setItem('op_admin_otp_logs', JSON.stringify([logRecord, ...existing].slice(0, 100)));
+  } catch (_) {}
 
   return logRecord;
 }

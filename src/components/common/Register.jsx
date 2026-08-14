@@ -144,7 +144,7 @@ export default function Register({ onGoToLogin }) {
     return () => clearInterval(interval);
   }, [timerSeconds]);
 
-  // Handle Send Direct WhatsApp & SMS OTP to Target User Phone
+  // Handle Send Direct SMS OTP to Target User Phone via Fast2SMS Gateway
   const handleSendInstantOtp = (phoneNum) => {
     if (!phoneNum || phoneNum.trim().length < 10) {
       showToast('❌ Please enter a valid 10-digit Phone Number first!', 'error');
@@ -153,7 +153,7 @@ export default function Register({ onGoToLogin }) {
 
     const cleanPhone = phoneNum.replace(/[^0-9]/g, '').slice(-10);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     setGeneratedOtp(code);
     setOtpSent(true);
     setTimerSeconds(60);
@@ -161,10 +161,12 @@ export default function Register({ onGoToLogin }) {
     setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    // 🚀 Dispatch Real Mobile SMS directly to Mobile SIM Inbox via Fast2SMS Gateway
-    sendRealFast2SMS(cleanPhone, code);
+    showToast(`📲 Sending OTP to +91 ${cleanPhone}...`, 'info');
 
-    showToast(`📲 6-Digit SMS OTP dispatched directly to +91 ${cleanPhone}! Check SMS Inbox.`, 'success');
+    // 🚀 Dispatch Real Mobile SMS via Fast2SMS Dual-Route Gateway
+    sendRealFast2SMS(cleanPhone, code, (statusMsg, success) => {
+      showToast(statusMsg, success ? 'success' : 'error');
+    });
   };
 
   // Handle Verify OTP
