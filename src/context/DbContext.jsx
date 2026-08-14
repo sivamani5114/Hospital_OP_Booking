@@ -217,6 +217,10 @@ export function DbProvider({ children }) {
     setBookings(prev => prev.map(b => b._id === id ? { ...b, status: newStatus } : b));
   };
 
+  const updateBooking = (id, fields) => {
+    setBookings(prev => prev.map(b => b._id === id ? { ...b, ...fields } : b));
+  };
+
   const deleteBooking = (id) => {
     setBookings(prev => prev.filter(b => b._id !== id));
   };
@@ -282,7 +286,7 @@ export function DbProvider({ children }) {
       users, addUser, updateUser, deleteUser, toggleUserStatus, resetUserPassword,
       hospitals, addHospital, registerHospitalSelf, updateHospital, deleteHospital, approveHospital, rejectHospital, toggleHospitalStatus,
       doctors, addDoctor, updateDoctor, deleteDoctor, toggleDoctorStatus,
-      bookings, createBooking, updateBookingStatus, deleteBooking,
+      bookings, createBooking, updateBookingStatus, updateBooking, deleteBooking,
       reviews, addReview, getReviewsByDoctor, hasUserReviewedBooking,
       notifications, addNotification, markNotificationRead, clearNotifications,
       prescriptions, addPrescription, getPrescriptionsByUser, getPrescriptionsByBooking

@@ -17,11 +17,11 @@ export default function AdminPortal() {
     users, addUser, updateUser, deleteUser, toggleUserStatus, resetUserPassword,
     hospitals, addHospital, updateHospital, deleteHospital, approveHospital, rejectHospital, toggleHospitalStatus,
     doctors, addDoctor, updateDoctor, deleteDoctor, toggleDoctorStatus,
-    bookings, updateBookingStatus, deleteBooking 
+    bookings, updateBookingStatus, updateBooking, deleteBooking 
   } = useDb();
   const { t } = useLanguage();
 
-  // Navigation Tab State: 'DASHBOARD' | 'USERS' | 'HOSPITALS' | 'DOCTORS' | 'BOOKINGS' | 'DISPATCHER'
+  // Navigation Tab State: 'DASHBOARD' | 'USERS' | 'HOSPITALS' | 'DOCTORS' | 'BOOKINGS' | 'CONTROLS' | 'DISPATCHER'
   const [activeTab, setActiveTab] = useState('DASHBOARD');
 
   // Search & Filter States
@@ -31,6 +31,13 @@ export default function AdminPortal() {
   const [hospStatusFilter, setHospStatusFilter] = useState('ALL');
   const [doctorSearchQuery, setDoctorSearchQuery] = useState('');
   const [doctorSpecialtyFilter, setDoctorSpecialtyFilter] = useState('ALL');
+  const [bookingSearchQuery, setBookingSearchQuery] = useState('');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState('ALL');
+
+  // Master Control States
+  const [announcementText, setAnnouncementText] = useState(() => localStorage.getItem('carepulse_broadcast_announcement') || '');
+  const [isEmergencyMode, setIsEmergencyMode] = useState(() => localStorage.getItem('carepulse_emergency_mode') === 'true');
+  const [allowPublicRegistration, setAllowPublicRegistration] = useState(() => localStorage.getItem('carepulse_allow_registration') !== 'false');
 
   // Modal States
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -39,6 +46,12 @@ export default function AdminPortal() {
   const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
   const [selectedHospitalDetails, setSelectedHospitalDetails] = useState(null);
   const [selectedDoctorDetails, setSelectedDoctorDetails] = useState(null);
+
+  // Master Edit Modals
+  const [editingUser, setEditingUser] = useState(null);
+  const [editingHospital, setEditingHospital] = useState(null);
+  const [editingDoctor, setEditingDoctor] = useState(null);
+  const [editingBooking, setEditingBooking] = useState(null);
 
   // User Form State
   const [userForm, setUserForm] = useState({
@@ -201,22 +214,50 @@ export default function AdminPortal() {
             <Calendar className="w-3.5 h-3.5" /> All OP Bookings ({totalBookings})
           </button>
           <button
+            onClick={() => setActiveTab('CONTROLS')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              activeTab === 'CONTROLS' ? 'bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow-lg shadow-amber-500/25' : 'text-amber-400 hover:text-amber-300'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" /> Master Controls 🛡️
+          </button>
+          <button
             onClick={() => setActiveTab('DISPATCHER')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
               activeTab === 'DISPATCHER' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp Dispatcher Logs ({ADMIN_PHONE_NUMBER})
+            <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp Logs
           </button>
         </div>
 
         <button
           onClick={logout}
-          className="px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-1"
+          className="px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-1 cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" /> Logout
         </button>
       </div>
+
+      {/* Live Broadcast Banner (If active) */}
+      {announcementText && (
+        <div className="bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-amber-500/20 border border-amber-500/40 p-3.5 rounded-2xl flex items-center justify-between text-xs text-amber-200 shadow-lg">
+          <span className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <strong>📢 ACTIVE PLATFORM BROADCAST:</strong> {announcementText}
+          </span>
+          <button
+            onClick={() => {
+              localStorage.removeItem('carepulse_broadcast_announcement');
+              setAnnouncementText('');
+              alert('Broadcast message cleared!');
+            }}
+            className="text-amber-400 hover:text-white underline font-bold text-[11px] cursor-pointer"
+          >
+            Clear Broadcast ✕
+          </button>
+        </div>
+      )}
 
       {/* --- DASHBOARD --- */}
       {activeTab === 'DASHBOARD' && (
@@ -446,13 +487,20 @@ export default function AdminPortal() {
                         </td>
 
                         {/* Actions */}
-                        <td className="p-3.5 text-right space-x-1.5 min-w-[200px]">
+                        <td className="p-3.5 text-right space-x-1.5 min-w-[240px]">
                           <button
                             onClick={() => setSelectedPatientDetails(u)}
                             className="px-2.5 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
                             title="View Full Profile & Appointment History"
                           >
-                            <Eye className="w-3 h-3" /> Full Profile
+                            <Eye className="w-3 h-3" /> Profile
+                          </button>
+                          <button
+                            onClick={() => setEditingUser({ ...u })}
+                            className="px-2.5 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            title="Edit Patient Full Details"
+                          >
+                            <Edit3 className="w-3 h-3" /> Edit
                           </button>
                           <button
                             onClick={() => toggleUserStatus(u._id)}
@@ -612,12 +660,19 @@ export default function AdminPortal() {
                             {h.status}
                           </span>
                         </td>
-                        <td className="p-3.5 text-right space-x-1.5 min-w-[210px]">
+                        <td className="p-3.5 text-right space-x-1.5 min-w-[270px]">
                           <button
                             onClick={() => setSelectedHospitalDetails(h)}
                             className="px-2.5 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
                           >
-                            <Eye className="w-3 h-3" /> Full Docs & Profile
+                            <Eye className="w-3 h-3" /> Full Docs
+                          </button>
+                          <button
+                            onClick={() => setEditingHospital({ ...h })}
+                            className="px-2.5 py-1 bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                            title="Edit Hospital Profile & Settings"
+                          >
+                            <Edit3 className="w-3 h-3" /> Edit
                           </button>
                           {h.status === 'PENDING' && (
                             <>
@@ -764,13 +819,19 @@ export default function AdminPortal() {
                       </div>
                     </div>
 
-                    {/* Actions: View Legal Docs & Delete */}
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                    {/* Actions: View Legal Docs, Edit & Delete */}
+                    <div className="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">
                       <button
                         onClick={() => setSelectedDoctorDetails(d)}
-                        className="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shadow cursor-pointer"
+                        className="flex-1 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 shadow cursor-pointer"
                       >
-                        <Eye className="w-3.5 h-3.5 text-cyan-400" /> Full Profile & 12 Docs
+                        <Eye className="w-3 h-3 text-cyan-400" /> Docs
+                      </button>
+                      <button
+                        onClick={() => setEditingDoctor({ ...d })}
+                        className="flex-1 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 shadow cursor-pointer"
+                      >
+                        <Edit3 className="w-3 h-3 text-indigo-400" /> Edit
                       </button>
                       <button
                         onClick={() => {
@@ -791,13 +852,16 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* --- BOOKINGS --- */}
+      {/* --- BOOKINGS (FULL SEARCH, OVERRIDE & RESCHEDULE) --- */}
       {activeTab === 'BOOKINGS' && (
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-indigo-400" /> Global OP Booking Records
-            </h3>
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 font-outfit">
+                <Calendar className="w-5 h-5 text-indigo-400" /> Global OP Consultation Bookings ({bookings.length})
+              </h3>
+              <p className="text-xs text-slate-400">Complete appointment logs, transaction reference numbers, doctor assignments & status overrides</p>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => printPdfReport(
@@ -805,9 +869,9 @@ export default function AdminPortal() {
                   ['Booking ID', 'Patient', 'Phone', 'Hospital', 'Doctor', 'Date', 'Fee (₹)', 'Status'],
                   bookings.map(b => [`#${b.bookingId}`, b.userName, b.userPhone, b.hospitalName, b.doctorName, b.date, b.opFee, b.status])
                 )}
-                className="flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 font-bold text-xs px-3.5 py-2 rounded-xl"
+                className="flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer"
               >
-                <FileText className="w-3.5 h-3.5" /> PDF
+                <FileText className="w-3.5 h-3.5" /> PDF Report
               </button>
               <button
                 onClick={() => downloadCsv(
@@ -815,45 +879,373 @@ export default function AdminPortal() {
                   ['Booking ID', 'Patient', 'Phone', 'Hospital', 'Doctor', 'Date', 'Time', 'Fee', 'Payment', 'Status'],
                   bookings.map(b => [`#${b.bookingId}`, b.userName, b.userPhone, b.hospitalName, b.doctorName, b.date, b.time, b.opFee, b.paymentMethod || 'N/A', b.status])
                 )}
-                className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 font-bold text-xs px-3.5 py-2 rounded-xl"
+                className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 font-bold text-xs px-3.5 py-2 rounded-xl cursor-pointer"
               >
-                <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+                <FileSpreadsheet className="w-3.5 h-3.5" /> Export Excel
               </button>
             </div>
           </div>
 
-          <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+          {/* Search & Status Filter */}
+          <div className="glass-panel p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search booking by booking ID, patient name, phone, doctor or hospital..."
+                value={bookingSearchQuery}
+                onChange={(e) => setBookingSearchQuery(e.target.value)}
+                className="w-full bg-slate-900/90 border border-slate-800 focus:border-indigo-500/40 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={bookingStatusFilter}
+                onChange={(e) => setBookingStatusFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="ALL">All Status ({bookings.length})</option>
+                <option value="Confirmed">Confirmed ({bookings.filter(b => b.status === 'Confirmed').length})</option>
+                <option value="Completed">Completed ({bookings.filter(b => b.status === 'Completed').length})</option>
+                <option value="Cancelled">Cancelled ({bookings.filter(b => b.status === 'Cancelled').length})</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="glass-panel rounded-2xl border border-slate-800 overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[850px]">
+              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold text-[10px]">
                 <tr>
-                  <th className="p-3.5">Booking ID</th>
+                  <th className="p-3.5">Booking / Token ID</th>
                   <th className="p-3.5">Patient Details</th>
                   <th className="p-3.5">Hospital & Doctor</th>
-                  <th className="p-3.5">Fee</th>
+                  <th className="p-3.5">Date & Slot Time</th>
+                  <th className="p-3.5">Fee & Payment</th>
                   <th className="p-3.5">Status</th>
-                  <th className="p-3.5 text-right">Admin Actions</th>
+                  <th className="p-3.5 text-right">Master Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800 text-slate-200">
-                {bookings.map(b => (
-                  <tr key={b._id} className="hover:bg-slate-900/50">
-                    <td className="p-3.5 font-mono text-cyan-400 font-bold">#{b.bookingId}</td>
-                    <td className="p-3.5 font-medium">{b.userName} ({b.userPhone})</td>
-                    <td className="p-3.5">{b.doctorName} ({b.hospitalName})</td>
-                    <td className="p-3.5 font-bold text-emerald-400">₹{b.opFee}</td>
-                    <td className="p-3.5 font-bold">{b.status}</td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => updateBookingStatus(b._id, 'Cancelled')}
-                        className="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-[11px]"
-                      >
-                        Cancel
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {bookings
+                  .filter(b => {
+                    const matchesStatus = bookingStatusFilter === 'ALL' || b.status === bookingStatusFilter;
+                    const q = bookingSearchQuery.toLowerCase();
+                    const matchesSearch = !bookingSearchQuery ||
+                      b.bookingId?.toLowerCase().includes(q) ||
+                      b.userName?.toLowerCase().includes(q) ||
+                      b.userPhone?.includes(q) ||
+                      b.doctorName?.toLowerCase().includes(q) ||
+                      b.hospitalName?.toLowerCase().includes(q) ||
+                      b.txnRefNumber?.toLowerCase().includes(q);
+                    return matchesStatus && matchesSearch;
+                  })
+                  .map(b => (
+                    <tr key={b._id} className="hover:bg-slate-900/50 transition-colors">
+                      <td className="p-3.5">
+                        <span className="font-mono text-cyan-400 font-bold block">#{b.bookingId}</span>
+                        {b.txnRefNumber && <span className="font-mono text-[10px] text-slate-400">Ref: {b.txnRefNumber}</span>}
+                      </td>
+                      <td className="p-3.5">
+                        <strong className="text-white block">{b.userName}</strong>
+                        <span className="font-mono text-[11px] text-slate-400">+91 {b.userPhone}</span>
+                      </td>
+                      <td className="p-3.5">
+                        <strong className="text-white block">{b.doctorName}</strong>
+                        <span className="text-[11px] text-indigo-400">{b.hospitalName}</span>
+                      </td>
+                      <td className="p-3.5">
+                        <div className="font-medium text-slate-200">{b.date}</div>
+                        <span className="text-cyan-400 font-bold text-[11px]">{b.time}</span>
+                      </td>
+                      <td className="p-3.5">
+                        <div className="font-bold text-emerald-400">₹{b.opFee}</div>
+                        <span className="text-[10px] text-slate-400">{b.paymentMethod || 'Online UPI'}</span>
+                      </td>
+                      <td className="p-3.5 font-bold">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] ${
+                          b.status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
+                          b.status === 'Completed' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' :
+                          'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                        }`}>
+                          {b.status}
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-right space-x-1.5 min-w-[200px]">
+                        <button
+                          onClick={() => setEditingBooking({ ...b })}
+                          className="px-2.5 py-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit3 className="w-3 h-3" /> Reschedule / Override
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Cancel and mark booking #${b.bookingId} as Cancelled?`)) {
+                              updateBookingStatus(b._id, 'Cancelled');
+                            }
+                          }}
+                          className="px-2 py-1 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg text-[11px] cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ TAB: SUPER ADMIN MASTER CONTROL CENTER ═══ */}
+      {activeTab === 'CONTROLS' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-xl font-extrabold text-white flex items-center gap-2 font-outfit">
+                <ShieldCheck className="w-6 h-6 text-amber-400" /> Super Administrator Master Control Center
+              </h3>
+              <p className="text-xs text-slate-400">Global system broadcasts, database backup & restoration, bulk operations & security policies</p>
+            </div>
+            <span className="bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-xs font-mono font-bold">
+              ROOT ACCESS · ACTIVE
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* 1. Global Platform Announcement Broadcast */}
+            <div className="glass-panel p-6 rounded-3xl border border-amber-500/30 shadow-xl space-y-4">
+              <div className="flex items-center gap-2.5 text-amber-400 font-bold text-sm">
+                <Send className="w-5 h-5" /> 1. Live Platform Announcement Broadcast
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Broadcast an emergency or official notification banner to all patients, doctors, and hospital administrators instantly across the entire CarePulse system.
+              </p>
+
+              <div className="space-y-3">
+                <textarea
+                  rows={3}
+                  placeholder="Enter broadcast message (e.g. 📢 Free Multi-Speciality Health Camp on Sunday at Apollo Hospital! Free consultation for all patients.)"
+                  value={announcementText}
+                  onChange={(e) => setAnnouncementText(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-amber-500/50 rounded-2xl p-3.5 text-xs text-white outline-none"
+                />
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!announcementText.trim()) {
+                        alert('Please enter an announcement message first!');
+                        return;
+                      }
+                      localStorage.setItem('carepulse_broadcast_announcement', announcementText.trim());
+                      alert('🚀 Broadcast Announcement Published Live to All Users!');
+                    }}
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" /> Publish Live Broadcast
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.removeItem('carepulse_broadcast_announcement');
+                      setAnnouncementText('');
+                      alert('Broadcast announcement removed.');
+                    }}
+                    className="px-4 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 rounded-xl text-xs font-semibold cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Master System Toggles & Emergency Controls */}
+            <div className="glass-panel p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
+              <div className="flex items-center gap-2.5 text-cyan-400 font-bold text-sm">
+                <Settings className="w-5 h-5" /> 2. Master Platform Security & Mode Switches
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Control system access rules, 24/7 red-alert emergency state, and public registration policies.
+              </p>
+
+              <div className="space-y-3 pt-1 text-xs">
+                {/* Emergency Red Alert Mode */}
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <strong className="text-white block">24/7 Red-Alert Emergency Mode</strong>
+                    <span className="text-[11px] text-slate-400">Prioritizes emergency OP bookings and enables direct walk-in queueing</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const next = !isEmergencyMode;
+                      setIsEmergencyMode(next);
+                      localStorage.setItem('carepulse_emergency_mode', next.toString());
+                      alert(`Emergency Mode: ${next ? 'ACTIVATED 🚨' : 'DEACTIVATED ✓'}`);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition-all ${
+                      isEmergencyMode ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {isEmergencyMode ? 'ENABLED 🚨' : 'DISABLED'}
+                  </button>
+                </div>
+
+                {/* Public Registration Gateway */}
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <strong className="text-white block">Hospital Self-Registration Gateway</strong>
+                    <span className="text-[11px] text-slate-400">Allow new hospitals to submit registration requests online</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const next = !allowPublicRegistration;
+                      setAllowPublicRegistration(next);
+                      localStorage.setItem('carepulse_allow_registration', next.toString());
+                      alert(`Hospital Registration: ${next ? 'OPEN TO PUBLIC ✓' : 'LOCKED TO ADMIN ONLY 🔒'}`);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-xl font-bold text-xs cursor-pointer transition-all ${
+                      allowPublicRegistration ? 'bg-emerald-600 text-white shadow-lg' : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {allowPublicRegistration ? 'OPEN (PUBLIC)' : 'ADMIN ONLY 🔒'}
+                  </button>
+                </div>
+
+                {/* Bulk Hospital Approval */}
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <strong className="text-white block">Bulk Hospital Approvals ({pendingHospitalsCount} Pending)</strong>
+                    <span className="text-[11px] text-slate-400">Approve all registered hospitals currently in pending review state</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (pendingHospitalsCount === 0) {
+                        alert('No hospitals are currently pending approval!');
+                        return;
+                      }
+                      hospitals.filter(h => h.status === 'PENDING').forEach(h => approveHospital(h._id));
+                      alert(`✅ All ${pendingHospitalsCount} pending hospitals approved!`);
+                    }}
+                    className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow cursor-pointer"
+                  >
+                    Approve All ({pendingHospitalsCount})
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Complete Database Backup & Export Center */}
+            <div className="glass-panel p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4 lg:col-span-2">
+              <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-sm">
+                <FileSpreadsheet className="w-5 h-5" /> 3. Master Database Backup, Export & Factory Reset Center
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Download a complete system snapshot (JSON master file), individual excel spreadsheets, or reset system records.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                {/* JSON DB Backup */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fullDbDump = {
+                      exportTimestamp: new Date().toISOString(),
+                      system: 'CarePulse Hospital OP Booking System',
+                      users,
+                      hospitals,
+                      doctors,
+                      bookings
+                    };
+                    const blob = new Blob([JSON.stringify(fullDbDump, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `CarePulse_Master_Database_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('💾 Complete Master JSON Database Backup downloaded successfully!');
+                  }}
+                  className="bg-slate-900 hover:bg-slate-800 border border-slate-700 p-4 rounded-2xl text-left space-y-2 cursor-pointer transition-all hover:border-cyan-500/40"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold">
+                    JSON
+                  </div>
+                  <strong className="text-white text-xs block">Download Full DB Backup</strong>
+                  <span className="text-[10px] text-slate-400 block">All users, hospitals, doctors, and bookings in JSON</span>
+                </button>
+
+                {/* CSV Patients Export */}
+                <button
+                  type="button"
+                  onClick={() => downloadCsv(
+                    `CarePulse_Patients_${new Date().toISOString().slice(0, 10)}`,
+                    ['Patient ID', 'Full Name', 'Phone', 'Email', 'DOB', 'Gender', 'Address', 'Role', 'Status', 'Registered Date'],
+                    users.map(u => [
+                      u.patientId || ('CP-PAT-' + (u.phone ? u.phone.slice(-6) : '543210')),
+                      u.fullName,
+                      u.phone,
+                      u.email || '',
+                      u.dateOfBirth || '',
+                      u.gender || '',
+                      u.address || '',
+                      u.role,
+                      u.status,
+                      u.createdAt || ''
+                    ])
+                  )}
+                  className="bg-slate-900 hover:bg-slate-800 border border-slate-700 p-4 rounded-2xl text-left space-y-2 cursor-pointer transition-all hover:border-emerald-500/40"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+                    CSV
+                  </div>
+                  <strong className="text-white text-xs block">Export Patients Directory</strong>
+                  <span className="text-[10px] text-slate-400 block">{users.length} patient records with contact details</span>
+                </button>
+
+                {/* CSV Doctors & Hospitals Export */}
+                <button
+                  type="button"
+                  onClick={() => downloadCsv(
+                    `CarePulse_Doctors_Directory_${new Date().toISOString().slice(0, 10)}`,
+                    ['Doctor Name', 'Registration No', 'Specialty', 'Qualifications', 'Hospital Name', 'OP Fee', 'Timings', 'Days'],
+                    doctors.map(d => {
+                      const h = hospitals.find(hosp => hosp._id === d.hospitalId);
+                      return [d.doctorName, d.medicalRegistrationNo || '', d.specialization, d.qualification || '', h?.hospitalName || '', d.opFee, d.availableTime, d.availableDays];
+                    })
+                  )}
+                  className="bg-slate-900 hover:bg-slate-800 border border-slate-700 p-4 rounded-2xl text-left space-y-2 cursor-pointer transition-all hover:border-indigo-500/40"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold">
+                    CSV
+                  </div>
+                  <strong className="text-white text-xs block">Export Doctors Directory</strong>
+                  <span className="text-[10px] text-slate-400 block">{doctors.length} verified doctors with hospital affiliations</span>
+                </button>
+
+                {/* Factory Reset Database */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const confirmText = prompt('⚠️ TYPE "RESET" TO FACTORY RESTORE THE ENTIRE DATABASE:');
+                    if (confirmText === 'RESET') {
+                      localStorage.clear();
+                      alert('🔄 Database factory reset completed. Reloading system...');
+                      window.location.reload();
+                    }
+                  }}
+                  className="bg-rose-950/20 hover:bg-rose-950/40 border border-rose-500/30 p-4 rounded-2xl text-left space-y-2 cursor-pointer transition-all hover:border-rose-500/60"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold">
+                    <Trash2 className="w-4 h-4" />
+                  </div>
+                  <strong className="text-rose-300 text-xs block">Factory Reset Database</strong>
+                  <span className="text-[10px] text-slate-400 block">Clear cache & restore factory initial dataset</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
@@ -1754,6 +2146,613 @@ export default function AdminPortal() {
                 ) : null;
               })()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MASTER EDIT MODAL: PATIENT / USER ═══ */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-lg rounded-3xl p-6 border border-cyan-500/40 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setEditingUser(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-outfit">
+              <Edit3 className="w-5 h-5 text-cyan-400" /> Super Admin Edit: {editingUser.fullName}
+            </h3>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              updateUser(editingUser._id, {
+                fullName: editingUser.fullName,
+                phone: editingUser.phone,
+                email: editingUser.email,
+                dateOfBirth: editingUser.dateOfBirth,
+                gender: editingUser.gender,
+                address: editingUser.address,
+                role: editingUser.role,
+                status: editingUser.status,
+                ...(editingUser.newPassword ? { password: editingUser.newPassword } : {})
+              });
+              alert('✅ Patient / User account details updated successfully by Admin!');
+              setEditingUser(null);
+            }} className="space-y-3 text-xs">
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  value={editingUser.fullName}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, fullName: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Mobile Phone (Login ID) *</label>
+                  <input
+                    type="tel"
+                    value={editingUser.phone}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={editingUser.email || ''}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={editingUser.dateOfBirth || ''}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Gender</label>
+                  <select
+                    value={editingUser.gender || 'Male'}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, gender: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Residential Address</label>
+                <input
+                  type="text"
+                  value={editingUser.address || ''}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, address: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Account Role</label>
+                  <select
+                    value={editingUser.role || 'USER'}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="USER">Patient / User</option>
+                    <option value="HOSPITAL">Hospital Admin</option>
+                    <option value="ADMIN">Super Admin</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Account Status</label>
+                  <select
+                    value={editingUser.status || 'ACTIVE'}
+                    onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="ACTIVE">ACTIVE ✓</option>
+                    <option value="SUSPENDED">SUSPENDED 🛑</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Override Password (Leave blank to keep existing)</label>
+                <input
+                  type="password"
+                  placeholder="Enter new custom password..."
+                  value={editingUser.newPassword || ''}
+                  onChange={(e) => setEditingUser(prev => ({ ...prev, newPassword: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-2.5 rounded-xl shadow-lg cursor-pointer"
+                >
+                  Save Account Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 bg-slate-800 text-slate-300 rounded-xl font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MASTER EDIT MODAL: HOSPITAL ═══ */}
+      {editingHospital && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-xl rounded-3xl p-6 border border-indigo-500/40 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setEditingHospital(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-outfit">
+              <Edit3 className="w-5 h-5 text-indigo-400" /> Super Admin Edit: {editingHospital.hospitalName}
+            </h3>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              updateHospital(editingHospital._id, {
+                hospitalName: editingHospital.hospitalName,
+                phone: editingHospital.phone,
+                email: editingHospital.email,
+                city: editingHospital.city,
+                area: editingHospital.area,
+                address: editingHospital.address,
+                opFee: Number(editingHospital.opFee),
+                hospitalTimings: editingHospital.hospitalTimings,
+                sameDayBooking: editingHospital.sameDayBooking,
+                status: editingHospital.status,
+                upiId: editingHospital.upiId
+              });
+              alert('✅ Hospital details updated successfully by Admin!');
+              setEditingHospital(null);
+            }} className="space-y-3 text-xs">
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Hospital Name *</label>
+                <input
+                  type="text"
+                  value={editingHospital.hospitalName}
+                  onChange={(e) => setEditingHospital(prev => ({ ...prev, hospitalName: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Phone Number *</label>
+                  <input
+                    type="tel"
+                    value={editingHospital.phone}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Official Email</label>
+                  <input
+                    type="email"
+                    value={editingHospital.email || ''}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">City</label>
+                  <input
+                    type="text"
+                    value={editingHospital.city}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, city: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Area / Landmark</label>
+                  <input
+                    type="text"
+                    value={editingHospital.area}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, area: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Full Street Address</label>
+                <input
+                  type="text"
+                  value={editingHospital.address}
+                  onChange={(e) => setEditingHospital(prev => ({ ...prev, address: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Base OP Fee (₹)</label>
+                  <input
+                    type="number"
+                    value={editingHospital.opFee}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, opFee: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Approval Status</label>
+                  <select
+                    value={editingHospital.status}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-bold"
+                  >
+                    <option value="APPROVED">APPROVED ✓</option>
+                    <option value="PENDING">PENDING REVIEW</option>
+                    <option value="SUSPENDED">SUSPENDED</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Advance Window</label>
+                  <select
+                    value={editingHospital.sameDayBooking || 'Yes'}
+                    onChange={(e) => setEditingHospital(prev => ({ ...prev, sameDayBooking: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    <option value="Yes">Same Day</option>
+                    <option value="1_DAY">1 Day</option>
+                    <option value="3_DAYS">3 Days</option>
+                    <option value="1_WEEK">1 Week</option>
+                    <option value="2_WEEKS">2 Weeks</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Hospital UPI ID (For patient QR payments)</label>
+                <input
+                  type="text"
+                  value={editingHospital.upiId || ''}
+                  onChange={(e) => setEditingHospital(prev => ({ ...prev, upiId: e.target.value }))}
+                  placeholder="e.g. apollo@ybl"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl shadow-lg cursor-pointer"
+                >
+                  Save Hospital Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingHospital(null)}
+                  className="px-4 bg-slate-800 text-slate-300 rounded-xl font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MASTER EDIT MODAL: DOCTOR ═══ */}
+      {editingDoctor && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-xl rounded-3xl p-6 border border-emerald-500/40 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setEditingDoctor(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-outfit">
+              <Edit3 className="w-5 h-5 text-emerald-400" /> Super Admin Edit: {editingDoctor.doctorName}
+            </h3>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              updateDoctor(editingDoctor._id, {
+                doctorName: editingDoctor.doctorName,
+                hospitalId: editingDoctor.hospitalId,
+                medicalRegistrationNo: editingDoctor.medicalRegistrationNo,
+                qualification: editingDoctor.qualification,
+                specialization: editingDoctor.specialization,
+                experience: Number(editingDoctor.experience),
+                phone: editingDoctor.phone,
+                opFee: Number(editingDoctor.opFee),
+                availableDays: editingDoctor.availableDays,
+                availableTime: editingDoctor.availableTime,
+                maxPatients: Number(editingDoctor.maxPatients)
+              });
+              alert('✅ Doctor details updated successfully by Admin!');
+              setEditingDoctor(null);
+            }} className="space-y-3 text-xs">
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Doctor Full Name *</label>
+                <input
+                  type="text"
+                  value={editingDoctor.doctorName}
+                  onChange={(e) => setEditingDoctor(prev => ({ ...prev, doctorName: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Assigned Hospital</label>
+                  <select
+                    value={editingDoctor.hospitalId}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, hospitalId: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    {hospitals.map(h => (
+                      <option key={h._id} value={h._id}>{h.hospitalName} ({h.city})</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Medical Registration No *</label>
+                  <input
+                    type="text"
+                    value={editingDoctor.medicalRegistrationNo || ''}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, medicalRegistrationNo: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Specialization</label>
+                  <select
+                    value={editingDoctor.specialization}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, specialization: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  >
+                    {ALL_DOCTOR_CATEGORIES.map(spec => (
+                      <option key={spec} value={spec}>{spec}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Degree & Qualifications</label>
+                  <input
+                    type="text"
+                    value={editingDoctor.qualification || ''}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, qualification: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">OP Fee (₹)</label>
+                  <input
+                    type="number"
+                    value={editingDoctor.opFee}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, opFee: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Experience (Yrs)</label>
+                  <input
+                    type="number"
+                    value={editingDoctor.experience || 5}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, experience: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Max Patients/Day</label>
+                  <input
+                    type="number"
+                    value={editingDoctor.maxPatients || 25}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, maxPatients: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Available Days</label>
+                  <input
+                    type="text"
+                    value={editingDoctor.availableDays || 'Monday - Saturday'}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, availableDays: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Timings Slot</label>
+                  <input
+                    type="text"
+                    value={editingDoctor.availableTime || '09:00 AM - 01:00 PM'}
+                    onChange={(e) => setEditingDoctor(prev => ({ ...prev, availableTime: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow-lg cursor-pointer"
+                >
+                  Save Doctor Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingDoctor(null)}
+                  className="px-4 bg-slate-800 text-slate-300 rounded-xl font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MASTER EDIT MODAL: BOOKING OVERRIDE & RESCHEDULE ═══ */}
+      {editingBooking && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="glass-panel w-full max-w-lg rounded-3xl p-6 border border-indigo-500/40 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setEditingBooking(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-outfit">
+              <Edit3 className="w-5 h-5 text-indigo-400" /> Admin Override: Booking #{editingBooking.bookingId}
+            </h3>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              updateBooking(editingBooking._id, {
+                userName: editingBooking.userName,
+                userPhone: editingBooking.userPhone,
+                date: editingBooking.date,
+                time: editingBooking.time,
+                opFee: Number(editingBooking.opFee),
+                status: editingBooking.status,
+                prescriptionNote: editingBooking.prescriptionNote
+              });
+              alert('✅ Booking record updated and rescheduled successfully!');
+              setEditingBooking(null);
+            }} className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Patient Name</label>
+                  <input
+                    type="text"
+                    value={editingBooking.userName}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, userName: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Patient Phone</label>
+                  <input
+                    type="tel"
+                    value={editingBooking.userPhone}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, userPhone: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Reschedule Date</label>
+                  <input
+                    type="date"
+                    value={editingBooking.date}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, date: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Time Slot</label>
+                  <input
+                    type="text"
+                    value={editingBooking.time}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, time: e.target.value }))}
+                    placeholder="e.g. 10:30 AM"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Consultation Status</label>
+                  <select
+                    value={editingBooking.status}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-bold"
+                  >
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Refunded">Refunded</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Fee (₹)</label>
+                  <input
+                    type="number"
+                    value={editingBooking.opFee}
+                    onChange={(e) => setEditingBooking(prev => ({ ...prev, opFee: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-semibold block mb-1">Prescription Note / Medical Remarks</label>
+                <textarea
+                  rows={3}
+                  placeholder="Enter medical notes, diagnosis, or prescription remarks..."
+                  value={editingBooking.prescriptionNote || ''}
+                  onChange={(e) => setEditingBooking(prev => ({ ...prev, prescriptionNote: e.target.value }))}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl shadow-lg cursor-pointer"
+                >
+                  Save Booking Override
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingBooking(null)}
+                  className="px-4 bg-slate-800 text-slate-300 rounded-xl font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
