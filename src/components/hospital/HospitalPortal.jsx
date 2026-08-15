@@ -78,9 +78,9 @@ export default function HospitalPortal() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   // Active Hospital object
-  const hospital = hospitals.find(h => h._id === currentUser?.hospitalId) || hospitals[0];
-  const hospitalDoctors = doctors.filter(d => d.hospitalId === hospital._id);
-  const hospitalBookings = bookings.filter(b => b.hospitalId === hospital._id);
+  const hospital = (hospitals && hospitals.find(h => h._id === currentUser?.hospitalId)) || (hospitals && hospitals[0]) || {};
+  const hospitalDoctors = (doctors || []).filter(d => d.hospitalId === hospital?._id);
+  const hospitalBookings = (bookings || []).filter(b => b.hospitalId === hospital?._id);
 
   // Modal States
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);

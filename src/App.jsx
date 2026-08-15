@@ -13,6 +13,8 @@ import UserPortal from './components/user/UserPortal';
 import HospitalPortal from './components/hospital/HospitalPortal';
 import AdminPortal from './components/admin/AdminPortal';
 
+import ErrorBoundary from './components/common/ErrorBoundary';
+
 function MainApp() {
   const { currentUser } = useAuth();
   
@@ -24,7 +26,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950">
       <div>
         <Navbar />
         <Toast />
@@ -54,7 +56,7 @@ function MainApp() {
 
               {authView === 'ADMIN_LOGIN' && (
                 <AdminLogin 
-                  onGoBack={handleBackToPortals}
+                  onGoBack={handleBackToPortals} 
                   onBackToPortals={handleBackToPortals} 
                 />
               )}
@@ -70,6 +72,9 @@ function MainApp() {
               {currentUser.role === 'USER' && <UserPortal />}
               {currentUser.role === 'HOSPITAL' && <HospitalPortal />}
               {currentUser.role === 'ADMIN' && <AdminPortal />}
+              {currentUser.role !== 'USER' && currentUser.role !== 'HOSPITAL' && currentUser.role !== 'ADMIN' && (
+                <AdminPortal />
+              )}
             </>
           )}
         </main>
@@ -89,12 +94,14 @@ function MainApp() {
 
 export default function App() {
   return (
-    <DbProvider>
-      <AuthProvider>
-        <LanguageProvider>
-          <MainApp />
-        </LanguageProvider>
-      </AuthProvider>
-    </DbProvider>
+    <ErrorBoundary>
+      <DbProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <MainApp />
+          </LanguageProvider>
+        </AuthProvider>
+      </DbProvider>
+    </ErrorBoundary>
   );
 }
