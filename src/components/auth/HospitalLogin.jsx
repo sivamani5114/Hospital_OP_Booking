@@ -17,23 +17,32 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(phone, password);
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      alert('❌ Please enter a valid 10-digit Hospital Phone Number!');
+      return;
+    }
+    if (!/^[6-9]/.test(cleanPhone)) {
+      alert('❌ Invalid Mobile Number! Indian phone numbers must start with 6, 7, 8, or 9.');
+      return;
+    }
+    login(cleanPhone, password);
   };
 
   const handleFillDemo = () => {
     setPhone('9123456789');
-    setPassword('hospital123');
+    setPassword('password123');
   };
 
   return (
     <div className="min-h-screen flex items-stretch bg-slate-950">
 
-      {/* ═══ LEFT BRANDING PANEL ═══ */}
+      {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl -z-10"></div>
 
-        {/* Logo */}
+        {/* Logo + Brand */}
         <div>
           <div className="flex items-center gap-3 mb-10">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
@@ -43,21 +52,21 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
           </div>
 
           <h2 className="text-3xl font-extrabold text-white leading-tight mb-3">
-            Hospital Desk<br />
-            <span className="text-emerald-400">Management Portal</span>
+            Manage OP Queues<br />
+            <span className="text-emerald-400">& Doctors Easily.</span>
           </h2>
           <p className="text-slate-400 text-sm leading-relaxed">
-            Manage your OP appointments, doctor schedules, live queue counter, patient records, and real-time analytics from a single dashboard.
+            Accept online OP bookings, configure doctor consultation slots, track daily revenue, and deliver digital prescriptions seamlessly.
           </p>
         </div>
 
         {/* Highlights */}
         <div className="space-y-4">
           {[
-            { icon: '🗓️', title: 'Live OP Queue Counter', desc: 'Real-time patient slot management' },
-            { icon: '👨‍⚕️', title: 'Doctor Schedule Management', desc: 'Set availability & specialties' },
-            { icon: '📊', title: 'Booking Analytics', desc: 'Track daily OP statistics' },
-            { icon: '🔔', title: 'Patient Notification System', desc: 'Auto alerts for appointments' },
+            { icon: '👨‍⚕️', title: 'Manage Doctors & Slots', desc: 'Add verified doctors with license numbers' },
+            { icon: '📋', title: 'Real-Time OP Queue', desc: 'Live token counter and queue management' },
+            { icon: '📄', title: 'Digital Prescriptions', desc: 'Attach prescription notes to patient records' },
+            { icon: '📊', title: 'Revenue & Reports', desc: 'Instant daily OP collection summaries' },
           ].map((f, i) => (
             <div key={i} className="flex items-start gap-3">
               <span className="text-xl mt-0.5">{f.icon}</span>
@@ -70,12 +79,13 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
         </div>
 
         <div className="text-[11px] text-slate-600">
-          🔒 Secure Hospital Portal · NABH Certified System · Admin-Approved Access Only
+          🔒 Secure Enterprise Portal · NABH & CEA Compliant · Encrypted System
         </div>
       </div>
 
       {/* ═══ RIGHT LOGIN FORM PANEL ═══ */}
       <div className="flex-1 flex flex-col justify-center p-6 sm:p-12">
+        {/* Back button */}
         <div className="mb-8">
           <button
             type="button"
@@ -87,6 +97,7 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
         </div>
 
         <div className="w-full max-w-md">
+          {/* Title */}
           <div className="mb-8 space-y-1.5">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4 text-emerald-400">
               <Building2 className="w-6 h-6" />
@@ -97,15 +108,42 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Hospital Registered Phone</label>
-              <div className="relative">
-                <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Hospital Registered Phone (10 Digits)</label>
+                {phone.length === 10 && /^[6-9]\d{9}$/.test(phone) ? (
+                  <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
+                  </span>
+                ) : phone.length > 0 && !/^[6-9]/.test(phone) ? (
+                  <span className="text-[10px] text-rose-400 font-bold">
+                    ⚠️ Must start with 6, 7, 8, or 9
+                  </span>
+                ) : phone.length > 0 ? (
+                  <span className="text-[10px] text-emerald-400 font-mono">
+                    {phone.length}/10 digits
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="relative flex items-center">
+                <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
+                  <span>🇮🇳</span>
+                  <span className="font-mono text-slate-300">+91</span>
+                </div>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   placeholder="Enter hospital registered phone number"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none transition-colors"
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className={`w-full bg-slate-900 border rounded-xl pl-20 pr-4 py-3 text-sm text-white font-mono tracking-wider outline-none transition-colors ${
+                    phone.length === 10 && /^[6-9]\d{9}$/.test(phone)
+                      ? 'border-emerald-500/80 focus:border-emerald-400'
+                      : phone.length > 0 && !/^[6-9]/.test(phone)
+                      ? 'border-rose-500/80 focus:border-rose-400'
+                      : 'border-slate-800 focus:border-emerald-500/60'
+                  }`}
                   required
                 />
               </div>

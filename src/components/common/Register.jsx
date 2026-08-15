@@ -13,7 +13,7 @@ import {
 
 export default function Register({ onGoToLogin }) {
   const { registerUser, showToast } = useAuth();
-  const { registerHospitalSelf } = useDb();
+  const { registerHospitalSelf, users, hospitals } = useDb();
 
   const [regType, setRegType] = useState('PATIENT'); // PATIENT | HOSPITAL
 
@@ -157,12 +157,33 @@ export default function Register({ onGoToLogin }) {
 
   // Handle Send Direct SMS OTP to Target User Phone via Fast2SMS Gateway
   const handleSendInstantOtp = (phoneNum) => {
-    if (!phoneNum || phoneNum.trim().length < 10) {
-      showToast('❌ Please enter a valid 10-digit Phone Number first!', 'error');
+    if (!phoneNum || phoneNum.trim().length === 0) {
+      showToast('❌ Please enter a 10-digit Mobile Number!', 'error');
       return;
     }
 
-    const cleanPhone = phoneNum.replace(/[^0-9]/g, '').slice(-10);
+    const cleanPhone = phoneNum.replace(/\D/g, '').slice(0, 10);
+    if (cleanPhone.length !== 10) {
+      showToast('❌ Mobile Number must be exactly 10 digits!', 'error');
+      alert('❌ Mobile Number must be exactly 10 digits!');
+      return;
+    }
+
+    if (!/^[6-9]/.test(cleanPhone)) {
+      showToast('❌ Invalid Number! Indian mobile numbers must start with 6, 7, 8, or 9.', 'error');
+      alert('❌ Invalid Number! Indian mobile numbers must start with 6, 7, 8, or 9.');
+      return;
+    }
+
+    // 🔒 Enforce Strict Unique Phone Number Check
+    const isUserExists = (users || []).some(u => u.phone === cleanPhone);
+    const isHospExists = (hospitals || []).some(h => h.phone === cleanPhone);
+    if (isUserExists || isHospExists) {
+      showToast(`❌ Phone number +91 ${cleanPhone} is already registered! Please login.`, 'error');
+      alert(`❌ Phone number +91 ${cleanPhone} is already registered!\n\nPlease Login with your existing account or use a different phone number.`);
+      return;
+    }
+
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     setGeneratedOtp(code);
@@ -389,19 +410,40 @@ export default function Register({ onGoToLogin }) {
 
             {/* Phone Number + Send OTP Button */}
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1">Phone Number *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs text-slate-400 font-semibold">Phone Number (10 Digits) *</label>
+                {patientForm.phone.length === 10 && /^[6-9]\d{9}$/.test(patientForm.phone) ? (
+                  <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
+                  </span>
+                ) : patientForm.phone.length > 0 && !/^[6-9]/.test(patientForm.phone) ? (
+                  <span className="text-[10px] text-rose-400 font-bold">
+                    ⚠️ Must start with 6, 7, 8, or 9
+                  </span>
+                ) : patientForm.phone.length > 0 ? (
+                  <span className="text-[10px] text-cyan-400 font-mono">
+                    {patientForm.phone.length}/10 digits
+                  </span>
+                ) : null}
+              </div>
+
               <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                <div className="relative flex-1 flex items-center">
+                  <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
+                    <span>🇮🇳</span>
+                    <span className="font-mono text-slate-300">+91</span>
+                  </div>
                   <input
-                    type="text"
-                    placeholder="e.g. 9876543210"
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="Enter 10-digit mobile number"
                     value={patientForm.phone}
                     onChange={(e) => {
-                      setPatientForm(prev => ({ ...prev, phone: e.target.value }));
+                      setPatientForm(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }));
                       setIsPhoneVerified(false);
                     }}
-                    className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3 py-2.5 text-xs text-white ${
+                    className={`w-full bg-slate-900 border rounded-xl pl-20 pr-3 py-2.5 text-xs text-white font-mono tracking-wider ${
                       isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800'
                     }`}
                     required
@@ -413,14 +455,14 @@ export default function Register({ onGoToLogin }) {
                     type="button"
                     onClick={() => handleSendInstantOtp(patientForm.phone)}
                     disabled={timerSeconds > 0}
-                    className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 min-w-max"
+                    className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 min-w-max cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
                   </button>
                 ) : (
                   <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" /> Verified
+                    <CheckCircle2 className="w-4 h-4" /> Verified ✓
                   </span>
                 )}
               </div>
@@ -680,19 +722,40 @@ export default function Register({ onGoToLogin }) {
 
                 {/* Hospital Phone Number + Send OTP Button */}
                 <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Hospital Phone Number *</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-slate-400 font-semibold block text-xs">Hospital Phone Number (10 Digits) *</label>
+                    {hospitalForm.phone.length === 10 && /^[6-9]\d{9}$/.test(hospitalForm.phone) ? (
+                      <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
+                      </span>
+                    ) : hospitalForm.phone.length > 0 && !/^[6-9]/.test(hospitalForm.phone) ? (
+                      <span className="text-[10px] text-rose-400 font-bold">
+                        ⚠️ Must start with 6, 7, 8, or 9
+                      </span>
+                    ) : hospitalForm.phone.length > 0 ? (
+                      <span className="text-[10px] text-emerald-400 font-mono">
+                        {hospitalForm.phone.length}/10 digits
+                      </span>
+                    ) : null}
+                  </div>
+
                   <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <div className="relative flex-1 flex items-center">
+                      <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
+                        <span>🇮🇳</span>
+                        <span className="font-mono text-slate-300">+91</span>
+                      </div>
                       <input
                         type="tel"
-                        placeholder="e.g. 9848012345"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="Enter 10-digit hospital phone number"
                         value={hospitalForm.phone}
                         onChange={(e) => {
-                          setHospitalForm(prev => ({ ...prev, phone: e.target.value }));
+                          setHospitalForm(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }));
                           setIsPhoneVerified(false);
                         }}
-                        className={`w-full bg-slate-900 border rounded-xl pl-9 pr-3 py-2.5 text-xs text-white ${
+                        className={`w-full bg-slate-900 border rounded-xl pl-20 pr-3 py-2.5 text-xs text-white font-mono tracking-wider ${
                           isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800'
                         }`}
                         required
@@ -704,14 +767,14 @@ export default function Register({ onGoToLogin }) {
                         type="button"
                         onClick={() => handleSendInstantOtp(hospitalForm.phone)}
                         disabled={timerSeconds > 0}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 min-w-max"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 min-w-max cursor-pointer"
                       >
                         <Send className="w-3.5 h-3.5" />
                         {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
                       </button>
                     ) : (
                       <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1">
-                        <CheckCircle2 className="w-4 h-4" /> Verified
+                        <CheckCircle2 className="w-4 h-4" /> Verified ✓
                       </span>
                     )}
                   </div>

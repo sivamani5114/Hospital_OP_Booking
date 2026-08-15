@@ -17,7 +17,16 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(phone, password);
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      alert('❌ Please enter a valid 10-digit Indian Mobile Number!');
+      return;
+    }
+    if (!/^[6-9]/.test(cleanPhone)) {
+      alert('❌ Invalid Mobile Number! Indian mobile numbers must start with 6, 7, 8, or 9.');
+      return;
+    }
+    login(cleanPhone, password);
   };
 
   const handleFillDemo = () => {
@@ -100,15 +109,42 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Phone Number</label>
-              <div className="relative">
-                <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Phone Number (10 Digits)</label>
+                {phone.length === 10 && /^[6-9]\d{9}$/.test(phone) ? (
+                  <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
+                  </span>
+                ) : phone.length > 0 && !/^[6-9]/.test(phone) ? (
+                  <span className="text-[10px] text-rose-400 font-bold">
+                    ⚠️ Must start with 6, 7, 8, or 9
+                  </span>
+                ) : phone.length > 0 ? (
+                  <span className="text-[10px] text-cyan-400 font-mono">
+                    {phone.length}/10 digits
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="relative flex items-center">
+                <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
+                  <span>🇮🇳</span>
+                  <span className="font-mono text-slate-300">+91</span>
+                </div>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   placeholder="Enter 10-digit phone number"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 focus:border-cyan-500/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none transition-colors"
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className={`w-full bg-slate-900 border rounded-xl pl-20 pr-4 py-3 text-sm text-white font-mono tracking-wider outline-none transition-colors ${
+                    phone.length === 10 && /^[6-9]\d{9}$/.test(phone)
+                      ? 'border-emerald-500/80 focus:border-emerald-400'
+                      : phone.length > 0 && !/^[6-9]/.test(phone)
+                      ? 'border-rose-500/80 focus:border-rose-400'
+                      : 'border-slate-800 focus:border-cyan-500/60'
+                  }`}
                   required
                 />
               </div>

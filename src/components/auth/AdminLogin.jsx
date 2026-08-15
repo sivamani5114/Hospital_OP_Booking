@@ -17,7 +17,16 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(phone, password);
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.length !== 10) {
+      alert('❌ Please enter a valid 10-digit Super Admin Phone Number!');
+      return;
+    }
+    if (!/^[6-9]/.test(cleanPhone)) {
+      alert('❌ Invalid Mobile Number! Indian phone numbers must start with 6, 7, 8, or 9.');
+      return;
+    }
+    login(cleanPhone, password);
   };
 
   const handleFillDemo = () => {
@@ -28,7 +37,7 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
   return (
     <div className="min-h-screen flex items-stretch bg-slate-950">
 
-      {/* ═══ LEFT BRANDING PANEL ═══ */}
+      {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl -z-10"></div>
@@ -43,21 +52,21 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
           </div>
 
           <h2 className="text-3xl font-extrabold text-white leading-tight mb-3">
-            System Admin<br />
-            <span className="text-indigo-400">Control Panel</span>
+            Super Admin<br />
+            <span className="text-indigo-400">Master Controls</span>
           </h2>
           <p className="text-slate-400 text-sm leading-relaxed">
-            Full CRUD control over all hospitals, patients, doctors, bookings, analytics, and system-wide settings with complete access authority.
+            Central authority portal for hospital approvals, system audit logs, doctor license verifications, and platform governance.
           </p>
         </div>
 
         {/* Highlights */}
         <div className="space-y-4">
           {[
-            { icon: '🏥', title: 'Hospital Management', desc: 'Approve, edit, suspend hospitals' },
-            { icon: '👥', title: 'User Management', desc: 'Full patient & user control' },
-            { icon: '📊', title: 'System Analytics', desc: 'Bookings, revenue & insights' },
-            { icon: '🛡️', title: 'Security Controls', desc: 'Access, roles & permissions' },
+            { icon: '🏥', title: 'Hospital Approvals', desc: 'Verify CEA and NABH registrations' },
+            { icon: '🩺', title: 'Doctor License Verification', desc: 'NMC / State medical council checks' },
+            { icon: '🛡️', title: 'Cyber Security Hub', desc: 'Real-time brute force and audit monitors' },
+            { icon: '📊', title: 'Global Platform Stats', desc: 'System-wide analytics and revenue tracking' },
           ].map((f, i) => (
             <div key={i} className="flex items-start gap-3">
               <span className="text-xl mt-0.5">{f.icon}</span>
@@ -70,12 +79,13 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
         </div>
 
         <div className="text-[11px] text-slate-600">
-          🔐 Restricted Access · Super Admin Credentials Only · Activity Logged
+          🔒 Restricted Access Only · Encrypted Session · 2FA Protected
         </div>
       </div>
 
       {/* ═══ RIGHT LOGIN FORM PANEL ═══ */}
       <div className="flex-1 flex flex-col justify-center p-6 sm:p-12">
+        {/* Back button */}
         <div className="mb-8">
           <button
             type="button"
@@ -87,6 +97,7 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
         </div>
 
         <div className="w-full max-w-md">
+          {/* Title */}
           <div className="mb-8 space-y-1.5">
             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4 text-indigo-400">
               <ShieldCheck className="w-6 h-6" />
@@ -97,15 +108,42 @@ export default function AdminLogin({ onGoBack, onBackToPortals }) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5">Super Admin Phone</label>
-              <div className="relative">
-                <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs text-slate-400 font-semibold">Super Admin Phone (10 Digits)</label>
+                {phone.length === 10 && /^[6-9]\d{9}$/.test(phone) ? (
+                  <span className="text-[10px] text-indigo-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
+                  </span>
+                ) : phone.length > 0 && !/^[6-9]/.test(phone) ? (
+                  <span className="text-[10px] text-rose-400 font-bold">
+                    ⚠️ Must start with 6, 7, 8, or 9
+                  </span>
+                ) : phone.length > 0 ? (
+                  <span className="text-[10px] text-indigo-400 font-mono">
+                    {phone.length}/10 digits
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="relative flex items-center">
+                <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
+                  <span>🇮🇳</span>
+                  <span className="font-mono text-slate-300">+91</span>
+                </div>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   placeholder="Enter Super Admin Phone Number"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500/60 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none transition-colors"
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className={`w-full bg-slate-900 border rounded-xl pl-20 pr-4 py-3 text-sm text-white font-mono tracking-wider outline-none transition-colors ${
+                    phone.length === 10 && /^[6-9]\d{9}$/.test(phone)
+                      ? 'border-indigo-500/80 focus:border-indigo-400'
+                      : phone.length > 0 && !/^[6-9]/.test(phone)
+                      ? 'border-rose-500/80 focus:border-rose-400'
+                      : 'border-slate-800 focus:border-indigo-500/60'
+                  }`}
                   required
                 />
               </div>
