@@ -7,7 +7,7 @@ import { autoVerifyHospitalCertificate, autoVerifyDoctorLicense } from '../../ut
 import CertificateVerificationModal from '../common/CertificateVerificationModal';
 import { 
   Building2, Users, Stethoscope, Calendar, Settings, LogOut, Plus, 
-  CheckCircle, XCircle, Clock, Trash2, Edit3, ShieldAlert, BarChart3, X, Image as ImageIcon, Upload, ShieldCheck, Award, FileText, FileSpreadsheet, Sparkles, CheckCircle2 
+  CheckCircle, XCircle, Clock, Trash2, Edit3, ShieldAlert, BarChart3, X, Image as ImageIcon, Upload, ShieldCheck, Award, FileText, FileSpreadsheet, Sparkles, CheckCircle2, Phone, PhoneCall, MessageCircle 
 } from 'lucide-react';
 
 export const ALL_DOCTOR_CATEGORIES = [
@@ -732,6 +732,7 @@ export default function HospitalPortal() {
                 <tr>
                   <th className="p-3.5">Booking ID</th>
                   <th className="p-3.5">Patient Details</th>
+                  <th className="p-3.5">Patient Phone (Direct Call 📞)</th>
                   <th className="p-3.5">Doctor & Dept</th>
                   <th className="p-3.5">Date & Time</th>
                   <th className="p-3.5">Status</th>
@@ -744,8 +745,32 @@ export default function HospitalPortal() {
                     <td className="p-3.5 font-mono text-emerald-400 font-bold">#{b.bookingId}</td>
                     <td className="p-3.5 font-medium">
                       <div className="text-white font-bold">{b.userName}</div>
-                      <div className="text-slate-400 text-[11px]">{b.userPhone} • {b.patientAge ? `${b.patientAge} yrs, ${b.patientGender || 'M'}` : 'Patient'}</div>
+                      <div className="text-slate-400 text-[11px]">{b.patientAge ? `${b.patientAge} yrs, ${b.patientGender || 'M'}` : 'Patient'}</div>
                       {b.patientReason && <div className="text-cyan-400 text-[10px] italic mt-0.5">"{b.patientReason}"</div>}
+                    </td>
+                    <td className="p-3.5 space-y-1">
+                      <div className="font-mono text-white font-bold flex items-center gap-1.5 text-xs">
+                        <Phone className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>+91 {b.userPhone || b.patientPhone || '9876543210'}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        <a
+                          href={`tel:+91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}`}
+                          className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 shadow transition-all cursor-pointer"
+                          title="Direct Phone Call to Patient"
+                        >
+                          <PhoneCall className="w-3 h-3 text-emerald-400" /> Call Patient 📞
+                        </a>
+                        <a
+                          href={`https://api.whatsapp.com/send?phone=91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *${hospital.hospitalName} OP Desk*\n\nHello ${b.userName || 'Patient'}, this is regarding your OP Appointment for ${b.doctorName || 'Doctor'} on ${b.date} at ${b.time}.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 p-1 rounded-lg text-[11px] font-bold inline-flex items-center justify-center transition-all cursor-pointer"
+                          title="WhatsApp Message to Patient"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                        </a>
+                      </div>
                     </td>
                     <td className="p-3.5">{b.doctorName} ({b.department})</td>
                     <td className="p-3.5">{b.date} at {b.time}</td>
