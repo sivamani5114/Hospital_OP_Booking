@@ -74,6 +74,9 @@ export default function HospitalPortal() {
   // Certificate Verification Modal State
   const [certModalConfig, setCertModalConfig] = useState({ isOpen: false, data: null, type: 'HOSPITAL' });
 
+  // Separate Edit Profile Toggle State (Default: Read-Only Display Mode)
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
   // Active Hospital object
   const hospital = hospitals.find(h => h._id === currentUser?.hospitalId) || hospitals[0];
   const hospitalDoctors = doctors.filter(d => d.hospitalId === hospital._id);
@@ -180,6 +183,7 @@ export default function HospitalPortal() {
   const handleUpdateHospitalProfile = (e) => {
     e.preventDefault();
     updateHospital(hospital._id, hospProfileForm);
+    setIsEditingProfile(false);
     alert('✅ Hospital profile updated successfully!');
   };
 
@@ -331,296 +335,459 @@ export default function HospitalPortal() {
         </div>
       )}
 
-      {/* --- PROFILE --- */}
+      {/* --- PROFILE TAB (READ-ONLY DISPLAY MODE WITH SEPARATE EDIT BUTTON) --- */}
       {activeTab === 'PROFILE' && (
-        <div className="max-w-2xl mx-auto glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-emerald-400" /> Manage Hospital Profile
-          </h3>
-
-          <form onSubmit={handleUpdateHospitalProfile} className="space-y-4 text-xs">
-            {/* 1. Basic Details */}
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h4 className="font-bold text-cyan-400 text-sm">1. Hospital Basic & Contact Details</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Hospital Name</label>
-                  <input
-                    type="text"
-                    value={hospProfileForm.hospitalName}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalName: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Hospital Type</label>
-                  <select
-                    value={hospital.hospitalType || 'Private'}
-                    onChange={(e) => updateHospital(hospital._id, { hospitalType: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                  >
-                    <option value="Private">Private Hospital</option>
-                    <option value="Government">Government Hospital</option>
-                    <option value="Corporate">Corporate Multi-Speciality</option>
-                    <option value="Clinic">Polyclinic / Specialty Clinic</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    value={hospProfileForm.phone}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Official Email</label>
-                  <input
-                    type="email"
-                    value={hospProfileForm.email}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Address & Maps */}
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h4 className="font-bold text-emerald-400 text-sm">2. Address & Google Maps Location</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">City</label>
-                  <input
-                    type="text"
-                    value={hospProfileForm.city}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, city: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Area / Locality</label>
-                  <input
-                    type="text"
-                    value={hospProfileForm.area}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, area: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                  />
-                </div>
+        <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+          
+          {/* Top Header Card */}
+          <div className="glass-panel p-6 rounded-3xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0">
+                <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <label className="text-slate-400 font-semibold block mb-1">Street Address</label>
-                <input
-                  type="text"
-                  value={hospProfileForm.address}
-                  onChange={(e) => setHospProfileForm(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                />
-              </div>
-            </div>
-
-            {/* 3. Legal & Verification */}
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h4 className="font-bold text-amber-400 text-sm">3. Legal & Verification Details</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Reg Certificate</label>
-                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-2 rounded-xl block font-mono text-[11px]">
-                    ✓ Verified Certificate
+                <h3 className="text-xl font-extrabold text-white font-outfit flex items-center gap-2">
+                  {hospital.hospitalName}
+                  <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                    {hospital.hospitalType || 'Private Hospital'}
                   </span>
-                </div>
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">NABH Accreditation</label>
-                  <span className="bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl block text-slate-300">
-                    {hospital.nabhAccredited || 'No'}
-                  </span>
-                </div>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {isEditingProfile ? '✏️ Modify your hospital contact details, OP fees, and bank settings' : '📋 Official Hospital Profile, Verified Legal Licenses & Settlement Settings'}
+                </p>
               </div>
             </div>
 
-            {/* 4. Facilities */}
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-2">
-              <h4 className="font-bold text-indigo-400 text-sm">4. Active Hospital Facilities</h4>
-              <div className="flex flex-wrap gap-1.5">
-                {(hospital.facilities || ['Emergency 24/7', 'Pharmacy', 'Laboratory', 'ICU', 'Ambulance 24/7', 'Operation Theatre']).map(f => (
-                  <span key={f} className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-xl text-[11px] font-semibold">
-                    ✓ {f}
-                  </span>
-                ))}
-              </div>
-            </div>
+            {/* Toggle Edit Button */}
+            {!isEditingProfile ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setHospProfileForm({
+                    hospitalName: hospital.hospitalName || '',
+                    phone: hospital.phone || '',
+                    email: hospital.email || '',
+                    city: hospital.city || '',
+                    area: hospital.area || '',
+                    address: hospital.address || '',
+                    opFee: hospital.opFee || 500,
+                    hospitalTimings: hospital.hospitalTimings || '09:00 AM - 08:00 PM',
+                    accountHolderName: hospital.accountHolderName || '',
+                    bankName: hospital.bankName || '',
+                    bankAccountNo: hospital.bankAccountNo || '',
+                    ifscCode: hospital.ifscCode || '',
+                    upiId: hospital.upiId || '',
+                    accountType: hospital.accountType || 'Current',
+                    upiQrCode: hospital.upiQrCode || '',
+                    upiQrCodeName: hospital.upiQrCodeName || ''
+                  });
+                  setIsEditingProfile(true);
+                }}
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer shrink-0 transition-all scale-[1.02] active:scale-95"
+              >
+                <Edit3 className="w-4 h-4" /> Edit Profile Details ✏️
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingProfile(false)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-1.5 border border-slate-700 cursor-pointer shrink-0"
+              >
+                <X className="w-4 h-4" /> Cancel Edit ❌
+              </button>
+            )}
+          </div>
 
-            {/* 5. OP Settings */}
-            <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h4 className="font-bold text-rose-400 text-sm">5. OP Booking Settings</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">Base OP Fee (₹)</label>
-                  <input
-                    type="number"
-                    value={hospProfileForm.opFee}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, opFee: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-bold text-emerald-400"
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-400 font-semibold block mb-1">OP Timings</label>
-                  <input
-                    type="text"
-                    value={hospProfileForm.hospitalTimings}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalTimings: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 💳 6. Business Bank Account & NetBanking / Dynamic UPI QR Settings */}
-            <div className="bg-slate-900/80 p-4 rounded-2xl border border-cyan-500/40 space-y-4 shadow-lg">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h4 className="font-bold text-cyan-300 text-sm flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-cyan-400" /> 6. Hospital Business Bank Account & Direct NetBanking/UPI Settlement
-                </h4>
-                <span className="bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/30">
-                  INSTANT SETTLEMENT
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">
-                Patient OP consultation booking amounts will be directly credited & settled into this verified Business Bank Account.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Account Holder Name *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Apollo Health City Pvt Ltd"
-                    value={hospProfileForm.accountHolderName}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-medium"
-                    required
-                  />
+          {/* ═══ VIEW 1: CLEAN READ-ONLY PROFILE OVERVIEW ═══ */}
+          {!isEditingProfile ? (
+            <div className="space-y-4 text-xs">
+              
+              {/* 1. Basic & Contact Card */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <h4 className="font-bold text-cyan-300 text-sm flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-cyan-400" /> 1. Hospital Basic & Contact Information
+                  </h4>
+                  <span className="text-[10px] text-cyan-400 font-mono font-bold">READ ONLY</span>
                 </div>
 
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Bank Name *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. HDFC Bank / ICICI Bank"
-                    value={hospProfileForm.bankName}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankName: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-medium"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Business Bank Account No *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 99881100223344"
-                    value={hospProfileForm.bankAccountNo}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankAccountNo: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono font-bold"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">IFSC Code *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. HDFC0000123"
-                    value={hospProfileForm.ifscCode}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, ifscCode: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase font-bold"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Official Hospital UPI ID / VPA *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. apollohealth@ybl or abchospital@upi"
-                    value={hospProfileForm.upiId}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, upiId: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-cyan-300 font-mono font-bold"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Account Type</label>
-                  <select
-                    value={hospProfileForm.accountType}
-                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, accountType: e.target.value }))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
-                  >
-                    <option value="Current">Current Business Account</option>
-                    <option value="Savings">Savings Account</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Live QR Code Generator & NetBanking Upload */}
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-                <span className="text-emerald-400 font-bold text-xs block flex items-center justify-between">
-                  <span>📱 Live Auto-Generated NetBanking / UPI QR Code Preview</span>
-                  <span className="text-[10px] text-emerald-400 font-mono">AUTOMATIC SYNC</span>
-                </span>
-
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <div className="bg-white p-2.5 rounded-2xl border-2 border-emerald-500/50 shadow-md">
-                    <img
-                      src={hospProfileForm.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent(hospProfileForm.upiId || 'carepulse@ybl')}&pn=${encodeURIComponent(hospProfileForm.hospitalName || 'Hospital')}`}
-                      className="w-28 h-28 object-contain rounded-xl"
-                      alt="Hospital Bank QR Code"
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-1">
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Hospital Name</span>
+                    <strong className="text-white text-sm block">{hospital.hospitalName}</strong>
                   </div>
-                  <div className="space-y-1.5 flex-1 text-xs">
-                    <p className="text-white font-bold">{hospProfileForm.hospitalName || 'Hospital Business Account'}</p>
-                    <p className="text-slate-400 font-mono">UPI ID: <strong className="text-cyan-300">{hospProfileForm.upiId || 'carepulse@ybl'}</strong></p>
-                    <p className="text-slate-400">Bank: <strong className="text-slate-200">{hospProfileForm.bankName || 'HDFC Bank'}</strong> (IFSC: {hospProfileForm.ifscCode || 'HDFC0000123'})</p>
 
-                    <div className="pt-1">
-                      <label className="text-slate-300 font-semibold block mb-1 text-[11px]">Upload Custom Standee UPI / NetBanking QR Code Image (Optional)</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setHospProfileForm(prev => ({ ...prev, upiQrCode: reader.result, upiQrCodeName: file.name }));
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-[11px] text-slate-300 file:bg-cyan-600 file:text-white file:border-0 file:rounded file:px-2 file:py-0.5 file:mr-1 file:font-bold"
-                      />
-                      {hospProfileForm.upiQrCodeName && <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">✓ Uploaded Custom QR: {hospProfileForm.upiQrCodeName}</span>}
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Hospital Type</span>
+                    <span className="text-emerald-400 font-bold block">{hospital.hospitalType || 'Private Hospital'}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Govt Reg / License No</span>
+                    <span className="font-mono text-cyan-300 font-bold block">{hospital.regCertificateNo || hospital.regNo || 'REG-TS-88492'}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Official Contact Phone</span>
+                    <span className="font-mono text-white font-bold block flex items-center gap-1">
+                      <Phone className="w-3 h-3 text-cyan-400" /> +91 {hospital.phone}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Official Email</span>
+                    <span className="text-slate-200 block truncate">{hospital.email}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Approval Status</span>
+                    <span className="text-emerald-400 font-bold block">✓ {hospital.status || 'APPROVED'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Address & Location Card */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <h4 className="font-bold text-emerald-300 text-sm flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> 2. Address & Google Maps Location
+                  </h4>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold">VERIFIED PIN</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1 sm:col-span-2">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Street Address</span>
+                    <span className="text-white block">{hospital.address || `${hospital.area}, ${hospital.city}`}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">City & Area</span>
+                    <span className="text-cyan-300 font-bold block">{hospital.city} ({hospital.area})</span>
+                  </div>
+                </div>
+
+                {hospital.mapsUrl && (
+                  <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <span className="text-slate-300 text-xs truncate max-w-md">📍 {hospital.mapsUrl}</span>
+                    <a
+                      href={hospital.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-xl text-[11px] font-bold shrink-0 hover:bg-cyan-500/30"
+                    >
+                      Open Google Maps 🗺️
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. OP Booking Settings & Fees */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <h4 className="font-bold text-amber-300 text-sm flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-amber-400" /> 3. OP Booking Timings & Consultation Fee
+                  </h4>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                  <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Base OP Consultation Fee</span>
+                    <span className="text-2xl font-extrabold text-emerald-400 font-outfit">₹{hospital.opFee}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Hospital OP Timings</span>
+                    <span className="text-sm font-bold text-white block">{hospital.hospitalTimings || '09:00 AM - 08:00 PM'}</span>
+                  </div>
+
+                  <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                    <span className="text-slate-400 text-[10px] uppercase font-semibold block">Advance Booking Window</span>
+                    <span className="text-sm font-bold text-cyan-300 block">Up to 2 Weeks (14 Days)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Business Bank Account & Dynamic UPI Settlement */}
+              <div className="glass-panel p-5 rounded-3xl border border-cyan-500/30 space-y-3 shadow-lg">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <h4 className="font-bold text-cyan-300 text-sm flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-cyan-400" /> 4. Verified Settlement Bank & UPI QR Code
+                  </h4>
+                  <span className="bg-cyan-500/20 text-cyan-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/40">
+                    DIRECT SETTLEMENT
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold block">Account Holder Name</span>
+                      <strong className="text-white text-xs block">{hospital.accountHolderName || hospital.hospitalName}</strong>
+                    </div>
+
+                    <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold block">Bank Name</span>
+                      <span className="text-slate-200 text-xs block">{hospital.bankName || 'HDFC Bank'}</span>
+                    </div>
+
+                    <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold block">Bank Account No</span>
+                      <span className="font-mono text-cyan-300 font-bold text-xs block">
+                        •••• •••• {(hospital.bankAccountNo || '99881100223344').slice(-4)}
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1">
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold block">IFSC Code</span>
+                      <span className="font-mono text-white text-xs block uppercase">{hospital.ifscCode || 'HDFC0000123'}</span>
+                    </div>
+
+                    <div className="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-1 sm:col-span-2">
+                      <span className="text-slate-400 text-[10px] uppercase font-semibold block">Hospital Official UPI ID / VPA</span>
+                      <span className="font-mono text-emerald-400 font-bold text-sm block">{hospital.upiId || 'apollohealth@ybl'}</span>
                     </div>
                   </div>
+
+                  {/* QR Preview */}
+                  <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 flex flex-col items-center justify-center text-center space-y-2">
+                    <div className="bg-white p-2 rounded-xl shadow">
+                      <img
+                        src={hospital.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent(hospital.upiId || 'carepulse@ybl')}&pn=${encodeURIComponent(hospital.hospitalName || 'Hospital')}`}
+                        className="w-20 h-20 object-contain rounded-lg"
+                        alt="UPI QR Code"
+                      />
+                    </div>
+                    <span className="text-[10px] text-slate-400">Official UPI Standee QR</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg"
-            >
-              Save & Update Full Hospital Profile 🚀
-            </button>
-          </form>
+              {/* 5. Legal Docs & Active Facilities */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <h4 className="font-bold text-indigo-300 text-sm flex items-center gap-2">
+                  <Award className="w-4 h-4 text-indigo-400" /> 5. Verified Legal Licenses & Active Facilities
+                </h4>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {(hospital.facilities || ['Emergency 24/7', 'Pharmacy', 'Laboratory', 'ICU', 'Ambulance 24/7', 'Operation Theatre']).map(f => (
+                    <span key={f} className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold">
+                      ✓ {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            /* ═══ VIEW 2: EDITABLE FORM (ONLY SHOWN WHEN USER CLICKS EDIT) ═══ */
+            <form onSubmit={handleUpdateHospitalProfile} className="space-y-4 text-xs">
+              
+              {/* 1. Basic Details Form */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <h4 className="font-bold text-cyan-400 text-sm">1. Hospital Basic & Contact Details</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Name *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.hospitalName}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalName: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/40 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Hospital Type</label>
+                    <select
+                      value={hospital.hospitalType || 'Private'}
+                      onChange={(e) => updateHospital(hospital._id, { hospitalType: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white cursor-pointer"
+                    >
+                      <option value="Private">Private Hospital</option>
+                      <option value="Government">Government Hospital</option>
+                      <option value="Corporate">Corporate Multi-Speciality</option>
+                      <option value="Clinic">Polyclinic / Specialty Clinic</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Official Phone Number *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.phone}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Official Email Address *</label>
+                    <input
+                      type="email"
+                      value={hospProfileForm.email}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Address & Maps Form */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <h4 className="font-bold text-emerald-400 text-sm">2. Address & Location Details</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">City</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.city}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, city: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Area / Locality</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.area}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, area: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 font-semibold block mb-1">Street Address</label>
+                  <input
+                    type="text"
+                    value={hospProfileForm.address}
+                    onChange={(e) => setHospProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* 3. OP Booking Settings Form */}
+              <div className="glass-panel p-5 rounded-3xl border border-slate-800 space-y-3 shadow-lg">
+                <h4 className="font-bold text-amber-400 text-sm">3. OP Booking Timings & Consultation Fee</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">Base OP Fee (₹)</label>
+                    <input
+                      type="number"
+                      value={hospProfileForm.opFee}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, opFee: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-bold text-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 font-semibold block mb-1">OP Consultation Timings</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.hospitalTimings}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, hospitalTimings: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Settlement Bank Details Form */}
+              <div className="glass-panel p-5 rounded-3xl border border-cyan-500/40 space-y-3 shadow-lg">
+                <h4 className="font-bold text-cyan-300 text-sm flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-cyan-400" /> 4. Business Bank Account & UPI Settlement Settings
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1">Account Holder Name *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.accountHolderName}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1">Bank Name *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.bankName}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankName: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1">Business Bank Account No *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.bankAccountNo}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, bankAccountNo: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-slate-300 font-semibold block mb-1">IFSC Code *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.ifscCode}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, ifscCode: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono uppercase"
+                      required
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-300 font-semibold block mb-1">Official Hospital UPI ID / VPA *</label>
+                    <input
+                      type="text"
+                      value={hospProfileForm.upiId}
+                      onChange={(e) => setHospProfileForm(prev => ({ ...prev, upiId: e.target.value }))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-cyan-300 font-mono font-bold"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingProfile(false)}
+                  className="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold py-3.5 rounded-xl border border-slate-700 cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/25 cursor-pointer"
+                >
+                  Save & Update Full Hospital Profile 🚀
+                </button>
+              </div>
+
+            </form>
+          )}
+
         </div>
       )}
 
