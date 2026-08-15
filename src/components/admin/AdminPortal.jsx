@@ -982,9 +982,18 @@ export default function AdminPortal() {
                         <span className="font-mono text-cyan-400 font-bold block">#{b.bookingId}</span>
                         {b.txnRefNumber && <span className="font-mono text-[10px] text-slate-400">Ref: {b.txnRefNumber}</span>}
                       </td>
-                      <td className="p-3.5">
+                      <td className="p-3.5 space-y-1">
                         <strong className="text-white block">{b.userName}</strong>
-                        <span className="font-mono text-[11px] text-slate-400">+91 {b.userPhone}</span>
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                          <span className="font-mono text-[11px] text-cyan-300 font-bold">+91 {b.userPhone}</span>
+                          <a
+                            href={`tel:+91${(b.userPhone || '').replace(/\D/g, '').slice(-10)}`}
+                            className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 shadow cursor-pointer"
+                            title="Direct Phone Call to Patient"
+                          >
+                            <Phone className="w-2.5 h-2.5 text-emerald-400" /> Call 📞
+                          </a>
+                        </div>
                       </td>
                       <td className="p-3.5">
                         <strong className="text-white block">{b.doctorName}</strong>
