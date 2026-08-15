@@ -29,9 +29,14 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
     login(cleanPhone, password);
   };
 
-  const handleFillDemo = () => {
+  const handleFillDemo = (autoLogin = false) => {
     setPhone('9876543210');
     setPassword('password123');
+    if (autoLogin) {
+      setTimeout(() => {
+        login('9876543210', 'password123');
+      }, 100);
+    }
   };
 
   return (
@@ -193,15 +198,37 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
             }}
           />
 
-          {/* Demo fill */}
-          <div className="text-center mt-4 pb-2 border-t border-slate-800/60 pt-4">
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="text-[11px] text-cyan-400/80 hover:text-cyan-300 underline"
-            >
-              💡 Click to autofill test Patient credentials (9876543210)
-            </button>
+          {/* ⚡ Demo Autofill & 1-Click Instant Login Box */}
+          <div className="mt-5 pt-4 border-t border-slate-800/80">
+            <div className="bg-cyan-950/40 p-3 rounded-2xl border border-cyan-500/30 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-lg">
+              <div className="text-left w-full sm:w-auto">
+                <span className="text-xs text-cyan-300 font-bold flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-cyan-400" /> Patient Demo Access
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono block mt-0.5">
+                  +91 9876543210 · password123
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => handleFillDemo(false)}
+                  className="flex-1 sm:flex-none px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 rounded-xl text-xs font-semibold cursor-pointer transition-all active:scale-95"
+                  title="Fill phone and password into form"
+                >
+                  📝 Fill Form
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFillDemo(true)}
+                  className="flex-1 sm:flex-none px-3.5 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1"
+                  title="Autofill and directly sign in"
+                >
+                  ⚡ Instant Login
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Register link */}
