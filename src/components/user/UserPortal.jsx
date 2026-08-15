@@ -424,7 +424,16 @@ export default function UserPortal() {
                           {doc.specialization}
                         </span>
                         <h4 className="font-bold text-white text-sm mt-1">{doc.doctorName}</h4>
-                        <p className="text-xs text-slate-400">{hosp?.hospitalName}</p>
+                        <p className="text-xs text-slate-300 font-semibold">{hosp?.hospitalName}</p>
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                          <span className="text-[10px] text-slate-400 font-mono">+91 {hosp?.phone || '9123456789'}</span>
+                          <a
+                            href={`tel:+91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}`}
+                            className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold border border-emerald-500/30"
+                          >
+                            📞 Call
+                          </a>
+                        </div>
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-xs text-slate-300 pt-2 border-t border-slate-800">
@@ -496,14 +505,45 @@ export default function UserPortal() {
                     </div>
                   </div>
 
-                  <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
-                    <p className="font-semibold text-white flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5 text-cyan-400" /> {hosp?.hospitalName}
+                  <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-white flex items-center gap-1.5 text-xs">
+                        <Building2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> {hosp?.hospitalName}
+                      </p>
+                      <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
+                        {hosp?.city || 'Hospital'}
+                      </span>
+                    </div>
+                    <p className="text-slate-400 text-[11px]">{hosp?.address ? `${hosp.address}, ${hosp.city}` : hosp?.city}</p>
+                    <p className="text-slate-400 flex items-center gap-1 text-[11px]">
+                      <Clock className="w-3 h-3 text-cyan-400 shrink-0" /> {doc.availableDays} ({doc.availableTime})
                     </p>
-                    <p className="text-slate-400">{hosp?.address}, {hosp?.city}</p>
-                    <p className="text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-cyan-400" /> {doc.availableDays} ({doc.availableTime})
-                    </p>
+
+                    {/* Hospital Phone Number & 1-Click Call Button */}
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <div className="text-[11px] font-mono text-slate-300 flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <span className="font-bold text-white">+91 {hosp?.phone || '9123456789'}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <a
+                          href={`tel:+91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}`}
+                          className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 shadow cursor-pointer transition-all active:scale-95"
+                          title="Direct Phone Call to Hospital Desk"
+                        >
+                          <PhoneCall className="w-3 h-3 text-emerald-400" /> Call Hospital 📞
+                        </a>
+                        <a
+                          href={`https://api.whatsapp.com/send?phone=91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *Enquiry regarding Dr. ${doc.doctorName}*\n\nHello ${hosp?.hospitalName}, I would like to enquire about appointment consultation timings for Dr. ${doc.doctorName} (${doc.specialization}).`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 p-1.5 rounded-lg text-[11px] inline-flex items-center justify-center transition-all cursor-pointer"
+                          title="WhatsApp Enquiry"
+                        >
+                          <MessageCircle className="w-3 h-3 text-emerald-400" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="pt-2 border-t border-slate-800 flex justify-between items-center">
