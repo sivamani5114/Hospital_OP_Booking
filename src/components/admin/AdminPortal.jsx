@@ -11,7 +11,7 @@ import {
   LogOut, Plus, CheckCircle, XCircle, Trash2, Edit3, Lock, Search, AlertCircle, X, ShieldAlert, Image as ImageIcon, Upload, Award, Smartphone, Send, MessageCircle, FileText, FileSpreadsheet,
   Phone, Mail, MapPin, CheckCircle2, Clock, Eye, Activity, User, Sparkles, Receipt, Hash, FileCheck2, Loader2, PhoneCall
 } from 'lucide-react';
-import { ALL_DOCTOR_CATEGORIES, OFFICIAL_QUALIFICATIONS, PRESET_AVATARS } from '../hospital/HospitalPortal';
+import { ALL_DOCTOR_CATEGORIES, OFFICIAL_QUALIFICATIONS, PRESET_AVATARS } from '../../utils/doctorConstants';
 
 export default function AdminPortal() {
   const { logout } = useAuth();
