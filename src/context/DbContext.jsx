@@ -6,29 +6,17 @@ const DbContext = createContext();
 export function DbProvider({ children }) {
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('op_db_users');
-    let loadedUsers = saved ? JSON.parse(saved) : initialUsers;
+    let loadedUsers = saved ? JSON.parse(saved) : [...initialUsers];
 
-    // Ensure Super Admin user 9948985114 is ALWAYS present & updated
-    const adminIndex = loadedUsers.findIndex(u => u.role === 'ADMIN' || u.phone === '9948985114');
-    const adminObj = {
-      _id: 'usr-4',
-      fullName: 'Super Administrator',
-      phone: '9948985114',
-      email: 'admin@carepulse.com',
-      dateOfBirth: '1980-01-01',
-      gender: 'Male',
-      address: 'Corporate HQs, Hyderabad',
-      password: '@Sivamani994898',
-      role: 'ADMIN',
-      status: 'ACTIVE',
-      createdAt: '2026-08-01'
-    };
-
-    if (adminIndex >= 0) {
-      loadedUsers[adminIndex] = adminObj;
-    } else {
-      loadedUsers.push(adminObj);
-    }
+    // Ensure all default demo users (Patient, Hospital, Admin) are ALWAYS present & accurate
+    initialUsers.forEach(initUser => {
+      const idx = loadedUsers.findIndex(u => u.phone === initUser.phone || u._id === initUser._id);
+      if (idx >= 0) {
+        loadedUsers[idx] = { ...initUser, ...loadedUsers[idx], password: initUser.password, role: initUser.role };
+      } else {
+        loadedUsers.push(initUser);
+      }
+    });
 
     return loadedUsers;
   });
