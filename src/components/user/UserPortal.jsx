@@ -9,7 +9,7 @@ import {
   Home, Search, Calendar, Building2, Stethoscope, User, LogOut, MapPin, Clock, 
   Ticket, CheckCircle2, QrCode, ArrowRight, X, Edit3, Lock, Sparkles, Filter, 
   CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck, Copy,
-  Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert
+  Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert, PhoneCall, MessageCircle
 } from 'lucide-react';
 
 export default function UserPortal() {
@@ -1561,14 +1561,55 @@ export default function UserPortal() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-4 border-b border-slate-800 pb-4">
-              <img src={selectedHospitalModal.logo} className="w-16 h-16 rounded-2xl object-cover border border-slate-700" />
-              <div>
-                <span className="bg-cyan-500/10 text-cyan-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/20">
-                  {selectedHospitalModal.city}
-                </span>
-                <h3 className="font-extrabold text-white text-xl mt-1">{selectedHospitalModal.hospitalName}</h3>
-                <p className="text-xs text-slate-400">{selectedHospitalModal.address}, {selectedHospitalModal.area}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-4">
+                <img src={selectedHospitalModal.logo} className="w-16 h-16 rounded-2xl object-cover border border-slate-700 shrink-0" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-cyan-500/10 text-cyan-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/20">
+                      {selectedHospitalModal.city}
+                    </span>
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                      {selectedHospitalModal.hospitalType || 'Hospital'}
+                    </span>
+                  </div>
+                  <h3 className="font-extrabold text-white text-xl mt-1">{selectedHospitalModal.hospitalName}</h3>
+                  <p className="text-xs text-slate-400">{selectedHospitalModal.address}, {selectedHospitalModal.area}</p>
+                </div>
+              </div>
+
+              {/* Direct Hospital Phone Call & WhatsApp Buttons */}
+              <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-2 shrink-0 pt-2 sm:pt-0">
+                <a
+                  href={`tel:+91${(selectedHospitalModal.phone || '9123456789').replace(/\D/g, '').slice(-10)}`}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer transition-all scale-[1.02] active:scale-95"
+                  title="Direct Phone Call to Hospital Desk"
+                >
+                  <PhoneCall className="w-4 h-4" /> Call Hospital (+91 {selectedHospitalModal.phone}) 📞
+                </a>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://api.whatsapp.com/send?phone=91${(selectedHospitalModal.phone || '9123456789').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *Enquiry for ${selectedHospitalModal.hospitalName}*\n\nHello, I am looking for OP consultation and doctor timings at your hospital.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer shadow transition-all"
+                    title="WhatsApp Enquiry"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp Chat
+                  </a>
+
+                  {selectedHospitalModal.mapsUrl && (
+                    <a
+                      href={selectedHospitalModal.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer shadow transition-all"
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Map
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
