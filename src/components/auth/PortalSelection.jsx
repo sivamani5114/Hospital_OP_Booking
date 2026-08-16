@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stethoscope, User, Building2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Stethoscope, User, Building2, ArrowRight } from 'lucide-react';
 
 export default function PortalSelection({ onSelectPortal }) {
   return (
@@ -9,7 +9,7 @@ export default function PortalSelection({ onSelectPortal }) {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10"></div>
 
-      <div className="w-full max-w-2xl glass-panel p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl space-y-6 sm:space-y-8 text-center">
+      <div className="w-full max-w-xl glass-panel p-6 sm:p-10 rounded-3xl border border-slate-800 shadow-2xl space-y-6 sm:space-y-8 text-center">
         
         {/* Branding Header */}
         <div className="space-y-2">
@@ -26,8 +26,8 @@ export default function PortalSelection({ onSelectPortal }) {
           </p>
         </div>
 
-        {/* 3 Separate Portal Selection Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
+        {/* 2 Main Portal Selection Cards (Patient & Hospital Desk) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           
           {/* 1. Patient Portal Entrance */}
           <div 
@@ -60,23 +60,6 @@ export default function PortalSelection({ onSelectPortal }) {
             </div>
             <div className="pt-2 flex items-center gap-1 text-xs font-bold text-emerald-400">
               Open Hospital Login <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* 3. Super Admin Entrance */}
-          <div 
-            onClick={() => onSelectPortal('ADMIN_LOGIN')}
-            className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/40 text-left space-y-4 cursor-pointer group transition-all"
-          >
-            <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-indigo-400 w-fit group-hover:scale-110 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-base group-hover:text-indigo-400 transition-colors">Super Admin Login</h3>
-              <p className="text-xs text-slate-400 mt-1">Full CRUD control over Users, Hospitals, and System Settings.</p>
-            </div>
-            <div className="pt-2 flex items-center gap-1 text-xs font-bold text-indigo-400">
-              Open Admin Login <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
