@@ -89,9 +89,20 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
       </div>
 
       {/* ═══ RIGHT LOGIN FORM PANEL ═══ */}
-      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12">
+      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 relative overflow-hidden">
+        
+        {/* 🏥 Light Medical Cross "+" Watermark in Middle Background */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+          <div className="w-72 h-72 sm:w-88 sm:h-88 opacity-[0.12] transition-opacity">
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-emerald-500">
+              <rect x="37" y="6" width="26" height="88" rx="10" />
+              <rect x="6" y="37" width="88" height="26" rx="10" />
+            </svg>
+          </div>
+        </div>
+
         {/* Back button */}
-        <div className="mb-8">
+        <div className="mb-8 relative z-10">
           <button
             type="button"
             onClick={handleBack}
@@ -101,7 +112,7 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
           </button>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md relative z-10">
           {/* Title */}
           <div className="mb-8 space-y-1.5">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4 text-emerald-400">
