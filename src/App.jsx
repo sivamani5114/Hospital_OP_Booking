@@ -8,7 +8,8 @@ import PortalSelection from './components/auth/PortalSelection';
 import UserLogin from './components/auth/UserLogin';
 import HospitalLogin from './components/auth/HospitalLogin';
 import AdminLogin from './components/auth/AdminLogin';
-import Register from './components/common/Register';
+import PatientRegister from './components/auth/PatientRegister';
+import HospitalRegister from './components/auth/HospitalRegister';
 import UserPortal from './components/user/UserPortal';
 import HospitalPortal from './components/hospital/HospitalPortal';
 import AdminPortal from './components/admin/AdminPortal';
@@ -18,9 +19,8 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 function MainApp() {
   const { currentUser } = useAuth();
   
-  // Auth View State: 'PORTAL_SELECT' | 'USER_LOGIN' | 'HOSPITAL_LOGIN' | 'ADMIN_LOGIN' | 'REGISTER'
+  // Auth View State: 'PORTAL_SELECT' | 'USER_LOGIN' | 'HOSPITAL_LOGIN' | 'ADMIN_LOGIN' | 'PATIENT_REGISTER' | 'HOSPITAL_REGISTER'
   const [authView, setAuthView] = useState('PORTAL_SELECT');
-  const [initialRegisterRole, setInitialRegisterRole] = useState('PATIENT');
 
   const handleBackToPortals = () => {
     setAuthView('PORTAL_SELECT');
@@ -36,8 +36,8 @@ function MainApp() {
     'theme-patient'
   ) : (
     authView === 'ADMIN_LOGIN' ? 'theme-admin' :
-    authView === 'HOSPITAL_LOGIN' || (authView === 'REGISTER' && initialRegisterRole === 'HOSPITAL') ? 'theme-hospital' :
-    authView === 'USER_LOGIN' || authView === 'REGISTER' ? 'theme-patient' :
+    authView === 'HOSPITAL_LOGIN' || authView === 'HOSPITAL_REGISTER' ? 'theme-hospital' :
+    authView === 'USER_LOGIN' || authView === 'PATIENT_REGISTER' ? 'theme-patient' :
     'theme-patient'
   );
 
@@ -58,10 +58,7 @@ function MainApp() {
                 <UserLogin 
                   onGoBack={handleBackToPortals}
                   onBackToPortals={handleBackToPortals} 
-                  onGoToRegister={(role = 'PATIENT') => {
-                    setInitialRegisterRole(role);
-                    setAuthView('REGISTER');
-                  }}
+                  onGoToRegister={() => setAuthView('PATIENT_REGISTER')}
                   onGoToHospitalLogin={() => setAuthView('HOSPITAL_LOGIN')}
                   onGoToAdminLogin={() => setAuthView('ADMIN_LOGIN')}
                 />
@@ -71,10 +68,7 @@ function MainApp() {
                 <HospitalLogin 
                   onGoBack={handleBackToPortals} 
                   onBackToPortals={handleBackToPortals}
-                  onGoToRegister={(role = 'HOSPITAL') => {
-                    setInitialRegisterRole(role);
-                    setAuthView('REGISTER');
-                  }} 
+                  onGoToRegister={() => setAuthView('HOSPITAL_REGISTER')} 
                 />
               )}
 
@@ -85,10 +79,17 @@ function MainApp() {
                 />
               )}
 
-              {authView === 'REGISTER' && (
-                <Register 
-                  onGoToLogin={handleBackToPortals} 
-                  initialRegType={initialRegisterRole}
+              {authView === 'PATIENT_REGISTER' && (
+                <PatientRegister 
+                  onGoToLogin={() => setAuthView('USER_LOGIN')} 
+                  onGoToHospitalRegister={() => setAuthView('HOSPITAL_REGISTER')}
+                />
+              )}
+
+              {authView === 'HOSPITAL_REGISTER' && (
+                <HospitalRegister 
+                  onGoToLogin={() => setAuthView('HOSPITAL_LOGIN')} 
+                  onGoToPatientRegister={() => setAuthView('PATIENT_REGISTER')}
                 />
               )}
             </>
