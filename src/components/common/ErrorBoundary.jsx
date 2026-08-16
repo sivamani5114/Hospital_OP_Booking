@@ -32,6 +32,11 @@ export default class ErrorBoundary extends React.Component {
             <p className="text-xs text-slate-400 leading-relaxed">
               CarePulse encountered a temporary rendering glitch. Click below to recover and refresh the application safely.
             </p>
+            {this.state.error && (
+              <pre className="text-[10px] text-rose-300 bg-rose-950/40 p-2.5 rounded-xl text-left overflow-auto max-h-24 font-mono border border-rose-500/20">
+                {this.state.error.toString()}
+              </pre>
+            )}
             <button
               onClick={this.handleReset}
               className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Building2, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope } from 'lucide-react';
+import { Building2, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope, CheckCircle2, KeyRound } from 'lucide-react';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegister }) {
