@@ -28,7 +28,7 @@ function MainApp() {
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950">
       <div>
-        <Navbar />
+        <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} />
         <Toast />
 
         <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
@@ -42,7 +42,9 @@ function MainApp() {
                 <UserLogin 
                   onGoBack={handleBackToPortals}
                   onBackToPortals={handleBackToPortals} 
-                  onGoToRegister={() => setAuthView('REGISTER')} 
+                  onGoToRegister={() => setAuthView('REGISTER')}
+                  onGoToHospitalLogin={() => setAuthView('HOSPITAL_LOGIN')}
+                  onGoToAdminLogin={() => setAuthView('ADMIN_LOGIN')}
                 />
               )}
 

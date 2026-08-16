@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { User, Phone, Lock, ArrowLeft, ArrowRight, Stethoscope, Calendar, CheckCircle2, KeyRound } from 'lucide-react';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
-export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister }) {
+export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister, onGoToHospitalLogin, onGoToAdminLogin }) {
   const { login } = useAuth();
   
   const [phone, setPhone] = useState('');
@@ -231,15 +231,22 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister })
             </div>
           </div>
 
-          {/* Register link */}
-          <div className="mt-4 text-center space-y-2">
-            <span className="text-xs text-slate-400 block">Don't have a patient account?</span>
+          {/* Register & Switch Portal Links */}
+          <div className="mt-4 text-center space-y-2.5">
             <button
               type="button"
               onClick={onGoToRegister}
-              className="w-full border border-slate-800 hover:border-cyan-500/40 text-slate-300 font-semibold py-3 rounded-xl text-sm transition-colors"
+              className="w-full border border-slate-800 hover:border-cyan-500/40 text-cyan-300 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
             >
               + Create New Patient Account
+            </button>
+
+            <button
+              type="button"
+              onClick={onGoToHospitalLogin}
+              className="w-full bg-emerald-950/30 hover:bg-emerald-950/60 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              🏥 Hospital Desk / Doctor Login →
             </button>
           </div>
         </div>
