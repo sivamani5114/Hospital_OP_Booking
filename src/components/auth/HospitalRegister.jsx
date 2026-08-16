@@ -319,19 +319,6 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
           >
             <ArrowLeft className="w-4 h-4" /> Back to Hospital Desk Login
           </button>
-          
-          <div className="flex items-center gap-3">
-            {onGoToPatientRegister && (
-              <button
-                type="button"
-                onClick={onGoToPatientRegister}
-                className="text-xs text-cyan-600 hover:text-cyan-700 font-bold bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-xl cursor-pointer transition-all"
-              >
-                👤 Patient Registration →
-              </button>
-            )}
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hidden sm:inline">Hospital Registration</span>
-          </div>
         </div>
 
         {/* Form Container */}
