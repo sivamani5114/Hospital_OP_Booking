@@ -13,7 +13,7 @@ import HospitalRegister from './components/auth/HospitalRegister';
 import UserPortal from './components/user/UserPortal';
 import HospitalPortal from './components/hospital/HospitalPortal';
 import AdminPortal from './components/admin/AdminPortal';
-import FirstTimeVisitorGuideModal from './components/common/FirstTimeVisitorGuideModal';
+import LiveSpotlightTour from './components/common/LiveSpotlightTour';
 
 import ErrorBoundary from './components/common/ErrorBoundary';
 
@@ -39,10 +39,10 @@ function MainApp() {
 
   const appPortalMode = getAppPortalMode(); // 'PATIENT' | 'HOSPITAL' | 'ADMIN' | 'ALL'
 
-  // First Time Visitor Interactive Tour / Guide State
-  const [showVisitorGuide, setShowVisitorGuide] = useState(() => {
+  // First Time Visitor Interactive Live Spotlight Tour State
+  const [showLiveTour, setShowLiveTour] = useState(() => {
     if (typeof window !== 'undefined') {
-      return !localStorage.getItem('carepulse_guide_dismissed');
+      return !localStorage.getItem('carepulse_live_tour_dismissed');
     }
     return false;
   });
@@ -66,16 +66,18 @@ function MainApp() {
           authView={authView} 
           onNavigate={(view) => setAuthView(view)} 
           appPortalMode={appPortalMode} 
-          onOpenGuide={() => setShowVisitorGuide(true)}
+          onOpenGuide={() => setShowLiveTour(true)}
         />
         <Toast />
 
-        {/* First Time Visitor Interactive Walkthrough Guide */}
-        <FirstTimeVisitorGuideModal
-          isOpen={showVisitorGuide}
-          onClose={() => setShowVisitorGuide(false)}
-          onNavigate={(view) => setAuthView(view)}
-        />
+        {/* 🏹 Live Screen Spotlight Tour with Pointing Arrows & Text Guide */}
+        {authView === 'PORTAL_SELECT' && !currentUser && (
+          <LiveSpotlightTour
+            isOpen={showLiveTour}
+            onClose={() => setShowLiveTour(false)}
+            onNavigate={(view) => setAuthView(view)}
+          />
+        )}
 
         <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
           {!currentUser ? (

@@ -31,8 +31,9 @@ export default function PortalSelection({ onSelectPortal }) {
           
           {/* 1. Patient Portal Entrance */}
           <div 
+            id="tour-patient-card"
             onClick={() => onSelectPortal('USER_LOGIN')}
-            className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/40 text-left space-y-4 cursor-pointer group transition-all"
+            className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/40 text-left space-y-4 cursor-pointer group transition-all relative"
           >
             <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400 w-fit group-hover:scale-110 transition-transform">
               <User className="w-6 h-6" />
@@ -48,8 +49,9 @@ export default function PortalSelection({ onSelectPortal }) {
 
           {/* 2. Hospital Portal Entrance */}
           <div 
+            id="tour-hospital-card"
             onClick={() => onSelectPortal('HOSPITAL_LOGIN')}
-            className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 text-left space-y-4 cursor-pointer group transition-all"
+            className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 text-left space-y-4 cursor-pointer group transition-all relative"
           >
             <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 w-fit group-hover:scale-110 transition-transform">
               <Building2 className="w-6 h-6" />
