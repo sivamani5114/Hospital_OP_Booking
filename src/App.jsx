@@ -25,8 +25,23 @@ function MainApp() {
     setAuthView('PORTAL_SELECT');
   };
 
+  // Dynamic theme class:
+  // Patient -> 'theme-patient' (Crisp Light Medical)
+  // Hospital -> 'theme-hospital' (Crisp Light Clinical Emerald)
+  // Super Admin -> 'theme-admin' (Deep Futuristic Dark Command Center)
+  const currentTheme = currentUser ? (
+    currentUser.role === 'ADMIN' ? 'theme-admin' :
+    currentUser.role === 'HOSPITAL' ? 'theme-hospital' :
+    'theme-patient'
+  ) : (
+    authView === 'ADMIN_LOGIN' ? 'theme-admin' :
+    authView === 'HOSPITAL_LOGIN' ? 'theme-hospital' :
+    authView === 'USER_LOGIN' || authView === 'REGISTER' ? 'theme-patient' :
+    'theme-patient'
+  );
+
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950">
+    <div className={`min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white ${currentTheme}`}>
       <div>
         <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} />
         <Toast />
