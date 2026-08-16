@@ -136,7 +136,7 @@ export default function HospitalPortal() {
   };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="portal-view space-y-6 pb-20">
 
       {/* Warning Banner */}
       {hospital.status === 'PENDING' && (
