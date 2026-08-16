@@ -75,7 +75,7 @@ function MainApp() {
   );
 
   return (
-    <div className={`min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white ${currentTheme}`}>
+    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950 text-slate-100">
       <div>
         <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} appPortalMode={appPortalMode} />
         <Toast />
