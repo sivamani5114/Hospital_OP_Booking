@@ -13,6 +13,7 @@ import HospitalRegister from './components/auth/HospitalRegister';
 import UserPortal from './components/user/UserPortal';
 import HospitalPortal from './components/hospital/HospitalPortal';
 import AdminPortal from './components/admin/AdminPortal';
+import FirstTimeVisitorGuideModal from './components/common/FirstTimeVisitorGuideModal';
 
 import ErrorBoundary from './components/common/ErrorBoundary';
 
@@ -38,6 +39,14 @@ function MainApp() {
 
   const appPortalMode = getAppPortalMode(); // 'PATIENT' | 'HOSPITAL' | 'ADMIN' | 'ALL'
 
+  // First Time Visitor Interactive Tour / Guide State
+  const [showVisitorGuide, setShowVisitorGuide] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('carepulse_guide_dismissed');
+    }
+    return false;
+  });
+
   // Auth View State: 'PORTAL_SELECT' | 'USER_LOGIN' | 'HOSPITAL_LOGIN' | 'ADMIN_LOGIN' | 'PATIENT_REGISTER' | 'HOSPITAL_REGISTER'
   const [authView, setAuthView] = useState(() => {
     if (appPortalMode === 'PATIENT') return 'USER_LOGIN';
@@ -50,26 +59,23 @@ function MainApp() {
     setAuthView('PORTAL_SELECT');
   };
 
-  // Dynamic theme class:
-  // Patient -> 'theme-patient' (Crisp Light Medical)
-  // Hospital -> 'theme-hospital' (Crisp Light Clinical Emerald)
-  // Super Admin -> 'theme-admin' (Deep Futuristic Dark Command Center)
-  const currentTheme = currentUser ? (
-    currentUser.role === 'ADMIN' ? 'theme-admin' :
-    currentUser.role === 'HOSPITAL' ? 'theme-hospital' :
-    'theme-patient'
-  ) : (
-    authView === 'ADMIN_LOGIN' || appPortalMode === 'ADMIN' ? 'theme-admin' :
-    authView === 'HOSPITAL_LOGIN' || authView === 'HOSPITAL_REGISTER' || appPortalMode === 'HOSPITAL' ? 'theme-hospital' :
-    authView === 'USER_LOGIN' || authView === 'PATIENT_REGISTER' || appPortalMode === 'PATIENT' ? 'theme-patient' :
-    'theme-patient'
-  );
-
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950 text-slate-100">
       <div>
-        <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} appPortalMode={appPortalMode} />
+        <Navbar 
+          authView={authView} 
+          onNavigate={(view) => setAuthView(view)} 
+          appPortalMode={appPortalMode} 
+          onOpenGuide={() => setShowVisitorGuide(true)}
+        />
         <Toast />
+
+        {/* First Time Visitor Interactive Walkthrough Guide */}
+        <FirstTimeVisitorGuideModal
+          isOpen={showVisitorGuide}
+          onClose={() => setShowVisitorGuide(false)}
+          onNavigate={(view) => setAuthView(view)}
+        />
 
         <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
           {!currentUser ? (

@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import NotificationBell from './common/NotificationBell';
 import { Stethoscope, LogOut, Globe, ShieldCheck } from 'lucide-react';
 
-export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) {
+export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL', onOpenGuide }) {
   const { currentUser, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
 
@@ -50,6 +50,19 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2">
+            {/* 💡 First Time Visitor Quick Guide Button */}
+            {onOpenGuide && (
+              <button
+                type="button"
+                onClick={onOpenGuide}
+                className="px-2.5 py-1.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+                title="Open Interactive Navigation Guide & Demo Accounts"
+              >
+                <span>💡</span>
+                <span className="hidden sm:inline">Guide / Tour</span>
+              </button>
+            )}
+
             {/* Super Admin Login Button - ONLY VISIBLE ON MAIN LANDING PAGE */}
             {authView === 'PORTAL_SELECT' && (
               <button
