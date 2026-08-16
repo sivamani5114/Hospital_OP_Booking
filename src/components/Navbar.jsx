@@ -50,20 +50,18 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2">
-            {/* Super Admin Login Button */}
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('ADMIN_LOGIN')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 ${
-                authView === 'ADMIN_LOGIN'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30 border border-indigo-400'
-                  : 'bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 hover:text-white border border-indigo-500/40'
-              }`}
-              title="Super Admin Master Control Login"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Admin Login</span>
-            </button>
+            {/* Super Admin Login Button - ONLY VISIBLE ON MAIN LANDING PAGE */}
+            {authView === 'PORTAL_SELECT' && (
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('ADMIN_LOGIN')}
+                className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 hover:text-white border border-indigo-500/40"
+                title="Super Admin Master Control Login"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Admin Login</span>
+              </button>
+            )}
 
             {/* Language Toggle Button */}
             <button
