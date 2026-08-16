@@ -262,7 +262,7 @@ export default function UserPortal() {
   };
 
   return (
-    <div className="portal-view space-y-6 pb-20">
+    <div className="space-y-6 pb-20">
 
       {/* Navigation Sub-Bar */}
       <div className="glass-panel p-2 rounded-2xl border border-slate-800 flex items-center justify-between overflow-x-auto">

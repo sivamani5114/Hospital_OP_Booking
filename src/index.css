@@ -8,7 +8,7 @@
   }
 }
 
-/* ═══ PATIENT LIGHT THEME (Crisp & Clean Modern Medical for Portal) ═══ */
+/* ═══ PATIENT LIGHT THEME (Crisp & Clean Modern Medical) ═══ */
 .theme-patient {
   background-color: #f1f5f9;
   background-image: 
@@ -19,75 +19,75 @@
   color: #0f172a;
 }
 
-.theme-patient .portal-view .glass-panel {
+.theme-patient .glass-panel {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(226, 232, 240, 1);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 
-.theme-patient .portal-view .glass-card {
+.theme-patient .glass-card {
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 1);
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
 }
 
-.theme-patient .portal-view .glass-card:hover {
+.theme-patient .glass-card:hover {
   background: #ffffff;
   border-color: rgba(6, 182, 212, 0.5);
   box-shadow: 0 12px 30px -10px rgba(6, 182, 212, 0.2);
 }
 
-.theme-patient .portal-view .bg-slate-950,
-.theme-patient .portal-view .bg-slate-900 {
+.theme-patient .bg-slate-950,
+.theme-patient .bg-slate-900 {
   background-color: #ffffff !important;
 }
 
-.theme-patient .portal-view .bg-slate-900\/90,
-.theme-patient .portal-view .bg-slate-900\/80,
-.theme-patient .portal-view .bg-slate-900\/70,
-.theme-patient .portal-view .bg-slate-900\/60,
-.theme-patient .portal-view .bg-slate-900\/50,
-.theme-patient .portal-view .bg-slate-900\/40 {
+.theme-patient .bg-slate-900\/90,
+.theme-patient .bg-slate-900\/80,
+.theme-patient .bg-slate-900\/70,
+.theme-patient .bg-slate-900\/60,
+.theme-patient .bg-slate-900\/50,
+.theme-patient .bg-slate-900\/40 {
   background-color: #f8fafc !important;
 }
 
-.theme-patient .portal-view .border-slate-800,
-.theme-patient .portal-view .border-slate-700 {
+.theme-patient .border-slate-800,
+.theme-patient .border-slate-700 {
   border-color: #e2e8f0 !important;
 }
 
-.theme-patient .portal-view .text-white {
+.theme-patient .text-white {
   color: #0f172a !important;
 }
 
-.theme-patient .portal-view .text-slate-200,
-.theme-patient .portal-view .text-slate-300 {
+.theme-patient .text-slate-200,
+.theme-patient .text-slate-300 {
   color: #1e293b !important;
 }
 
-.theme-patient .portal-view .text-slate-400 {
+.theme-patient .text-slate-400 {
   color: #475569 !important;
 }
 
-.theme-patient .portal-view .text-slate-500 {
+.theme-patient .text-slate-500 {
   color: #64748b !important;
 }
 
-.theme-patient .portal-view input,
-.theme-patient .portal-view select,
-.theme-patient .portal-view textarea {
+.theme-patient input,
+.theme-patient select,
+.theme-patient textarea {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
 }
 
-.theme-patient .portal-view input::placeholder,
-.theme-patient .portal-view textarea::placeholder {
+.theme-patient input::placeholder,
+.theme-patient textarea::placeholder {
   color: #94a3b8 !important;
 }
 
 
-/* ═══ HOSPITAL LIGHT THEME (Crisp Clinical Emerald for Dashboard) ═══ */
+/* ═══ HOSPITAL LIGHT THEME (Crisp Clinical Emerald) ═══ */
 .theme-hospital {
   background-color: #f0fdf4;
   background-image: 
@@ -98,70 +98,70 @@
   color: #0f172a;
 }
 
-.theme-hospital .portal-view .glass-panel {
+.theme-hospital .glass-panel {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(209, 250, 229, 0.9);
   box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 
-.theme-hospital .portal-view .glass-card {
+.theme-hospital .glass-card {
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 1);
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
 }
 
-.theme-hospital .portal-view .glass-card:hover {
+.theme-hospital .glass-card:hover {
   background: #ffffff;
   border-color: rgba(16, 185, 129, 0.5);
   box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.2);
 }
 
-.theme-hospital .portal-view .bg-slate-950,
-.theme-hospital .portal-view .bg-slate-900 {
+.theme-hospital .bg-slate-950,
+.theme-hospital .bg-slate-900 {
   background-color: #ffffff !important;
 }
 
-.theme-hospital .portal-view .bg-slate-900\/90,
-.theme-hospital .portal-view .bg-slate-900\/80,
-.theme-hospital .portal-view .bg-slate-900\/70,
-.theme-hospital .portal-view .bg-slate-900\/60,
-.theme-hospital .portal-view .bg-slate-900\/50,
-.theme-hospital .portal-view .bg-slate-900\/40 {
+.theme-hospital .bg-slate-900\/90,
+.theme-hospital .bg-slate-900\/80,
+.theme-hospital .bg-slate-900\/70,
+.theme-hospital .bg-slate-900\/60,
+.theme-hospital .bg-slate-900\/50,
+.theme-hospital .bg-slate-900\/40 {
   background-color: #f8fafc !important;
 }
 
-.theme-hospital .portal-view .border-slate-800,
-.theme-hospital .portal-view .border-slate-700 {
+.theme-hospital .border-slate-800,
+.theme-hospital .border-slate-700 {
   border-color: #e2e8f0 !important;
 }
 
-.theme-hospital .portal-view .text-white {
+.theme-hospital .text-white {
   color: #0f172a !important;
 }
 
-.theme-hospital .portal-view .text-slate-200,
-.theme-hospital .portal-view .text-slate-300 {
+.theme-hospital .text-slate-200,
+.theme-hospital .text-slate-300 {
   color: #1e293b !important;
 }
 
-.theme-hospital .portal-view .text-slate-400 {
+.theme-hospital .text-slate-400 {
   color: #475569 !important;
 }
 
-.theme-hospital .portal-view .text-slate-500 {
+.theme-hospital .text-slate-500 {
   color: #64748b !important;
 }
 
-.theme-hospital .portal-view input,
-.theme-hospital .portal-view select,
-.theme-hospital .portal-view textarea {
+.theme-hospital input,
+.theme-hospital select,
+.theme-hospital textarea {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
 }
 
-.theme-hospital .portal-view input::placeholder,
-.theme-hospital .portal-view textarea::placeholder {
+.theme-hospital input::placeholder,
+.theme-hospital textarea::placeholder {
   color: #94a3b8 !important;
 }
 
