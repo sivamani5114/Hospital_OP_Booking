@@ -20,6 +20,7 @@ function MainApp() {
   
   // Auth View State: 'PORTAL_SELECT' | 'USER_LOGIN' | 'HOSPITAL_LOGIN' | 'ADMIN_LOGIN' | 'REGISTER'
   const [authView, setAuthView] = useState('PORTAL_SELECT');
+  const [initialRegisterRole, setInitialRegisterRole] = useState('PATIENT');
 
   const handleBackToPortals = () => {
     setAuthView('PORTAL_SELECT');
@@ -35,7 +36,7 @@ function MainApp() {
     'theme-patient'
   ) : (
     authView === 'ADMIN_LOGIN' ? 'theme-admin' :
-    authView === 'HOSPITAL_LOGIN' ? 'theme-hospital' :
+    authView === 'HOSPITAL_LOGIN' || (authView === 'REGISTER' && initialRegisterRole === 'HOSPITAL') ? 'theme-hospital' :
     authView === 'USER_LOGIN' || authView === 'REGISTER' ? 'theme-patient' :
     'theme-patient'
   );
@@ -57,7 +58,10 @@ function MainApp() {
                 <UserLogin 
                   onGoBack={handleBackToPortals}
                   onBackToPortals={handleBackToPortals} 
-                  onGoToRegister={() => setAuthView('REGISTER')}
+                  onGoToRegister={(role = 'PATIENT') => {
+                    setInitialRegisterRole(role);
+                    setAuthView('REGISTER');
+                  }}
                   onGoToHospitalLogin={() => setAuthView('HOSPITAL_LOGIN')}
                   onGoToAdminLogin={() => setAuthView('ADMIN_LOGIN')}
                 />
@@ -67,7 +71,10 @@ function MainApp() {
                 <HospitalLogin 
                   onGoBack={handleBackToPortals} 
                   onBackToPortals={handleBackToPortals}
-                  onGoToRegister={() => setAuthView('REGISTER')} 
+                  onGoToRegister={(role = 'HOSPITAL') => {
+                    setInitialRegisterRole(role);
+                    setAuthView('REGISTER');
+                  }} 
                 />
               )}
 
@@ -81,6 +88,7 @@ function MainApp() {
               {authView === 'REGISTER' && (
                 <Register 
                   onGoToLogin={handleBackToPortals} 
+                  initialRegType={initialRegisterRole}
                 />
               )}
             </>

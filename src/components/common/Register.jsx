@@ -11,11 +11,17 @@ import {
   Award, ShieldCheck, Loader2, FileCheck2
 } from 'lucide-react';
 
-export default function Register({ onGoToLogin }) {
+export default function Register({ onGoToLogin, initialRegType = 'PATIENT' }) {
   const { registerUser, showToast } = useAuth();
   const { registerHospitalSelf, users, hospitals } = useDb();
 
-  const [regType, setRegType] = useState('PATIENT'); // PATIENT | HOSPITAL
+  const [regType, setRegType] = useState(initialRegType || 'PATIENT'); // PATIENT | HOSPITAL
+
+  useEffect(() => {
+    if (initialRegType) {
+      setRegType(initialRegType);
+    }
+  }, [initialRegType]);
 
   // Certificate Auto-Verification State
   const [isVerifyingCert, setIsVerifyingCert] = useState(false);

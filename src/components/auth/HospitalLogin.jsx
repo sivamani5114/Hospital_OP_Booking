@@ -245,8 +245,8 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
             <span className="text-xs text-slate-400 block">Want to register a new Hospital?</span>
             <button
               type="button"
-              onClick={onGoToRegister}
-              className="w-full border border-slate-800 hover:border-emerald-500/40 text-emerald-400 font-semibold py-3 rounded-xl text-sm transition-colors"
+              onClick={() => onGoToRegister && onGoToRegister('HOSPITAL')}
+              className="w-full border border-slate-800 hover:border-emerald-500/40 text-emerald-400 font-semibold py-3 rounded-xl text-sm transition-colors cursor-pointer"
             >
               + Register New Hospital (Pending Admin Approval)
             </button>
