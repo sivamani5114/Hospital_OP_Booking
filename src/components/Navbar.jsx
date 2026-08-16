@@ -4,70 +4,145 @@ import { useLanguage } from '../context/LanguageContext';
 import NotificationBell from './common/NotificationBell';
 import { Stethoscope, LogOut, Globe } from 'lucide-react';
 
-export default function Navbar({ authView, onNavigate }) {
+export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) {
   const { currentUser, logout } = useAuth();
   const { language, toggleLanguage, t } = useLanguage();
 
-  // If not logged in, render the Global CarePulse Portal Header
+  // If not logged in, render the Portal Header
   if (!currentUser) {
     return (
       <header className="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3 bg-slate-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div 
-            onClick={() => onNavigate && onNavigate('PORTAL_SELECT')}
+            onClick={() => onNavigate && onNavigate(appPortalMode === 'PATIENT' ? 'USER_LOGIN' : appPortalMode === 'HOSPITAL' ? 'HOSPITAL_LOGIN' : appPortalMode === 'ADMIN' ? 'ADMIN_LOGIN' : 'PORTAL_SELECT')}
             className="flex items-center gap-3 cursor-pointer group"
           >
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+            <div className={`h-10 w-10 rounded-xl p-0.5 shadow-lg group-hover:scale-105 transition-transform ${
+              appPortalMode === 'HOSPITAL' ? 'bg-gradient-to-tr from-emerald-500 to-teal-600 shadow-emerald-500/20' :
+              appPortalMode === 'ADMIN' ? 'bg-gradient-to-tr from-indigo-500 to-purple-600 shadow-indigo-500/20' :
+              'bg-gradient-to-tr from-cyan-500 to-blue-600 shadow-cyan-500/20'
+            }`}>
               <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Stethoscope className="w-5 h-5 text-cyan-400" />
+                <Stethoscope className={`w-5 h-5 ${
+                  appPortalMode === 'HOSPITAL' ? 'text-emerald-400' :
+                  appPortalMode === 'ADMIN' ? 'text-indigo-400' :
+                  'text-cyan-400'
+                }`} />
               </div>
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-white font-outfit tracking-tight">
-                CarePulse <span className="text-cyan-400">OP</span>
+                CarePulse <span className={
+                  appPortalMode === 'HOSPITAL' ? 'text-emerald-400' :
+                  appPortalMode === 'ADMIN' ? 'text-indigo-400' :
+                  'text-cyan-400'
+                }>OP</span>
               </h1>
-              <p className="text-[10px] text-slate-400 hidden sm:block">Multi-Portal Hospital OP Booking Network</p>
+              <p className="text-[10px] text-slate-400 hidden sm:block">
+                {appPortalMode === 'PATIENT' ? 'Online Patient OP Booking Network' :
+                 appPortalMode === 'HOSPITAL' ? 'Hospital OP Queue & Doctor Management' :
+                 appPortalMode === 'ADMIN' ? 'Super Admin Command & Verification Center' :
+                 'Multi-Portal Hospital OP Booking Network'}
+              </p>
             </div>
           </div>
 
-          {/* Quick Navigation Buttons */}
+          {/* Navigation Buttons based on active mode */}
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('USER_LOGIN')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                authView === 'USER_LOGIN'
-                  ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
-                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
-              }`}
-            >
-              👤 Patient Login
-            </button>
+            {appPortalMode === 'ALL' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('USER_LOGIN')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    authView === 'USER_LOGIN' || authView === 'PATIENT_REGISTER'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                  }`}
+                >
+                  👤 Patient Login
+                </button>
 
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('HOSPITAL_LOGIN')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                authView === 'HOSPITAL_LOGIN'
-                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
-                  : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30'
-              }`}
-            >
-              🏥 Hospital Desk Login
-            </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('HOSPITAL_LOGIN')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    authView === 'HOSPITAL_LOGIN' || authView === 'HOSPITAL_REGISTER'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
+                      : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30'
+                  }`}
+                >
+                  🏥 Hospital Desk Login
+                </button>
 
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('ADMIN_LOGIN')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer hidden md:flex items-center gap-1.5 ${
-                authView === 'ADMIN_LOGIN'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
-              }`}
-            >
-              🛡️ Super Admin
-            </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('ADMIN_LOGIN')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer hidden md:flex items-center gap-1.5 ${
+                    authView === 'ADMIN_LOGIN'
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                  }`}
+                >
+                  🛡️ Super Admin
+                </button>
+              </>
+            )}
+
+            {appPortalMode === 'PATIENT' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('USER_LOGIN')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    authView === 'USER_LOGIN'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                  }`}
+                >
+                  👤 Patient Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('PATIENT_REGISTER')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    authView === 'PATIENT_REGISTER'
+                      ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
+                      : 'bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-300 border border-cyan-500/30'
+                  }`}
+                >
+                  + Register Account
+                </button>
+              </>
+            )}
+
+            {appPortalMode === 'HOSPITAL' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('HOSPITAL_LOGIN')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    authView === 'HOSPITAL_LOGIN'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
+                      : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                  }`}
+                >
+                  🏥 Hospital Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('HOSPITAL_REGISTER')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    authView === 'HOSPITAL_REGISTER'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25'
+                      : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30'
+                  }`}
+                >
+                  + Register Hospital
+                </button>
+              </>
+            )}
 
             {/* Language Toggle Button */}
             <button

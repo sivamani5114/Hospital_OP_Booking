@@ -19,11 +19,44 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 function MainApp() {
   const { currentUser } = useAuth();
   
+  // Read Portal Type from Environment Variable or URL Query or Subdomain
+  const getAppPortalMode = () => {
+    // 1. Env variable (Vercel Project specific)
+    const envPortal = import.meta.env.VITE_PORTAL_TYPE;
+    if (envPortal) return envPortal.toUpperCase();
+
+    // 2. URL Search Param ?portal=patient | ?portal=hospital | ?portal=admin
+    if (typeof window !== 'undefined' && window.location) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const paramPortal = searchParams.get('portal');
+      if (paramPortal) return paramPortal.toUpperCase();
+
+      // 3. Subdomain check (e.g. carepulse-patient.vercel.app or hospital.carepulse.com)
+      const host = window.location.hostname.toLowerCase();
+      if (host.includes('patient')) return 'PATIENT';
+      if (host.includes('hospital')) return 'HOSPITAL';
+      if (host.includes('admin')) return 'ADMIN';
+    }
+
+    // 4. Default: All/Multi-portal selector
+    return 'ALL';
+  };
+
+  const appPortalMode = getAppPortalMode(); // 'PATIENT' | 'HOSPITAL' | 'ADMIN' | 'ALL'
+
   // Auth View State: 'PORTAL_SELECT' | 'USER_LOGIN' | 'HOSPITAL_LOGIN' | 'ADMIN_LOGIN' | 'PATIENT_REGISTER' | 'HOSPITAL_REGISTER'
-  const [authView, setAuthView] = useState('PORTAL_SELECT');
+  const [authView, setAuthView] = useState(() => {
+    if (appPortalMode === 'PATIENT') return 'USER_LOGIN';
+    if (appPortalMode === 'HOSPITAL') return 'HOSPITAL_LOGIN';
+    if (appPortalMode === 'ADMIN') return 'ADMIN_LOGIN';
+    return 'PORTAL_SELECT';
+  });
 
   const handleBackToPortals = () => {
-    setAuthView('PORTAL_SELECT');
+    if (appPortalMode === 'PATIENT') setAuthView('USER_LOGIN');
+    else if (appPortalMode === 'HOSPITAL') setAuthView('HOSPITAL_LOGIN');
+    else if (appPortalMode === 'ADMIN') setAuthView('ADMIN_LOGIN');
+    else setAuthView('PORTAL_SELECT');
   };
 
   // Dynamic theme class:
@@ -35,16 +68,16 @@ function MainApp() {
     currentUser.role === 'HOSPITAL' ? 'theme-hospital' :
     'theme-patient'
   ) : (
-    authView === 'ADMIN_LOGIN' ? 'theme-admin' :
-    authView === 'HOSPITAL_LOGIN' || authView === 'HOSPITAL_REGISTER' ? 'theme-hospital' :
-    authView === 'USER_LOGIN' || authView === 'PATIENT_REGISTER' ? 'theme-patient' :
+    authView === 'ADMIN_LOGIN' || appPortalMode === 'ADMIN' ? 'theme-admin' :
+    authView === 'HOSPITAL_LOGIN' || authView === 'HOSPITAL_REGISTER' || appPortalMode === 'HOSPITAL' ? 'theme-hospital' :
+    authView === 'USER_LOGIN' || authView === 'PATIENT_REGISTER' || appPortalMode === 'PATIENT' ? 'theme-patient' :
     'theme-patient'
   );
 
   return (
     <div className={`min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white ${currentTheme}`}>
       <div>
-        <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} />
+        <Navbar authView={authView} onNavigate={(view) => setAuthView(view)} appPortalMode={appPortalMode} />
         <Toast />
 
         <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
