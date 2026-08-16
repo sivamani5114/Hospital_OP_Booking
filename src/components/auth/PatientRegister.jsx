@@ -65,7 +65,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
       return;
     }
 
-    // 🔒 Enforce Strict Unique Phone Number Check
+    // Strict Unique Phone Number Check
     const isUserExists = (users || []).some(u => u.phone === cleanPhone);
     const isHospExists = (hospitals || []).some(h => h.phone === cleanPhone);
     if (isUserExists || isHospExists) {
@@ -85,7 +85,6 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
     showToast(`📲 Sending OTP to +91 ${cleanPhone}...`, 'info');
 
-    // 🚀 Dispatch Real Mobile SMS via Fast2SMS Dual-Route Gateway
     sendRealFast2SMS(cleanPhone, code, (statusMsg, success) => {
       showToast(statusMsg, success ? 'success' : 'error');
     });
@@ -127,7 +126,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
   };
 
   return (
-    <div className="min-h-screen flex items-stretch">
+    <div className="min-h-screen flex items-stretch bg-slate-950 text-slate-100">
 
       {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
       <div className="hidden lg:flex flex-col justify-between w-[400px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/40 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
@@ -185,11 +184,11 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
       {/* ═══ RIGHT REGISTRATION FORM PANEL ═══ */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-200 dark:border-slate-800 glass-panel sticky top-0 z-20">
+        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-800 glass-panel sticky top-0 z-20">
           <button
             type="button"
             onClick={onGoToLogin}
-            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-white font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Patient Login
           </button>
@@ -197,28 +196,28 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
         {/* Form Container */}
         <div className="flex-1 flex items-start justify-center p-5 sm:p-10">
-          <div className="w-full max-w-xl glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
+          <div className="w-full max-w-xl glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
             
             {/* Title */}
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-3 text-cyan-500">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-3 text-cyan-400">
                 <User className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-extrabold font-outfit text-slate-900 dark:text-white">Patient Account Registration</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Please fill your official profile details and verify your phone number.</p>
+              <h2 className="text-2xl font-extrabold font-outfit text-white">Patient Account Registration</h2>
+              <p className="text-xs text-slate-400 mt-0.5">Please fill your official profile details and verify your phone number.</p>
             </div>
 
             <form onSubmit={handlePatientSubmit} className="space-y-4">
               
               {/* Full Name */}
               <div>
-                <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Patient Full Name *</label>
+                <label className="text-xs text-slate-300 font-semibold block mb-1">Patient Full Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Siva Kumar"
                   value={patientForm.fullName}
                   onChange={(e) => setPatientForm(prev => ({ ...prev, fullName: e.target.value }))}
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                   required
                 />
               </div>
@@ -226,17 +225,17 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
               {/* Phone Number + Send OTP Button */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold">Mobile Number (10 Digits) *</label>
+                  <label className="text-xs text-slate-300 font-semibold">Mobile Number (10 Digits) *</label>
                   {patientForm.phone.length === 10 && /^[6-9]\d{9}$/.test(patientForm.phone) ? (
-                    <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
                     </span>
                   ) : patientForm.phone.length > 0 && !/^[6-9]/.test(patientForm.phone) ? (
-                    <span className="text-[10px] text-rose-500 font-bold">
+                    <span className="text-[10px] text-rose-400 font-bold">
                       ⚠️ Must start with 6, 7, 8, or 9
                     </span>
                   ) : patientForm.phone.length > 0 ? (
-                    <span className="text-[10px] text-cyan-600 font-mono">
+                    <span className="text-[10px] text-cyan-400 font-mono">
                       {patientForm.phone.length}/10 digits
                     </span>
                   ) : null}
@@ -244,9 +243,9 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
                 <div className="flex gap-2">
                   <div className="relative flex-1 flex items-center">
-                    <div className="absolute left-3 flex items-center gap-1 text-slate-500 font-bold text-xs select-none pointer-events-none border-r border-slate-300 dark:border-slate-700 pr-2">
+                    <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
                       <span>🇮🇳</span>
-                      <span className="font-mono">+91</span>
+                      <span className="font-mono text-slate-300">+91</span>
                     </div>
                     <input
                       type="tel"
@@ -258,8 +257,8 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                         setPatientForm(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }));
                         setIsPhoneVerified(false);
                       }}
-                      className={`w-full bg-white dark:bg-slate-900 border rounded-xl pl-20 pr-3 py-3 text-xs text-slate-900 dark:text-white font-mono tracking-wider outline-none ${
-                        isPhoneVerified ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-slate-300 dark:border-slate-800 focus:border-cyan-500'
+                      className={`w-full bg-slate-900 border rounded-xl pl-20 pr-3 py-3 text-xs text-white font-mono tracking-wider outline-none ${
+                        isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800 focus:border-cyan-500'
                       }`}
                       required
                     />
@@ -276,7 +275,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                       {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
                     </button>
                   ) : (
-                    <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-4 py-3 rounded-xl flex items-center gap-1.5 shrink-0">
+                    <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-3 rounded-xl flex items-center gap-1.5 shrink-0">
                       <CheckCircle2 className="w-4 h-4" /> Verified ✓
                     </span>
                   )}
@@ -285,17 +284,17 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
               {/* DIRECT REAL MOBILE SMS OTP VERIFICATION CARD (FAST2SMS GATEWAY) */}
               {otpSent && !isPhoneVerified && showMobileSmsCard && (
-                <div className="bg-cyan-50 dark:bg-slate-900 p-4 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-lg animate-fadeIn">
+                <div className="bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 p-4 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-2xl animate-fadeIn">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-cyan-700 dark:text-cyan-300 font-bold flex items-center gap-1.5">
-                      <Smartphone className="w-4 h-4 text-cyan-600" /> SMS Sent to Mobile (+91 {targetPhone})
+                    <span className="text-cyan-300 font-bold flex items-center gap-1.5">
+                      <Smartphone className="w-4 h-4 text-cyan-400" /> SMS Sent to Mobile (+91 {targetPhone})
                     </span>
-                    <span className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Real SMS Dispatched
+                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Real SMS Dispatched
                     </span>
                   </div>
 
-                  <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
+                  <p className="text-slate-300 text-xs leading-relaxed">
                     🔒 A 6-digit security OTP has been sent directly to your phone SIM inbox (<strong>+91 {targetPhone}</strong>) via <strong>Fast2SMS Gateway</strong>. Please enter the code below.
                   </p>
 
@@ -306,7 +305,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                       placeholder="Enter 6-digit SMS OTP code"
                       value={enteredOtp}
                       onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-cyan-500 rounded-xl p-3 text-center font-mono text-slate-900 dark:text-white text-sm font-bold tracking-widest outline-none"
+                      className="flex-1 bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl p-3 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"
                       autoFocus
                     />
                     <button
@@ -322,13 +321,13 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
               {/* Email Address */}
               <div>
-                <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Email Address *</label>
+                <label className="text-xs text-slate-300 font-semibold block mb-1">Email Address *</label>
                 <input
                   type="email"
                   placeholder="e.g. siva@gmail.com"
                   value={patientForm.email}
                   onChange={(e) => setPatientForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                   required
                 />
               </div>
@@ -336,21 +335,21 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
               {/* DOB & Gender */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Date of Birth *</label>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1">Date of Birth *</label>
                   <input
                     type="date"
                     value={patientForm.dateOfBirth}
                     onChange={(e) => setPatientForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Gender *</label>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1">Gender *</label>
                   <select
                     value={patientForm.gender}
                     onChange={(e) => setPatientForm(prev => ({ ...prev, gender: e.target.value }))}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -361,13 +360,13 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
               {/* Full Address */}
               <div>
-                <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Full Residential Address *</label>
+                <label className="text-xs text-slate-300 font-semibold block mb-1">Full Residential Address *</label>
                 <input
                   type="text"
                   placeholder="e.g. Flat 201, Jubilee Hills, Hyderabad"
                   value={patientForm.address}
                   onChange={(e) => setPatientForm(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                   required
                 />
               </div>
@@ -375,24 +374,24 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
               {/* Password & Confirm Password */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Password *</label>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1">Password *</label>
                   <input
                     type="password"
                     placeholder="••••••••"
                     value={patientForm.password}
                     onChange={(e) => setPatientForm(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700 dark:text-slate-300 font-semibold block mb-1">Confirm Password *</label>
+                  <label className="text-xs text-slate-300 font-semibold block mb-1">Confirm Password *</label>
                   <input
                     type="password"
                     placeholder="••••••••"
                     value={patientForm.confirmPassword}
                     onChange={(e) => setPatientForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-500"
                     required
                   />
                 </div>
@@ -404,7 +403,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 className={`w-full font-bold py-3.5 rounded-xl text-xs transition-all cursor-pointer ${
                   isPhoneVerified 
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 active:scale-[0.98]'
-                    : 'bg-slate-200 dark:bg-slate-800 text-slate-400 border border-slate-300 dark:border-slate-700 cursor-not-allowed'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
                 }`}
               >
                 {isPhoneVerified ? 'Complete Patient Registration →' : '⚠️ Please Verify Mobile Number with OTP First'}
@@ -412,13 +411,13 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
             </form>
 
             {/* Bottom Link */}
-            <div className="text-center pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="text-center pt-2 border-t border-slate-800">
               <button
                 type="button"
                 onClick={onGoToLogin}
-                className="text-xs text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 font-semibold transition-colors cursor-pointer"
+                className="text-xs text-slate-400 hover:text-cyan-400 font-semibold transition-colors cursor-pointer"
               >
-                Already have a patient account? <span className="font-bold underline">Login Here</span>
+                Already have a patient account? <span className="font-bold underline text-cyan-400">Login Here</span>
               </button>
             </div>
 

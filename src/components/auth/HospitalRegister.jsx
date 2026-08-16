@@ -253,7 +253,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
   };
 
   return (
-    <div className="min-h-screen flex items-stretch">
+    <div className="min-h-screen flex items-stretch bg-slate-950 text-slate-100">
 
       {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
       <div className="hidden lg:flex flex-col justify-between w-[400px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
@@ -269,28 +269,28 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
             </div>
             <div>
               <span className="text-white font-extrabold text-xl font-outfit tracking-tight block">CarePulse</span>
-              <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Hospital Desk Portal</span>
+              <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Hospital Portal</span>
             </div>
           </div>
 
           <h2 className="text-3xl font-extrabold text-white leading-tight mb-3 font-outfit">
             Register Your<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
-              Hospital or Clinic
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+              Hospital / Clinic
             </span>
           </h2>
           <p className="text-slate-300 text-xs leading-relaxed">
-            Join the centralized online OP queue network. Onboard verified doctors, manage consultation tokens, and receive direct digital patient payments.
+            Join 150+ verified healthcare institutions on CarePulse. Accept online OP bookings, configure doctor consultation slots, track daily revenue, and deliver digital prescriptions seamlessly.
           </p>
         </div>
 
         {/* Highlights */}
         <div className="space-y-4 my-8">
           {[
-            { icon: '👨‍⚕️', title: 'Doctor Roster Management', desc: 'Add verified doctors with medical council registration' },
-            { icon: '📊', title: 'Live OP Queue System', desc: 'Smart counter calling & token flow management' },
-            { icon: '💳', title: 'Direct UPI Settlement', desc: 'Hospital bank account & QR code configuration' },
-            { icon: '🛡️', title: 'Govt & NABH Verified', desc: 'Instant AI certificate scanning & legal audit' },
+            { icon: '👨‍⚕️', title: 'Manage Doctors & Slots', desc: 'Add verified doctors with license numbers' },
+            { icon: '📋', title: 'Real-Time OP Queue', desc: 'Live token counter and queue management' },
+            { icon: '📄', title: 'Digital Prescriptions', desc: 'Attach prescription notes to patient records' },
+            { icon: '📊', title: 'Revenue & Reports', desc: 'Instant daily OP collection summaries' },
           ].map((f, i) => (
             <div key={i} className="flex items-start gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-sm">
               <span className="text-xl mt-0.5">{f.icon}</span>
@@ -304,18 +304,18 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
         <div className="text-[11px] text-emerald-300/80 flex items-center gap-1.5 pt-4 border-t border-slate-800">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>NABH & CEA Standard Healthcare Platform</span>
+          <span>🔒 NABH & CEA Compliant · Encrypted System</span>
         </div>
       </div>
 
       {/* ═══ RIGHT REGISTRATION FORM PANEL ═══ */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-200 dark:border-slate-800 glass-panel sticky top-0 z-20">
+        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-800 glass-panel sticky top-0 z-20">
           <button
             type="button"
             onClick={onGoToLogin}
-            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-white font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Hospital Desk Login
           </button>
@@ -323,26 +323,26 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
         {/* Form Container */}
         <div className="flex-1 flex items-start justify-center p-5 sm:p-10">
-          <div className="w-full max-w-2xl glass-card p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
+          <div className="w-full max-w-2xl glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
             
             {/* Title */}
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3 text-emerald-500">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3 text-emerald-400">
                 <Building2 className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-extrabold font-outfit text-slate-900 dark:text-white">Hospital Registration & Verification</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
+              <h2 className="text-2xl font-extrabold font-outfit text-white">Hospital Registration & Verification</h2>
+              <p className="text-xs text-slate-400 mt-0.5">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
             </div>
 
             <form onSubmit={handleHospitalSubmit} className="space-y-5">
               
               {/* Step Navigation Pill Indicator */}
-              <div className="bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold gap-1">
+              <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold gap-1">
                 <button
                   type="button"
                   onClick={() => setHospStep(1)}
                   className={`flex-1 py-2.5 rounded-xl text-center transition-all cursor-pointer ${
-                    hospStep === 1 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    hospStep === 1 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Step 1: Basic & Contact
@@ -351,7 +351,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   type="button"
                   onClick={() => setHospStep(2)}
                   className={`flex-1 py-2.5 rounded-xl text-center transition-all cursor-pointer ${
-                    hospStep === 2 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    hospStep === 2 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Step 2: Legal Docs & Settings
@@ -360,7 +360,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   type="button"
                   onClick={() => setHospStep(3)}
                   className={`flex-1 py-2.5 rounded-xl text-center transition-all cursor-pointer ${
-                    hospStep === 3 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    hospStep === 3 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Step 3: Bank Details 💳
@@ -373,23 +373,23 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Hospital Name & Type */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Hospital Name *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Hospital Name *</label>
                       <input
                         type="text"
                         placeholder="e.g. Apollo Health City"
                         value={hospitalForm.hospitalName}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalName: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Hospital Type *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Hospital Type *</label>
                       <select
                         value={hospitalForm.hospitalType}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalType: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                       >
                         <option value="Private">Private Hospital</option>
                         <option value="Government">Government Hospital</option>
@@ -400,8 +400,8 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   </div>
 
                   {/* Hospital Photo */}
-                  <div className="bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-                    <label className="text-slate-700 dark:text-slate-300 font-semibold block text-xs">Upload Hospital Building Photo / Logo *</label>
+                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                    <label className="text-slate-300 font-semibold block text-xs">Upload Hospital Building Photo / Logo *</label>
                     <div className="flex items-center gap-3">
                       {hospitalForm.logo && (
                         <img src={hospitalForm.logo} className="w-12 h-12 rounded-xl object-cover border border-emerald-500/50 shadow" alt="Hospital Preview" />
@@ -420,11 +420,11 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             reader.readAsDataURL(file);
                           }
                         }}
-                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2 text-xs text-slate-700 dark:text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold cursor-pointer"
+                        className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold cursor-pointer"
                       />
                     </div>
                     {hospitalForm.logoFileName && (
-                      <span className="text-[10px] text-emerald-600 font-bold block">
+                      <span className="text-[10px] text-emerald-400 font-bold block">
                         ✓ Photo Selected: {hospitalForm.logoFileName}
                       </span>
                     )}
@@ -433,25 +433,25 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Reg No & Est Year */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Hospital Reg. No *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Hospital Reg. No *</label>
                       <input
                         type="text"
                         placeholder="e.g. REG-TS-88492"
                         value={hospitalForm.regNo}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, regNo: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Established Year</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Established Year</label>
                       <input
                         type="number"
                         placeholder="e.g. 2012"
                         value={hospitalForm.establishedYear}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, establishedYear: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                       />
                     </div>
                   </div>
@@ -459,17 +459,17 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Phone + Send OTP */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block text-xs">Hospital Phone Number (10 Digits) *</label>
+                      <label className="text-slate-300 font-semibold block text-xs">Hospital Phone Number (10 Digits) *</label>
                       {hospitalForm.phone.length === 10 && /^[6-9]\d{9}$/.test(hospitalForm.phone) ? (
-                        <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                        <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Valid Mobile Number
                         </span>
                       ) : hospitalForm.phone.length > 0 && !/^[6-9]/.test(hospitalForm.phone) ? (
-                        <span className="text-[10px] text-rose-500 font-bold">
+                        <span className="text-[10px] text-rose-400 font-bold">
                           ⚠️ Must start with 6, 7, 8, or 9
                         </span>
                       ) : hospitalForm.phone.length > 0 ? (
-                        <span className="text-[10px] text-emerald-600 font-mono">
+                        <span className="text-[10px] text-emerald-400 font-mono">
                           {hospitalForm.phone.length}/10 digits
                         </span>
                       ) : null}
@@ -477,9 +477,9 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                     <div className="flex gap-2">
                       <div className="relative flex-1 flex items-center">
-                        <div className="absolute left-3 flex items-center gap-1 text-slate-500 font-bold text-xs select-none pointer-events-none border-r border-slate-300 dark:border-slate-700 pr-2">
+                        <div className="absolute left-3 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2">
                           <span>🇮🇳</span>
-                          <span className="font-mono">+91</span>
+                          <span className="font-mono text-slate-300">+91</span>
                         </div>
                         <input
                           type="tel"
@@ -491,8 +491,8 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             setHospitalForm(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }));
                             setIsPhoneVerified(false);
                           }}
-                          className={`w-full bg-white dark:bg-slate-900 border rounded-xl pl-20 pr-3 py-3 text-xs text-slate-900 dark:text-white font-mono tracking-wider outline-none ${
-                            isPhoneVerified ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-slate-300 dark:border-slate-800 focus:border-emerald-500'
+                          className={`w-full bg-slate-900 border rounded-xl pl-20 pr-3 py-3 text-xs text-white font-mono tracking-wider outline-none ${
+                            isPhoneVerified ? 'border-emerald-500/80 bg-emerald-950/20' : 'border-slate-800 focus:border-emerald-500'
                           }`}
                           required
                         />
@@ -509,7 +509,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                           {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
                         </button>
                       ) : (
-                        <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-4 py-3 rounded-xl flex items-center gap-1.5 shrink-0">
+                        <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-3 rounded-xl flex items-center gap-1.5 shrink-0">
                           <CheckCircle2 className="w-4 h-4" /> Verified ✓
                         </span>
                       )}
@@ -518,17 +518,17 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                   {/* SMS OTP CARD */}
                   {otpSent && !isPhoneVerified && showMobileSmsCard && (
-                    <div className="bg-emerald-50 dark:bg-slate-900 p-4 rounded-2xl border-2 border-emerald-500/40 space-y-3 shadow-lg animate-fadeIn">
+                    <div className="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 p-4 rounded-2xl border-2 border-emerald-500/40 space-y-3 shadow-2xl animate-fadeIn">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-1.5">
-                          <Smartphone className="w-4 h-4 text-emerald-600" /> SMS Sent to Mobile (+91 {targetPhone})
+                        <span className="text-emerald-300 font-bold flex items-center gap-1.5">
+                          <Smartphone className="w-4 h-4 text-emerald-400" /> SMS Sent to Mobile (+91 {targetPhone})
                         </span>
-                        <span className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Real SMS Dispatched
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Real SMS Dispatched
                         </span>
                       </div>
 
-                      <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
+                      <p className="text-slate-300 text-xs leading-relaxed">
                         🔒 A 6-digit verification code has been dispatched directly to your hospital mobile SIM (<strong>+91 {targetPhone}</strong>) via <strong>Fast2SMS Gateway</strong>. Please enter the code below.
                       </p>
 
@@ -539,7 +539,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                           placeholder="Enter 6-digit SMS OTP code"
                           value={enteredOtp}
                           onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                          className="flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl p-3 text-center font-mono text-slate-900 dark:text-white text-sm font-bold tracking-widest outline-none"
+                          className="flex-1 bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl p-3 text-center font-mono text-white text-sm font-bold tracking-widest outline-none"
                           autoFocus
                         />
                         <button
@@ -556,25 +556,25 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Email & Landline */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Official Hospital Email *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Official Hospital Email *</label>
                       <input
                         type="email"
                         placeholder="e.g. contact@hospital.com"
                         value={hospitalForm.email}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, email: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Landline Number (Optional)</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Landline Number (Optional)</label>
                       <input
                         type="text"
                         placeholder="e.g. 040-23456789"
                         value={hospitalForm.landline}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, landline: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                       />
                     </div>
                   </div>
@@ -582,25 +582,25 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* City & Area */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">City *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">City *</label>
                       <input
                         type="text"
                         placeholder="e.g. Hyderabad / Vijayawada"
                         value={hospitalForm.city}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, city: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Area / Locality *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Area / Locality *</label>
                       <input
                         type="text"
                         placeholder="e.g. Jubilee Hills / MG Road"
                         value={hospitalForm.area}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, area: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
                         required
                       />
                     </div>
@@ -608,7 +608,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                   {/* Google Maps Location */}
                   <div>
-                    <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Google Maps Location Link *</label>
+                    <label className="text-slate-300 font-semibold block mb-1">Google Maps Location Link *</label>
                     <div className="flex gap-2 mb-2">
                       <button
                         type="button"
@@ -618,7 +618,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                           window.open(mapsUrl, '_blank');
                           setHospitalForm(prev => ({ ...prev, mapsUrl: prev.mapsUrl || mapsUrl }));
                         }}
-                        className="flex-1 bg-cyan-50 dark:bg-cyan-950/40 hover:bg-cyan-100 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-500/40 text-xs font-bold py-2.5 rounded-xl cursor-pointer"
+                        className="flex-1 bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/40 text-xs font-bold py-2.5 rounded-xl cursor-pointer"
                       >
                         🗺️ Open Google Maps to Select Pin
                       </button>
@@ -636,7 +636,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             });
                           }
                         }}
-                        className="bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/40 text-xs font-bold px-3 py-2.5 rounded-xl cursor-pointer"
+                        className="bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/40 text-xs font-bold px-3 py-2.5 rounded-xl cursor-pointer"
                       >
                         🎯 Auto GPS Pin
                       </button>
@@ -647,7 +647,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                       placeholder="https://www.google.com/maps?q=latitude,longitude"
                       value={hospitalForm.mapsUrl}
                       onChange={(e) => setHospitalForm(prev => ({ ...prev, mapsUrl: e.target.value }))}
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-3 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-emerald-500"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-xs font-mono outline-none focus:border-emerald-500"
                       required
                     />
                   </div>
@@ -667,33 +667,33 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                 <div className="space-y-4 animate-fadeIn text-xs">
                   
                   {/* 1. Authorized Person Verification */}
-                  <div className="bg-slate-50 dark:bg-slate-950/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="font-bold text-slate-900 dark:text-cyan-300 text-xs flex items-center justify-between">
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <h4 className="font-bold text-cyan-300 text-xs flex items-center justify-between">
                       <span>👨‍💼 1. Hospital Owner / Authorized Person Verification</span>
-                      <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-semibold font-mono">KYC VERIFICATION</span>
+                      <span className="text-[10px] text-cyan-400 font-semibold font-mono">KYC VERIFICATION</span>
                     </h4>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Authorized Person Name *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Authorized Person Name *</label>
                         <input
                           type="text"
                           placeholder="e.g. Dr. Rajesh Kumar"
                           value={hospitalForm.authorizedPersonName}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonName: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Designation *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Designation *</label>
                         <input
                           type="text"
                           placeholder="e.g. Managing Director"
                           value={hospitalForm.authorizedPersonDesignation}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, authorizedPersonDesignation: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                           required
                         />
                       </div>
@@ -701,36 +701,36 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   </div>
 
                   {/* 2. Mandatory Legal Certificates with AI Verification */}
-                  <div className="bg-slate-50 dark:bg-slate-950/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="font-bold text-slate-900 dark:text-emerald-300 text-xs flex items-center justify-between">
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <h4 className="font-bold text-emerald-300 text-xs flex items-center justify-between">
                       <span>📑 2. Hospital Registration Certificate (Auto-Verified)</span>
-                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold font-mono">GOVT LICENSES</span>
+                      <span className="text-[10px] text-emerald-400 font-semibold font-mono">GOVT LICENSES</span>
                     </h4>
 
                     {isVerifyingCert && (
-                      <div className="bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-400 p-3 rounded-2xl flex items-center gap-2.5 text-cyan-700 dark:text-cyan-300 text-xs animate-pulse">
-                        <Loader2 className="w-4 h-4 animate-spin text-cyan-500 shrink-0" />
+                      <div className="bg-cyan-950/50 border border-cyan-400 p-3 rounded-2xl flex items-center gap-2.5 text-cyan-300 text-xs animate-pulse">
+                        <Loader2 className="w-4 h-4 animate-spin text-cyan-400 shrink-0" />
                         <span>🔍 <strong>AI Engine Active:</strong> Scanning Govt Health Registry & Authenticating Official Seal...</span>
                       </div>
                     )}
 
                     {certVerificationData && !isVerifyingCert && (
-                      <div className="bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-500/50 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow">
+                      <div className="bg-emerald-950/60 border-2 border-emerald-500/50 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-2xl">
                         <div className="flex items-center gap-2.5">
-                          <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
                           <div>
-                            <strong className="text-emerald-800 dark:text-emerald-300 block font-bold">
+                            <strong className="text-emerald-300 block font-bold">
                               {certVerificationData.badge} ({certVerificationData.confidenceScore}% Genuine Authenticated)
                             </strong>
-                            <span className="text-[10px] text-slate-600 dark:text-slate-400">
-                              {certVerificationData.details.issuingAuthority} · <span className="font-mono text-cyan-600 dark:text-cyan-300 font-bold">{certVerificationData.verificationId}</span>
+                            <span className="text-[10px] text-slate-400">
+                              {certVerificationData.details.issuingAuthority} · <span className="font-mono text-cyan-300 font-bold">{certVerificationData.verificationId}</span>
                             </span>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => setShowCertVerificationModal(true)}
-                          className="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer shrink-0 shadow"
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer shrink-0 shadow"
                         >
                           <Award className="w-3.5 h-3.5" /> Inspect Certificate 🛡️
                         </button>
@@ -738,7 +738,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                     )}
 
                     <div className="space-y-2">
-                      <label className="text-slate-700 dark:text-slate-300 font-bold block text-[11px]">Hospital Registration / License Certificate *</label>
+                      <label className="text-slate-300 font-bold block text-[11px]">Hospital Registration / License Certificate *</label>
                       <input
                         type="text"
                         placeholder="Registration Number (e.g. REG-TS-88492)"
@@ -749,7 +749,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             handleAutoVerifyHospitalCert(null, e.target.value);
                           }
                         }}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-2.5 text-xs text-slate-900 dark:text-white font-mono"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white font-mono"
                       />
                       <input
                         type="file"
@@ -766,15 +766,15 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             reader.readAsDataURL(file);
                           }
                         }}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg p-2 text-[11px] text-slate-700 dark:text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2.5 file:py-1 file:mr-2 file:font-bold cursor-pointer"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded file:px-2.5 file:py-1 file:mr-2 file:font-bold cursor-pointer"
                       />
                       {hospitalForm.regCertificateName && (
-                        <div className="flex items-center justify-between text-[10px] text-emerald-600 font-bold pt-0.5">
+                        <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold pt-0.5">
                           <span>✓ {hospitalForm.regCertificateName}</span>
                           <button
                             type="button"
                             onClick={() => handleAutoVerifyHospitalCert(null, hospitalForm.regCertificateNo)}
-                            className="text-cyan-600 hover:underline cursor-pointer"
+                            className="text-cyan-400 hover:underline cursor-pointer"
                           >
                             ⚡ Re-Verify Scan
                           </button>
@@ -785,15 +785,15 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                   {/* Facilities Checkboxes */}
                   <div>
-                    <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1.5">Hospital Facilities Available</label>
-                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px]">
+                    <label className="text-slate-300 font-semibold block mb-1.5">Hospital Facilities Available</label>
+                    <div className="grid grid-cols-2 gap-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px]">
                       {[
                         'Emergency 24/7', 'Pharmacy', 'Laboratory', 'Radiology / X-Ray', 
                         'CT Scan', 'MRI', 'ICU', 'Ambulance 24/7', 'Blood Bank', 'Operation Theatre'
                       ].map((facility) => {
                         const isChecked = hospitalForm.facilities.includes(facility);
                         return (
-                          <label key={facility} className="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+                          <label key={facility} className="flex items-center gap-2 cursor-pointer text-slate-300">
                             <input
                               type="checkbox"
                               checked={isChecked}
@@ -816,23 +816,23 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Fee & Slot duration */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Base OP Fee (₹) *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Base OP Fee (₹) *</label>
                       <input
                         type="number"
                         placeholder="500"
                         value={hospitalForm.opFee}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, opFee: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">OP Slot Duration</label>
+                      <label className="text-slate-300 font-semibold block mb-1">OP Slot Duration</label>
                       <select
                         value={hospitalForm.slotDurationMinutes}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, slotDurationMinutes: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                       >
                         <option value="10">10 Minutes</option>
                         <option value="15">15 Minutes</option>
@@ -845,25 +845,25 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   {/* Password & Confirm Password */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Hospital Password *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Hospital Password *</label>
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={hospitalForm.password}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, password: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Confirm Password *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Confirm Password *</label>
                       <input
                         type="password"
                         placeholder="••••••••"
                         value={hospitalForm.confirmPassword}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                         required
                       />
                     </div>
@@ -873,7 +873,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                     <button
                       type="button"
                       onClick={() => setHospStep(1)}
-                      className="w-1/3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-3 rounded-xl cursor-pointer"
+                      className="w-1/3 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl cursor-pointer"
                     >
                       ← Back
                     </button>
@@ -892,42 +892,42 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
               {/* STEP 3: Bank Details */}
               {hospStep === 3 && (
                 <div className="space-y-4 animate-fadeIn text-xs">
-                  <div className="bg-slate-50 dark:bg-slate-950/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="font-bold text-amber-700 dark:text-amber-300 text-xs">💳 Business Bank Account Details</h4>
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <h4 className="font-bold text-amber-300 text-xs">💳 Business Bank Account Details</h4>
 
                     <div>
-                      <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Account Holder Name *</label>
+                      <label className="text-slate-300 font-semibold block mb-1">Account Holder Name *</label>
                       <input
                         type="text"
                         placeholder="e.g. Apollo Health City Pvt Ltd"
                         value={hospitalForm.accountHolderName}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                         required
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Bank Account Number *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Bank Account Number *</label>
                         <input
                           type="password"
                           placeholder="e.g. 99881100223344"
                           value={hospitalForm.bankAccountNo}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, bankAccountNo: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white font-mono"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Confirm Account Number *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Confirm Account Number *</label>
                         <input
                           type="text"
                           placeholder="e.g. 99881100223344"
                           value={hospitalForm.confirmBankAccountNo}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, confirmBankAccountNo: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white font-mono"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
                           required
                         />
                       </div>
@@ -935,35 +935,35 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Bank Name *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Bank Name *</label>
                         <input
                           type="text"
                           placeholder="e.g. HDFC Bank"
                           value={hospitalForm.bankName}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, bankName: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">IFSC Code *</label>
+                        <label className="text-slate-300 font-semibold block mb-1">IFSC Code *</label>
                         <input
                           type="text"
                           placeholder="e.g. HDFC0000123"
                           value={hospitalForm.ifscCode}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, ifscCode: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white uppercase font-mono"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white uppercase font-mono"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Account Type</label>
+                        <label className="text-slate-300 font-semibold block mb-1">Account Type</label>
                         <select
                           value={hospitalForm.accountType}
                           onChange={(e) => setHospitalForm(prev => ({ ...prev, accountType: e.target.value }))}
-                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white"
                         >
                           <option value="Current">Current Account</option>
                           <option value="Savings">Savings Account</option>
@@ -974,13 +974,13 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
                   {/* UPI ID */}
                   <div>
-                    <label className="text-slate-700 dark:text-slate-300 font-semibold block mb-1">Hospital Official UPI ID *</label>
+                    <label className="text-slate-300 font-semibold block mb-1">Hospital Official UPI ID *</label>
                     <input
                       type="text"
                       placeholder="e.g. apollohealth@ybl"
                       value={hospitalForm.upiId}
                       onChange={(e) => setHospitalForm(prev => ({ ...prev, upiId: e.target.value }))}
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-2.5 text-slate-900 dark:text-white font-mono"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white font-mono"
                       required
                     />
                   </div>
@@ -989,7 +989,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                     <button
                       type="button"
                       onClick={() => setHospStep(2)}
-                      className="w-1/3 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-3.5 rounded-xl cursor-pointer"
+                      className="w-1/3 bg-slate-800 text-slate-300 font-bold py-3.5 rounded-xl cursor-pointer"
                     >
                       ← Back
                     </button>
@@ -1006,13 +1006,13 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
             </form>
 
             {/* Bottom Link */}
-            <div className="text-center pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="text-center pt-2 border-t border-slate-800">
               <button
                 type="button"
                 onClick={onGoToLogin}
-                className="text-xs text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 font-semibold transition-colors cursor-pointer"
+                className="text-xs text-slate-400 hover:text-emerald-400 font-semibold transition-colors cursor-pointer"
               >
-                Already have a hospital account? <span className="font-bold underline">Login to Hospital Desk</span>
+                Already have a hospital account? <span className="font-bold underline text-emerald-400">Login to Hospital Desk</span>
               </button>
             </div>
 
