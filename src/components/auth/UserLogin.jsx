@@ -231,22 +231,14 @@ export default function UserLogin({ onGoBack, onBackToPortals, onGoToRegister, o
             </div>
           </div>
 
-          {/* Register & Switch Portal Links */}
-          <div className="mt-4 text-center space-y-2.5">
+          {/* Register link */}
+          <div className="mt-4 text-center">
             <button
               type="button"
               onClick={onGoToRegister}
-              className="w-full border border-slate-800 hover:border-cyan-500/40 text-cyan-300 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
+              className="w-full border border-slate-800 hover:border-cyan-500/40 text-cyan-300 font-semibold py-3 rounded-xl text-xs transition-colors cursor-pointer"
             >
               + Create New Patient Account
-            </button>
-
-            <button
-              type="button"
-              onClick={onGoToHospitalLogin}
-              className="w-full bg-emerald-950/30 hover:bg-emerald-950/60 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 font-semibold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              🏥 Hospital Desk / Doctor Login →
             </button>
           </div>
         </div>
