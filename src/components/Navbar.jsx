@@ -15,7 +15,7 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div 
-            onClick={() => onNavigate && onNavigate(appPortalMode === 'PATIENT' ? 'USER_LOGIN' : appPortalMode === 'HOSPITAL' ? 'HOSPITAL_LOGIN' : appPortalMode === 'ADMIN' ? 'ADMIN_LOGIN' : 'PORTAL_SELECT')}
+            onClick={() => onNavigate && onNavigate('PORTAL_SELECT')}
             className="flex items-center gap-3 cursor-pointer group"
           >
             <div className={`h-10 w-10 rounded-xl p-0.5 shadow-lg group-hover:scale-105 transition-transform ${

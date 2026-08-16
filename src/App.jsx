@@ -19,26 +19,20 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 function MainApp() {
   const { currentUser } = useAuth();
   
-  // Read Portal Type from Environment Variable or URL Query or Subdomain
+  // Read Portal Type from Environment Variable or URL Query
   const getAppPortalMode = () => {
-    // 1. Env variable (Vercel Project specific)
+    // 1. Env variable (Vercel Project specific if set)
     const envPortal = import.meta.env.VITE_PORTAL_TYPE;
-    if (envPortal) return envPortal.toUpperCase();
+    if (envPortal && envPortal !== 'ALL') return envPortal.toUpperCase();
 
     // 2. URL Search Param ?portal=patient | ?portal=hospital | ?portal=admin
     if (typeof window !== 'undefined' && window.location) {
       const searchParams = new URLSearchParams(window.location.search);
       const paramPortal = searchParams.get('portal');
       if (paramPortal) return paramPortal.toUpperCase();
-
-      // 3. Subdomain check (e.g. carepulse-patient.vercel.app or hospital.carepulse.com)
-      const host = window.location.hostname.toLowerCase();
-      if (host.includes('patient')) return 'PATIENT';
-      if (host.includes('hospital')) return 'HOSPITAL';
-      if (host.includes('admin')) return 'ADMIN';
     }
 
-    // 4. Default: All/Multi-portal selector
+    // 3. Default: All/Multi-portal selector (Main Portal Choice Landing Page)
     return 'ALL';
   };
 
@@ -53,10 +47,7 @@ function MainApp() {
   });
 
   const handleBackToPortals = () => {
-    if (appPortalMode === 'PATIENT') setAuthView('USER_LOGIN');
-    else if (appPortalMode === 'HOSPITAL') setAuthView('HOSPITAL_LOGIN');
-    else if (appPortalMode === 'ADMIN') setAuthView('ADMIN_LOGIN');
-    else setAuthView('PORTAL_SELECT');
+    setAuthView('PORTAL_SELECT');
   };
 
   // Dynamic theme class:
