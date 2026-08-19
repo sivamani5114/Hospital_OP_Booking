@@ -51,7 +51,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950 text-slate-100">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-50 text-slate-900">
       <div className="flex-1 flex flex-col w-full">
         <Navbar 
           authView={authView} 
@@ -130,10 +130,10 @@ function MainApp() {
       </div>
 
       {authView === 'PORTAL_SELECT' && (
-        <footer className="border-t border-slate-900 glass-panel py-4 text-center text-xs text-slate-500">
+        <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
             <p>© 2026 CarePulse Hospital OP Booking System. All rights reserved.</p>
-            <div className="flex items-center gap-3 text-slate-400">
+            <div className="flex items-center gap-3 text-slate-600 font-medium">
               <span>Patient App</span> • <span>Hospital App</span> • <span>Super Admin App</span>
             </div>
           </div>

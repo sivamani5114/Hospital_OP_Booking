@@ -11,35 +11,35 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
   // If not logged in, render the Portal Header
   if (!currentUser) {
     return (
-      <header className="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3 bg-slate-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 lg:px-8 py-3 backdrop-blur-md shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div 
             onClick={() => onNavigate && onNavigate('PORTAL_SELECT')}
             className="flex items-center gap-3 cursor-pointer group"
           >
-            <div className={`h-10 w-10 rounded-xl p-0.5 shadow-lg group-hover:scale-105 transition-transform ${
+            <div className={`h-10 w-10 rounded-xl p-0.5 shadow-md group-hover:scale-105 transition-transform ${
               appPortalMode === 'HOSPITAL' ? 'bg-gradient-to-tr from-emerald-500 to-teal-600 shadow-emerald-500/20' :
               appPortalMode === 'ADMIN' ? 'bg-gradient-to-tr from-indigo-500 to-purple-600 shadow-indigo-500/20' :
               'bg-gradient-to-tr from-cyan-500 to-blue-600 shadow-cyan-500/20'
             }`}>
-              <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+              <div className="h-full w-full bg-white rounded-[10px] flex items-center justify-center">
                 <Stethoscope className={`w-5 h-5 ${
-                  appPortalMode === 'HOSPITAL' ? 'text-emerald-400' :
-                  appPortalMode === 'ADMIN' ? 'text-indigo-400' :
-                  'text-cyan-400'
+                  appPortalMode === 'HOSPITAL' ? 'text-emerald-600' :
+                  appPortalMode === 'ADMIN' ? 'text-indigo-600' :
+                  'text-cyan-600'
                 }`} />
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-white font-outfit tracking-tight">
+              <h1 className="text-xl font-extrabold text-slate-900 font-outfit tracking-tight">
                 CarePulse <span className={
-                  appPortalMode === 'HOSPITAL' ? 'text-emerald-400' :
-                  appPortalMode === 'ADMIN' ? 'text-indigo-400' :
-                  'text-cyan-400'
+                  appPortalMode === 'HOSPITAL' ? 'text-emerald-600' :
+                  appPortalMode === 'ADMIN' ? 'text-indigo-600' :
+                  'text-cyan-600'
                 }>OP</span>
               </h1>
-              <p className="text-[10px] text-slate-400 hidden sm:block">
+              <p className="text-[10px] text-slate-500 hidden sm:block font-medium">
                 {appPortalMode === 'PATIENT' ? 'Online Patient OP Booking Network' :
                  appPortalMode === 'HOSPITAL' ? 'Hospital OP Queue & Doctor Management' :
                  appPortalMode === 'ADMIN' ? 'Super Admin Command & Verification Center' :
@@ -55,10 +55,10 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate('ADMIN_LOGIN')}
-                className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 hover:text-white border border-indigo-500/40"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 hover:text-indigo-900 border border-indigo-200"
                 title="Super Admin Master Control Login"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
                 <span>Admin Login</span>
               </button>
             )}
@@ -68,9 +68,9 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
               type="button"
               onClick={toggleLanguage}
               title={language === 'EN' ? 'Switch to Telugu' : 'Switch to English'}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <Globe className="w-3.5 h-3.5 text-cyan-600" />
               {language === 'EN' ? 'తె' : 'EN'}
             </button>
           </div>
@@ -80,25 +80,25 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
   }
 
   return (
-    <header className="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3.5">
+    <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 lg:px-8 py-3.5 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         
         {/* Brand Logo & Role Badge */}
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-lg shadow-cyan-500/20">
-            <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Stethoscope className="w-5 h-5 text-cyan-400" />
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-md shadow-cyan-500/20">
+            <div className="h-full w-full bg-white rounded-[10px] flex items-center justify-center">
+              <Stethoscope className="w-5 h-5 text-cyan-600" />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-white font-outfit">
-                CarePulse <span className="text-cyan-400">OP</span>
+              <h1 className="text-xl font-bold text-slate-900 font-outfit">
+                CarePulse <span className="text-cyan-600">OP</span>
               </h1>
               <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                currentUser.role === 'USER' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' :
-                currentUser.role === 'HOSPITAL' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+                currentUser.role === 'USER' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' :
+                currentUser.role === 'HOSPITAL' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                'bg-indigo-50 text-indigo-700 border-indigo-200'
               }`}>
                 {currentUser.role === 'USER' ? 'PATIENT PORTAL' : currentUser.role === 'HOSPITAL' ? 'HOSPITAL PORTAL' : 'ADMIN PORTAL'}
               </span>
@@ -111,23 +111,23 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
           <NotificationBell />
 
           <div className="hidden sm:flex flex-col text-right">
-            <span className="text-xs font-bold text-white">{currentUser.fullName}</span>
-            <span className="text-[10px] text-slate-400">{currentUser.phone} • {currentUser.email}</span>
+            <span className="text-xs font-bold text-slate-900">{currentUser.fullName}</span>
+            <span className="text-[10px] text-slate-500 font-medium">{currentUser.phone} • {currentUser.email}</span>
           </div>
 
           {/* Language Toggle Button */}
           <button
             onClick={toggleLanguage}
             title={language === 'EN' ? 'Switch to Telugu' : 'Switch to English'}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30 hover:border-indigo-400/60 text-indigo-300 hover:text-indigo-200 text-xs font-bold transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 hover:border-indigo-300 text-indigo-700 text-xs font-bold transition-all shadow-sm cursor-pointer"
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-3.5 h-3.5 text-indigo-600" />
             {language === 'EN' ? 'తె Telugu' : 'EN English'}
           </button>
 
           <button
             onClick={logout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-rose-500/10 text-slate-300 hover:text-rose-400 border border-slate-800 hover:border-rose-500/30 text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 hover:border-rose-200 text-xs font-semibold transition-all cursor-pointer shadow-sm"
           >
             <LogOut className="w-3.5 h-3.5" /> {t('logout')}
           </button>
