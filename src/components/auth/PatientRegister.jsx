@@ -195,16 +195,6 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
           >
             <ArrowLeft className="w-4 h-4" /> Back to Patient Login
           </button>
-
-          {onGoToHospitalRegister && (
-            <button
-              type="button"
-              onClick={onGoToHospitalRegister}
-              className="text-xs text-emerald-400 hover:text-emerald-300 font-bold hover:underline cursor-pointer"
-            >
-              Hospital Desk Registration →
-            </button>
-          )}
         </div>
 
         {/* Form Container (100% Full Width Edge to Edge Layout) */}
