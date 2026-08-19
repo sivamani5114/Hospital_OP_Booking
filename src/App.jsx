@@ -52,7 +52,7 @@ function MainApp() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white bg-slate-950 text-slate-100">
-      <div>
+      <div className="flex-1 flex flex-col w-full">
         <Navbar 
           authView={authView} 
           onNavigate={(view) => setAuthView(view)} 
@@ -60,14 +60,16 @@ function MainApp() {
         />
         <Toast />
 
-        <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
-          {!currentUser ? (
-            <>
-              {authView === 'PORTAL_SELECT' && (
+        {!currentUser ? (
+          <div className="flex-1 flex flex-col w-full">
+            {authView === 'PORTAL_SELECT' && (
+              <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 w-full flex-1 flex items-center justify-center">
                 <PortalSelection onSelectPortal={(view) => setAuthView(view)} />
-              )}
+              </main>
+            )}
 
-              {authView === 'USER_LOGIN' && (
+            {authView === 'USER_LOGIN' && (
+              <div className="flex-1 w-full flex">
                 <UserLogin 
                   onGoBack={handleBackToPortals}
                   onBackToPortals={handleBackToPortals} 
@@ -75,58 +77,68 @@ function MainApp() {
                   onGoToHospitalLogin={() => setAuthView('HOSPITAL_LOGIN')}
                   onGoToAdminLogin={() => setAuthView('ADMIN_LOGIN')}
                 />
-              )}
+              </div>
+            )}
 
-              {authView === 'HOSPITAL_LOGIN' && (
+            {authView === 'HOSPITAL_LOGIN' && (
+              <div className="flex-1 w-full flex">
                 <HospitalLogin 
                   onGoBack={handleBackToPortals} 
                   onBackToPortals={handleBackToPortals}
                   onGoToRegister={() => setAuthView('HOSPITAL_REGISTER')} 
                 />
-              )}
+              </div>
+            )}
 
-              {authView === 'ADMIN_LOGIN' && (
+            {authView === 'ADMIN_LOGIN' && (
+              <div className="flex-1 w-full flex">
                 <AdminLogin 
                   onGoBack={handleBackToPortals} 
                   onBackToPortals={handleBackToPortals} 
                 />
-              )}
+              </div>
+            )}
 
-              {authView === 'PATIENT_REGISTER' && (
+            {authView === 'PATIENT_REGISTER' && (
+              <div className="flex-1 w-full flex">
                 <PatientRegister 
                   onGoToLogin={() => setAuthView('USER_LOGIN')} 
                   onGoToHospitalRegister={() => setAuthView('HOSPITAL_REGISTER')}
                 />
-              )}
+              </div>
+            )}
 
-              {authView === 'HOSPITAL_REGISTER' && (
+            {authView === 'HOSPITAL_REGISTER' && (
+              <div className="flex-1 w-full flex">
                 <HospitalRegister 
                   onGoToLogin={() => setAuthView('HOSPITAL_LOGIN')} 
                   onGoToPatientRegister={() => setAuthView('PATIENT_REGISTER')}
                 />
-              )}
-            </>
-          ) : (
-            <>
-              {currentUser.role === 'USER' && <UserPortal />}
-              {currentUser.role === 'HOSPITAL' && <HospitalPortal />}
-              {currentUser.role === 'ADMIN' && <AdminPortal />}
-              {currentUser.role !== 'USER' && currentUser.role !== 'HOSPITAL' && currentUser.role !== 'ADMIN' && (
-                <AdminPortal />
-              )}
-            </>
-          )}
-        </main>
+              </div>
+            )}
+          </div>
+        ) : (
+          <main className="max-w-7xl mx-auto px-4 lg:px-8 py-6 w-full flex-1">
+            {currentUser.role === 'USER' && <UserPortal />}
+            {currentUser.role === 'HOSPITAL' && <HospitalPortal />}
+            {currentUser.role === 'ADMIN' && <AdminPortal />}
+            {currentUser.role !== 'USER' && currentUser.role !== 'HOSPITAL' && currentUser.role !== 'ADMIN' && (
+              <AdminPortal />
+            )}
+          </main>
+        )}
       </div>
 
-      <footer className="border-t border-slate-900 glass-panel py-4 text-center text-xs text-slate-500 mt-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 CarePulse Hospital OP Booking System. All rights reserved.</p>
-          <div className="flex items-center gap-3 text-slate-400">
-            <span>Patient App</span> • <span>Hospital App</span> • <span>Super Admin App</span>
+      {authView === 'PORTAL_SELECT' && (
+        <footer className="border-t border-slate-900 glass-panel py-4 text-center text-xs text-slate-500">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>© 2026 CarePulse Hospital OP Booking System. All rights reserved.</p>
+            <div className="flex items-center gap-3 text-slate-400">
+              <span>Patient App</span> • <span>Hospital App</span> • <span>Super Admin App</span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
