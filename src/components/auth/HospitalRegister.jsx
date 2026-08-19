@@ -321,17 +321,17 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
           </button>
         </div>
 
-        {/* Form Container */}
-        <div className="flex-1 flex items-start justify-center p-5 sm:p-10">
-          <div className="w-full max-w-2xl glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-6">
+        {/* Form Container (End to End Seamless Layout) */}
+        <div className="flex-1 flex flex-col items-center justify-start p-6 sm:p-10 lg:p-14 w-full">
+          <div className="w-full max-w-2xl lg:max-w-3xl space-y-6">
             
             {/* Title */}
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3 text-emerald-400">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3 text-emerald-400 shadow-md">
                 <Building2 className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-extrabold font-outfit text-white">Hospital Registration & Verification</h2>
-              <p className="text-xs text-slate-400 mt-0.5">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-outfit text-white">Hospital Registration & Verification</h2>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
             </div>
 
             <form onSubmit={handleHospitalSubmit} className="space-y-5">
