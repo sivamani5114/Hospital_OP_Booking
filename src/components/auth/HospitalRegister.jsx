@@ -334,7 +334,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
               <p className="text-xs sm:text-sm text-slate-400 mt-1">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
             </div>
 
-            <form onSubmit={handleHospitalSubmit} className="space-y-5">
+            <form onSubmit={handleHospitalSubmit} className="space-y-5 w-full">
               
               {/* Step Navigation Pill Indicator */}
               <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold gap-1">

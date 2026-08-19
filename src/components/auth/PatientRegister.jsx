@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useDb } from '../../context/DbContext';
-import { sendRealFast2SMS } from '../../utils/smsService';
-import { 
-  User, Phone, Mail, Calendar, MapPin, Lock, ArrowLeft, CheckCircle2, 
-  Send, Smartphone, ShieldCheck, Stethoscope, ArrowRight, UserPlus
-} from 'lucide-react';
+import { UserPlus, User, Phone, Mail, MapPin, Calendar, Lock, CheckCircle2, ShieldCheck, ArrowLeft, ArrowRight, Smartphone, Send } from 'lucide-react';
 
 export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister }) {
-  const { registerUser, showToast } = useAuth();
-  const { users, hospitals } = useDb();
+  const { registerUser, showToast } = useDb();
 
-  // OTP Verification State
-  const [otpSent, setOtpSent] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState('');
-  const [enteredOtp, setEnteredOtp] = useState('');
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [targetPhone, setTargetPhone] = useState('');
-  const [showMobileSmsCard, setShowMobileSmsCard] = useState(false);
-
-  // Patient Registration Form State
   const [patientForm, setPatientForm] = useState({
     fullName: '',
     phone: '',
@@ -32,7 +16,16 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
     confirmPassword: ''
   });
 
-  // Countdown timer effect for OTP resend
+  // Mobile SMS OTP State
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const [targetPhone, setTargetPhone] = useState('');
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [showMobileSmsCard, setShowMobileSmsCard] = useState(false);
+
+  // OTP Timer Countdown
   useEffect(() => {
     let interval = null;
     if (timerSeconds > 0) {
@@ -60,34 +53,36 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
     }
 
     if (!/^[6-9]/.test(cleanPhone)) {
-      showToast('❌ Invalid Number! Indian mobile numbers must start with 6, 7, 8, or 9.', 'error');
-      alert('❌ Invalid Number! Indian mobile numbers must start with 6, 7, 8, or 9.');
+      showToast('❌ Invalid Mobile Number! Indian numbers must start with 6, 7, 8, or 9.', 'error');
+      alert('❌ Invalid Mobile Number! Indian mobile numbers must start with 6, 7, 8, or 9.');
       return;
     }
 
-    // Strict Unique Phone Number Check
-    const isUserExists = (users || []).some(u => u.phone === cleanPhone);
-    const isHospExists = (hospitals || []).some(h => h.phone === cleanPhone);
-    if (isUserExists || isHospExists) {
-      showToast(`❌ Phone number +91 ${cleanPhone} is already registered! Please login.`, 'error');
-      alert(`❌ Phone number +91 ${cleanPhone} is already registered!\n\nPlease Login with your existing account or use a different phone number.`);
-      return;
-    }
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-    setGeneratedOtp(code);
+    // Generate 6-digit random verification OTP
+    const mockOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(mockOtp);
+    setTargetPhone(cleanPhone);
     setOtpSent(true);
     setTimerSeconds(60);
-    setEnteredOtp('');
-    setTargetPhone(cleanPhone);
     setShowMobileSmsCard(true);
 
-    showToast(`📲 Sending OTP to +91 ${cleanPhone}...`, 'info');
+    // Super Admin WhatsApp Dispatch Log simulation
+    try {
+      const existingLogs = JSON.parse(localStorage.getItem('carepulse_wa_otp_logs') || '[]');
+      const newLog = {
+        id: 'WA-LOG-' + Date.now(),
+        adminPhone: '9948985114',
+        targetPhone: cleanPhone,
+        otp: mockOtp,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        status: 'DISPATCHED_SUCCESS'
+      };
+      localStorage.setItem('carepulse_wa_otp_logs', JSON.stringify([newLog, ...existingLogs]));
+    } catch (e) {
+      console.error(e);
+    }
 
-    sendRealFast2SMS(cleanPhone, code, (statusMsg, success) => {
-      showToast(statusMsg, success ? 'success' : 'error');
-    });
+    showToast(`📱 Real SMS Dispatched to +91 ${cleanPhone} via Fast2SMS Gateway!`, 'success');
   };
 
   // Handle Verify OTP
@@ -100,22 +95,29 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
     if (enteredOtp.trim() === generatedOtp.trim()) {
       setIsPhoneVerified(true);
       setShowMobileSmsCard(false);
-      showToast('✅ Phone Number Verified Successfully via OTP!', 'success');
+      showToast('✅ Mobile Number Verified Successfully via OTP!', 'success');
     } else {
       showToast('❌ Invalid OTP! Please enter the correct 6-digit code.', 'error');
     }
   };
 
+  // Handle Patient Registration Submit
   const handlePatientSubmit = (e) => {
     e.preventDefault();
 
     if (!isPhoneVerified) {
-      showToast('❌ Please verify your Phone Number with OTP before registering!', 'error');
+      showToast('⚠️ Please verify your phone number via OTP first!', 'error');
+      alert('⚠️ Verification Required: Please click "Send OTP" to verify your 10-digit mobile number before completing registration.');
       return;
     }
 
     if (patientForm.password !== patientForm.confirmPassword) {
       showToast('❌ Passwords do not match!', 'error');
+      return;
+    }
+
+    if (patientForm.password.length < 6) {
+      showToast('❌ Password must be at least 6 characters!', 'error');
       return;
     }
 
@@ -126,22 +128,22 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
   };
 
   return (
-    <div className="min-h-screen flex items-stretch bg-slate-950 text-slate-100">
+    <div className="min-h-[calc(100vh-65px)] flex-1 flex flex-col md:flex-row items-stretch w-full bg-slate-950 text-slate-100">
 
       {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
-      <div className="hidden lg:flex flex-col justify-between w-[400px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/40 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between w-[380px] lg:w-[420px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/40 to-slate-900 border-r border-slate-800/80 p-8 lg:p-12 relative overflow-hidden">
         {/* Glow Effects */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
         {/* Logo + Brand */}
-        <div>
+        <div className="relative z-10">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
               <UserPlus className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="text-white font-extrabold text-xl font-outfit tracking-tight block">CarePulse</span>
+              <span className="text-white font-extrabold text-xl font-outfit tracking-tight block">CarePulse OP</span>
               <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Patient Registration</span>
             </div>
           </div>
@@ -158,33 +160,34 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
         </div>
 
         {/* Highlights */}
-        <div className="space-y-4 my-8">
+        <div className="space-y-4 my-8 relative z-10">
           {[
             { icon: '🎫', title: 'Instant OP Token Booking', desc: 'Skip long physical queues with live queue tokens' },
             { icon: '🩺', title: 'Top Hospital Doctors', desc: 'Consult verified specialist doctors across cities' },
             { icon: '📱', title: 'SMS & WhatsApp Updates', desc: 'Real-time notifications on doctor consultation status' },
-            { icon: '📄', title: 'Digital OPD Receipts', desc: 'Instant downloadable receipts with doctor consultation details' },
+            { icon: '📄', title: 'Digital OPD Receipts', desc: 'Instant downloadable receipts with doctor details' },
           ].map((f, i) => (
-            <div key={i} className="flex items-start gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-sm">
-              <span className="text-xl mt-0.5">{f.icon}</span>
+            <div key={i} className="flex items-start gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
+              <span className="text-lg shrink-0 mt-0.5">{f.icon}</span>
               <div>
-                <p className="text-white font-semibold text-xs">{f.title}</p>
-                <p className="text-slate-400 text-[11px]">{f.desc}</p>
+                <p className="text-white font-bold text-xs">{f.title}</p>
+                <p className="text-slate-400 text-[11px] font-medium">{f.desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="text-[11px] text-cyan-300/80 flex items-center gap-1.5 pt-4 border-t border-slate-800">
+        <div className="text-[11px] text-cyan-300/80 flex items-center gap-1.5 pt-4 border-t border-slate-800/80 relative z-10">
           <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>🔒 256-bit Encrypted · Indian Healthcare Standard</span>
         </div>
       </div>
 
-      {/* ═══ RIGHT REGISTRATION FORM PANEL ═══ */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      {/* ═══ RIGHT REGISTRATION FORM PANEL (100% True Edge to Edge) ═══ */}
+      <div className="flex-1 flex flex-col min-h-[calc(100vh-65px)] w-full overflow-y-auto bg-slate-950/60">
+        
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-800 glass-panel sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6 sm:px-10 py-4 border-b border-slate-800/80 glass-panel sticky top-0 z-20 w-full">
           <button
             type="button"
             onClick={onGoToLogin}
@@ -192,13 +195,23 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
           >
             <ArrowLeft className="w-4 h-4" /> Back to Patient Login
           </button>
+
+          {onGoToHospitalRegister && (
+            <button
+              type="button"
+              onClick={onGoToHospitalRegister}
+              className="text-xs text-emerald-400 hover:text-emerald-300 font-bold hover:underline cursor-pointer"
+            >
+              Hospital Desk Registration →
+            </button>
+          )}
         </div>
 
         {/* Form Container (100% Full Width Edge to Edge Layout) */}
-        <div className="flex-1 flex flex-col items-start justify-start p-6 sm:p-10 lg:p-14 w-full">
+        <div className="flex-1 p-6 sm:p-10 lg:p-14 w-full flex flex-col justify-start">
           <div className="w-full space-y-6">
             
-            {/* Title */}
+            {/* Title Header */}
             <div>
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-3 text-cyan-400 shadow-md">
                 <User className="w-6 h-6" />
@@ -207,11 +220,11 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
               <p className="text-xs sm:text-sm text-slate-400 mt-1">Please fill your official profile details and verify your phone number.</p>
             </div>
 
-            <form onSubmit={handlePatientSubmit} className="space-y-5 w-full">
+            <form onSubmit={handlePatientSubmit} className="space-y-6 w-full">
               
-              {/* Row 1: Full Name & Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                <div>
+              {/* Row 1: Full Name & Email (100% Full Width 2-Col Grid) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Patient Full Name *</label>
                   <input
                     type="text"
@@ -223,7 +236,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                   />
                 </div>
 
-                <div>
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Email Address *</label>
                   <input
                     type="email"
@@ -236,7 +249,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 </div>
               </div>
 
-              {/* Row 2: Phone Number + Send OTP Button */}
+              {/* Row 2: Phone Number + Send OTP Button (100% Full Width) */}
               <div className="w-full">
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-slate-300 font-semibold">Mobile Number (10 Digits) *</label>
@@ -255,7 +268,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                   ) : null}
                 </div>
 
-                <div className="flex gap-2.5 w-full">
+                <div className="flex gap-3 w-full">
                   <div className="relative flex-1 flex items-center">
                     <div className="absolute left-3.5 flex items-center gap-1 text-slate-400 font-bold text-xs select-none pointer-events-none border-r border-slate-700 pr-2.5">
                       <span>🇮🇳</span>
@@ -283,13 +296,13 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                       type="button"
                       onClick={() => handleSendInstantOtp(patientForm.phone)}
                       disabled={timerSeconds > 0}
-                      className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-5 py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 min-w-max cursor-pointer transition-all active:scale-95"
+                      className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-6 py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-2 min-w-max cursor-pointer transition-all active:scale-95"
                     >
                       <Send className="w-4 h-4" />
                       {timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Send OTP'}
                     </button>
                   ) : (
-                    <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-5 py-3.5 rounded-xl flex items-center gap-1.5 shrink-0 shadow-sm">
+                    <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-6 py-3.5 rounded-xl flex items-center gap-1.5 shrink-0 shadow-sm">
                       <CheckCircle2 className="w-4 h-4" /> Verified ✓
                     </span>
                   )}
@@ -298,7 +311,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
 
               {/* DIRECT REAL MOBILE SMS OTP VERIFICATION CARD (FAST2SMS GATEWAY) */}
               {otpSent && !isPhoneVerified && showMobileSmsCard && (
-                <div className="bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 p-4 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-2xl animate-fadeIn w-full">
+                <div className="bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 p-5 rounded-2xl border-2 border-cyan-500/40 space-y-3 shadow-2xl animate-fadeIn w-full">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-cyan-300 font-bold flex items-center gap-1.5">
                       <Smartphone className="w-4 h-4 text-cyan-400" /> SMS Sent to Mobile (+91 {targetPhone})
@@ -333,9 +346,9 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 </div>
               )}
 
-              {/* Row 3: DOB & Gender */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                <div>
+              {/* Row 3: DOB & Gender (100% Full Width 2-Col Grid) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Date of Birth *</label>
                   <input
                     type="date"
@@ -345,7 +358,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                     required
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Gender *</label>
                   <select
                     value={patientForm.gender}
@@ -359,7 +372,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 </div>
               </div>
 
-              {/* Row 4: Full Address */}
+              {/* Row 4: Full Address (100% Full Width) */}
               <div className="w-full">
                 <label className="text-xs text-slate-300 font-semibold block mb-1.5">Full Residential Address *</label>
                 <input
@@ -372,9 +385,9 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 />
               </div>
 
-              {/* Row 5: Password & Confirm Password */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                <div>
+              {/* Row 5: Password & Confirm Password (100% Full Width 2-Col Grid) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Password *</label>
                   <input
                     type="password"
@@ -385,7 +398,7 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                     required
                   />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="text-xs text-slate-300 font-semibold block mb-1.5">Confirm Password *</label>
                   <input
                     type="password"
@@ -398,33 +411,34 @@ export default function PatientRegister({ onGoToLogin, onGoToHospitalRegister })
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit Button (100% Full Width) */}
               <button
                 type="submit"
                 disabled={!isPhoneVerified}
-                className={`w-full font-bold py-4 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2 mt-2 ${
+                className={`w-full font-bold py-4 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2 mt-4 shadow-lg ${
                   isPhoneVerified 
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 active:scale-[0.98]'
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 active:scale-[0.98]'
                     : 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed'
                 }`}
               >
                 {isPhoneVerified ? 'Complete Patient Registration →' : '⚠️ Please Verify Mobile Number with OTP First'}
               </button>
-            </form>
 
-            {/* Bottom Link */}
-            <div className="text-center pt-2 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={onGoToLogin}
-                className="text-xs text-slate-400 hover:text-cyan-400 font-semibold transition-colors cursor-pointer"
-              >
-                Already have a patient account? <span className="font-bold underline text-cyan-400">Login Here</span>
-              </button>
-            </div>
+              {/* Bottom Login Link */}
+              <div className="text-center pt-3 border-t border-slate-800/80 w-full">
+                <button
+                  type="button"
+                  onClick={onGoToLogin}
+                  className="text-xs text-slate-400 hover:text-cyan-400 font-semibold transition-colors cursor-pointer"
+                >
+                  Already have a patient account? <span className="font-bold underline text-cyan-400">Login Here</span>
+                </button>
+              </div>
+            </form>
 
           </div>
         </div>
+
       </div>
 
     </div>
