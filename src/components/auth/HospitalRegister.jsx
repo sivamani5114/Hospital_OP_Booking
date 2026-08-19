@@ -321,9 +321,9 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
           </button>
         </div>
 
-        {/* Form Container (End to End Seamless Layout) */}
-        <div className="flex-1 flex flex-col items-center justify-start p-6 sm:p-10 lg:p-14 w-full">
-          <div className="w-full max-w-2xl lg:max-w-3xl space-y-6">
+        {/* Form Container (100% Full Width Edge to Edge Layout) */}
+        <div className="flex-1 flex flex-col items-start justify-start p-6 sm:p-10 lg:p-14 w-full">
+          <div className="w-full space-y-6">
             
             {/* Title */}
             <div>
