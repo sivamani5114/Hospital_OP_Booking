@@ -875,19 +875,20 @@ export default function HospitalPortal() {
                       <div className="flex items-center gap-1.5 pt-0.5">
                         <a
                           href={`tel:+91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}`}
-                          className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 shadow transition-all cursor-pointer"
+                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
                           title="Direct Phone Call to Patient"
                         >
-                          <PhoneCall className="w-3 h-3 text-emerald-400" /> Call Patient 📞
+                          <PhoneCall className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                          <span>Call</span>
                         </a>
                         <a
                           href={`https://api.whatsapp.com/send?phone=91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *${hospital.hospitalName} OP Desk*\n\nHello ${b.userName || 'Patient'}, this is regarding your OP Appointment for ${b.doctorName || 'Doctor'} on ${b.date} at ${b.time}.`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 p-1 rounded-lg text-[11px] font-bold inline-flex items-center justify-center transition-all cursor-pointer"
+                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 p-1 rounded text-[10px] inline-flex items-center justify-center transition-colors cursor-pointer"
                           title="WhatsApp Message to Patient"
                         >
-                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                          <MessageCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
                         </a>
                       </div>
                     </td>

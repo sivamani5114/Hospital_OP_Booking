@@ -454,37 +454,39 @@ export default function AdminPortal() {
                             <span className="font-mono text-white font-bold text-xs flex items-center gap-1">
                               <Phone className="w-3 h-3 text-cyan-400 shrink-0" /> +91 {u.phone}
                             </span>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 shrink-0">
                               <a
                                 href={`tel:+91${(u.phone || '').replace(/\D/g, '').slice(-10)}`}
-                                className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold inline-flex items-center gap-1 shadow transition-all cursor-pointer"
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                                 title="Direct Phone Call to User"
                               >
-                                <PhoneCall className="w-2.5 h-2.5 text-emerald-400" /> Call 📞
+                                <PhoneCall className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                                <span>Call</span>
                               </a>
                               <a
                                 href={`https://api.whatsapp.com/send?phone=91${(u.phone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *CarePulse Administration*\n\nHello ${u.fullName}, this is an official communication from CarePulse Portal.`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 p-1 rounded-lg text-[10px] inline-flex items-center justify-center transition-all cursor-pointer"
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 p-1 rounded text-[10px] inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                                 title="WhatsApp Chat"
                               >
-                                <MessageCircle className="w-2.5 h-2.5 text-emerald-400" />
+                                <MessageCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
                               </a>
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-800/60">
-                            <span className="text-slate-300 text-[11px] flex items-center gap-1 truncate max-w-[130px]" title={u.email}>
+                          <div className="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-200">
+                            <span className="text-slate-600 text-[11px] flex items-center gap-1 truncate max-w-[130px]" title={u.email}>
                               <Mail className="w-3 h-3 text-slate-400 shrink-0" /> {u.email || 'No email'}
                             </span>
                             {u.email && (
                               <a
                                 href={`mailto:${u.email}?subject=${encodeURIComponent('CarePulse Health Portal - Official Communication')}&body=${encodeURIComponent(`Hello ${u.fullName},\n\n`)}`}
-                                className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-lg text-[10px] font-semibold inline-flex items-center gap-1 transition-all cursor-pointer shrink-0"
+                                className="bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-300 px-1.5 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                                 title="Send Direct Email to User"
                               >
-                                <Send className="w-2.5 h-2.5 text-cyan-400" /> Mail ✉️
+                                <Send className="w-2.5 h-2.5 text-cyan-600 shrink-0" />
+                                <span>Mail</span>
                               </a>
                             )}
                           </div>
@@ -673,37 +675,39 @@ export default function AdminPortal() {
                             <span className="font-mono text-white font-bold text-xs flex items-center gap-1">
                               <Phone className="w-3 h-3 text-indigo-400 shrink-0" /> +91 {h.phone}
                             </span>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 shrink-0">
                               <a
                                 href={`tel:+91${(h.phone || '').replace(/\D/g, '').slice(-10)}`}
-                                className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold inline-flex items-center gap-1 shadow transition-all cursor-pointer"
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                                 title="Direct Phone Call to Hospital Desk"
                               >
-                                <PhoneCall className="w-2.5 h-2.5 text-emerald-400" /> Call 📞
+                                <PhoneCall className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                                <span>Call</span>
                               </a>
                               <a
                                 href={`https://api.whatsapp.com/send?phone=91${(h.phone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *CarePulse Administration Enquiry*\n\nHello ${h.hospitalName} Administration, this is an official message regarding your hospital listing.`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 p-1 rounded-lg text-[10px] inline-flex items-center justify-center transition-all cursor-pointer"
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 p-1 rounded text-[10px] inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                                 title="WhatsApp Chat"
                               >
-                                <MessageCircle className="w-2.5 h-2.5 text-emerald-400" />
+                                <MessageCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
                               </a>
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-800/60">
-                            <span className="text-slate-300 text-[11px] flex items-center gap-1 truncate max-w-[130px]" title={h.email}>
+                          <div className="flex items-center justify-between gap-1.5 pt-0.5 border-t border-slate-200">
+                            <span className="text-slate-600 text-[11px] flex items-center gap-1 truncate max-w-[130px]" title={h.email}>
                               <Mail className="w-3 h-3 text-slate-400 shrink-0" /> {h.email || 'No email'}
                             </span>
                             {h.email && (
                               <a
                                 href={`mailto:${h.email}?subject=${encodeURIComponent(`CarePulse Administration - Hospital Verification & Operations (${h.hospitalName})`)}&body=${encodeURIComponent(`Hello ${h.hospitalName} Management,\n\n`)}`}
-                                className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-lg text-[10px] font-semibold inline-flex items-center gap-1 transition-all cursor-pointer shrink-0"
+                                className="bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-300 px-1.5 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                                 title="Send Direct Email to Hospital"
                               >
-                                <Send className="w-2.5 h-2.5 text-cyan-400" /> Mail ✉️
+                                <Send className="w-2.5 h-2.5 text-cyan-600 shrink-0" />
+                                <span>Mail</span>
                               </a>
                             )}
                           </div>
