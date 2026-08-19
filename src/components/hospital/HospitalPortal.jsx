@@ -821,11 +821,15 @@ export default function HospitalPortal() {
                     <Edit3 className="w-3.5 h-3.5" /> Edit
                   </button>
                   <button
-                    onClick={() => deleteDoctor(doc._id)}
-                    className="p-2 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800"
-                    title="Delete Doctor Profile"
+                    onClick={() => {
+                      if (confirm(`Are you sure you want to remove ${doc.name}?`)) {
+                        deleteDoctor(doc._id);
+                      }
+                    }}
+                    className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 rounded-lg border border-rose-500/20 cursor-pointer transition-all active:scale-95"
+                    title="Delete Doctor"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
