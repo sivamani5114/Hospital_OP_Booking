@@ -253,22 +253,22 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
   };
 
   return (
-    <div className="min-h-screen flex items-stretch bg-slate-950 text-slate-100">
+    <div className="min-h-[calc(100vh-65px)] flex-1 flex flex-col md:flex-row items-stretch w-full bg-slate-950 text-slate-100">
 
       {/* ═══ LEFT BRANDING PANEL (hidden on mobile) ═══ */}
-      <div className="hidden lg:flex flex-col justify-between w-[400px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 border-r border-slate-800 p-10 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between w-[380px] lg:w-[420px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 border-r border-slate-800/80 p-8 lg:p-12 relative overflow-hidden">
         {/* Glow Effects */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute bottom-0 right-0 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
         {/* Logo + Brand */}
-        <div>
+        <div className="relative z-10">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="text-white font-extrabold text-xl font-outfit tracking-tight block">CarePulse</span>
+              <span className="text-white font-extrabold text-xl font-outfit tracking-tight block">CarePulse OP</span>
               <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Hospital Portal</span>
             </div>
           </div>
@@ -285,14 +285,14 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
         </div>
 
         {/* Highlights */}
-        <div className="space-y-4 my-8">
+        <div className="space-y-4 my-8 relative z-10">
           {[
             { icon: '👨‍⚕️', title: 'Manage Doctors & Slots', desc: 'Add verified doctors with license numbers' },
             { icon: '📋', title: 'Real-Time OP Queue', desc: 'Live token counter and queue management' },
             { icon: '📄', title: 'Digital Prescriptions', desc: 'Attach prescription notes to patient records' },
             { icon: '📊', title: 'Revenue & Reports', desc: 'Instant daily OP collection summaries' },
           ].map((f, i) => (
-            <div key={i} className="flex items-start gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800 backdrop-blur-sm">
+            <div key={i} className="flex items-start gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
               <span className="text-xl mt-0.5">{f.icon}</span>
               <div>
                 <p className="text-white font-semibold text-xs">{f.title}</p>
@@ -302,16 +302,16 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
           ))}
         </div>
 
-        <div className="text-[11px] text-emerald-300/80 flex items-center gap-1.5 pt-4 border-t border-slate-800">
+        <div className="text-[11px] text-emerald-300/80 flex items-center gap-1.5 pt-4 border-t border-slate-800/80 relative z-10">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>🔒 NABH & CEA Compliant · Encrypted System</span>
         </div>
       </div>
 
-      {/* ═══ RIGHT REGISTRATION FORM PANEL ═══ */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      {/* ═══ RIGHT REGISTRATION FORM PANEL (100% True Edge to Edge) ═══ */}
+      <div className="flex-1 flex flex-col min-h-[calc(100vh-65px)] w-full overflow-y-auto bg-slate-950/60">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-5 sm:px-10 py-4 border-b border-slate-800 glass-panel sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6 sm:px-10 py-4 border-b border-slate-800/80 glass-panel sticky top-0 z-20 w-full">
           <button
             type="button"
             onClick={onGoToLogin}
@@ -322,26 +322,26 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
         </div>
 
         {/* Form Container (100% Full Width Edge to Edge Layout) */}
-        <div className="flex-1 flex flex-col items-start justify-start p-6 sm:p-10 lg:p-14 w-full">
+        <div className="flex-1 p-6 sm:p-10 lg:p-14 w-full flex flex-col justify-start">
           <div className="w-full space-y-6">
             
-            {/* Title */}
+            {/* Title Header */}
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3 text-emerald-400 shadow-md">
                 <Building2 className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold font-outfit text-white">Hospital Registration & Verification</h2>
+              <h2 className="text-2xl sm:text-4xl font-extrabold font-outfit text-white">Hospital Registration & Verification</h2>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">3-Step official registration for Super Admin document audit and live portal onboarding.</p>
             </div>
 
-            <form onSubmit={handleHospitalSubmit} className="space-y-5 w-full">
+            <form onSubmit={handleHospitalSubmit} className="space-y-6 w-full">
               
-              {/* Step Navigation Pill Indicator */}
-              <div className="bg-slate-900 p-1.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold gap-1">
+              {/* Step Navigation Pill Indicator (100% Full Width) */}
+              <div className="bg-slate-900 p-2 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-bold gap-2 w-full">
                 <button
                   type="button"
                   onClick={() => setHospStep(1)}
-                  className={`flex-1 py-2.5 rounded-xl text-center transition-all cursor-pointer ${
+                  className={`flex-1 py-3 rounded-xl text-center transition-all cursor-pointer ${
                     hospStep === 1 ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
                   }`}
                 >
