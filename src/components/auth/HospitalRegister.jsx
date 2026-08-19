@@ -369,27 +369,27 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
 
               {/* STEP 1: Basic Info & Contact */}
               {hospStep === 1 && (
-                <div className="space-y-4 animate-fadeIn text-xs">
+                <div className="space-y-5 animate-fadeIn text-xs w-full">
                   {/* Hospital Name & Type */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-300 font-semibold block mb-1">Hospital Name *</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                    <div className="w-full">
+                      <label className="text-slate-300 font-semibold block mb-1.5">Hospital Name *</label>
                       <input
                         type="text"
                         placeholder="e.g. Apollo Health City"
                         value={hospitalForm.hospitalName}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalName: e.target.value }))}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-emerald-500 shadow-sm"
                         required
                       />
                     </div>
 
-                    <div>
-                      <label className="text-slate-300 font-semibold block mb-1">Hospital Type *</label>
+                    <div className="w-full">
+                      <label className="text-slate-300 font-semibold block mb-1.5">Hospital Type *</label>
                       <select
                         value={hospitalForm.hospitalType}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, hospitalType: e.target.value }))}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-emerald-500 shadow-sm"
                       >
                         <option value="Private">Private Hospital</option>
                         <option value="Government">Government Hospital</option>
@@ -400,11 +400,11 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   </div>
 
                   {/* Hospital Photo */}
-                  <div className="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                  <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2.5 w-full">
                     <label className="text-slate-300 font-semibold block text-xs">Upload Hospital Building Photo / Logo *</label>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full">
                       {hospitalForm.logo && (
-                        <img src={hospitalForm.logo} className="w-12 h-12 rounded-xl object-cover border border-emerald-500/50 shadow" alt="Hospital Preview" />
+                        <img src={hospitalForm.logo} className="w-12 h-12 rounded-xl object-cover border border-emerald-500/50 shadow shrink-0" alt="Hospital Preview" />
                       )}
                       <input
                         type="file"
@@ -420,7 +420,7 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                             reader.readAsDataURL(file);
                           }
                         }}
-                        className="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold cursor-pointer"
+                        className="flex-1 w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:px-3 file:py-1 file:mr-2 file:font-bold cursor-pointer"
                       />
                     </div>
                     {hospitalForm.logoFileName && (
@@ -431,27 +431,27 @@ export default function HospitalRegister({ onGoToLogin, onGoToPatientRegister })
                   </div>
 
                   {/* Reg No & Est Year */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-slate-300 font-semibold block mb-1">Hospital Reg. No *</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                    <div className="w-full">
+                      <label className="text-slate-300 font-semibold block mb-1.5">Hospital Reg. No *</label>
                       <input
                         type="text"
                         placeholder="e.g. REG-TS-88492"
                         value={hospitalForm.regNo}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, regNo: e.target.value }))}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-emerald-500 shadow-sm"
                         required
                       />
                     </div>
 
-                    <div>
-                      <label className="text-slate-300 font-semibold block mb-1">Established Year</label>
+                    <div className="w-full">
+                      <label className="text-slate-300 font-semibold block mb-1.5">Established Year</label>
                       <input
                         type="number"
                         placeholder="e.g. 2012"
                         value={hospitalForm.establishedYear}
                         onChange={(e) => setHospitalForm(prev => ({ ...prev, establishedYear: e.target.value }))}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white outline-none focus:border-emerald-500"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-emerald-500 shadow-sm"
                       />
                     </div>
                   </div>
