@@ -30,6 +30,10 @@ export default function HospitalPortal() {
   const hospitalDoctors = (doctors || []).filter(d => d.hospitalId === hospital?._id);
   const hospitalBookings = (bookings || []).filter(b => b.hospitalId === hospital?._id);
 
+  // Date Separation Filter: 'ALL' | 'TODAY' | 'TOMORROW' | 'UPCOMING' | 'CUSTOM'
+  const [bookingDateFilter, setBookingDateFilter] = useState('ALL');
+  const [selectedCustomDate, setSelectedCustomDate] = useState('');
+
   // Modal States
   const [showAddDoctorModal, setShowAddDoctorModal] = useState(false);
   const [editingDoctorId, setEditingDoctorId] = useState(null);
@@ -838,96 +842,217 @@ export default function HospitalPortal() {
         </div>
       )}
 
-      {/* --- OP BOOKINGS MANAGEMENT --- */}
-      {activeTab === 'BOOKINGS' && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-400" /> Hospital OP Bookings
-          </h3>
+      {/* --- OP BOOKINGS MANAGEMENT (DIVIDED BY DATE: TODAY, TOMORROW, UPCOMING, CUSTOM) --- */}
+      {activeTab === 'BOOKINGS' && (() => {
+        // Date formatting helper & calculations
+        const todayStr = new Date().toISOString().split('T')[0];
+        const tomorrowObj = new Date();
+        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+        const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
 
-          <div className="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold">
-                <tr>
-                  <th className="p-3.5">Booking ID</th>
-                  <th className="p-3.5">Patient Details</th>
-                  <th className="p-3.5">Patient Phone (Direct Call 📞)</th>
-                  <th className="p-3.5">Doctor & Dept</th>
-                  <th className="p-3.5">Date & Time</th>
-                  <th className="p-3.5">Status</th>
-                  <th className="p-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-200">
-                {hospitalBookings.map(b => (
-                  <tr key={b._id} className="hover:bg-slate-900/50">
-                    <td className="p-3.5 font-mono text-emerald-400 font-bold">#{b.bookingId}</td>
-                    <td className="p-3.5 font-medium">
-                      <div className="text-white font-bold">{b.userName}</div>
-                      <div className="text-slate-400 text-[11px]">{b.patientAge ? `${b.patientAge} yrs, ${b.patientGender || 'M'}` : 'Patient'}</div>
-                      {b.patientReason && <div className="text-cyan-400 text-[10px] italic mt-0.5">"{b.patientReason}"</div>}
-                    </td>
-                    <td className="p-3.5 space-y-1">
-                      <div className="font-mono text-white font-bold flex items-center gap-1.5 text-xs">
-                        <Phone className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span>+91 {b.userPhone || b.patientPhone || '9876543210'}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 pt-0.5">
-                        <a
-                          href={`tel:+91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}`}
-                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
-                          title="Direct Phone Call to Patient"
-                        >
-                          <PhoneCall className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
-                          <span>Call</span>
-                        </a>
-                        <a
-                          href={`https://api.whatsapp.com/send?phone=91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *${hospital.hospitalName} OP Desk*\n\nHello ${b.userName || 'Patient'}, this is regarding your OP Appointment for ${b.doctorName || 'Doctor'} on ${b.date} at ${b.time}.`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 p-1 rounded text-[10px] inline-flex items-center justify-center transition-colors cursor-pointer"
-                          title="WhatsApp Message to Patient"
-                        >
-                          <MessageCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
-                        </a>
-                      </div>
-                    </td>
-                    <td className="p-3.5">{b.doctorName} ({b.department})</td>
-                    <td className="p-3.5">{b.date} at {b.time}</td>
-                    <td className="p-3.5 font-bold">{b.status}</td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => updateBookingStatus(b._id, 'Confirmed')}
-                        className="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-[11px]"
-                      >
-                        Confirm
-                      </button>
-                      <button
-                        onClick={() => {
-                          const presc = prompt('Enter Medical Prescription / Doctor Advice Note for patient:');
-                          if (presc) {
-                            updateBookingStatus(b._id, 'Completed');
-                            alert('✅ Medical Prescription attached to patient OP Record!');
-                          }
-                        }}
-                        className="px-2.5 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded-lg text-[11px]"
-                      >
-                        + Prescription
-                      </button>
-                      <button
-                        onClick={() => updateBookingStatus(b._id, 'Cancelled')}
-                        className="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-[11px]"
-                      >
-                        Cancel
-                      </button>
-                    </td>
+        const todayCount = hospitalBookings.filter(b => b.date === todayStr).length;
+        const tomorrowCount = hospitalBookings.filter(b => b.date === tomorrowStr).length;
+        const upcomingCount = hospitalBookings.filter(b => b.date && b.date > tomorrowStr).length;
+
+        const displayedBookings = hospitalBookings.filter(b => {
+          if (bookingDateFilter === 'TODAY') return b.date === todayStr;
+          if (bookingDateFilter === 'TOMORROW') return b.date === tomorrowStr;
+          if (bookingDateFilter === 'UPCOMING') return b.date && b.date > tomorrowStr;
+          if (bookingDateFilter === 'CUSTOM' && selectedCustomDate) return b.date === selectedCustomDate;
+          return true; // 'ALL'
+        });
+
+        return (
+          <div className="space-y-4">
+            {/* Header & Date Separation Navigation */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-emerald-600" /> Hospital OP Bookings
+                </h3>
+                <p className="text-xs text-slate-500">Filter and manage patient appointments divided by date.</p>
+              </div>
+
+              {/* Date Filter Quick Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setBookingDateFilter('ALL')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    bookingDateFilter === 'ALL'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  }`}
+                >
+                  All ({hospitalBookings.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setBookingDateFilter('TODAY')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    bookingDateFilter === 'TODAY'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Today ({todayCount})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setBookingDateFilter('TOMORROW')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    bookingDateFilter === 'TOMORROW'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  }`}
+                >
+                  Tomorrow ({tomorrowCount})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setBookingDateFilter('UPCOMING')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    bookingDateFilter === 'UPCOMING'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  }`}
+                >
+                  Upcoming ({upcomingCount})
+                </button>
+
+                {/* Specific Date Picker Input */}
+                <div className="flex items-center gap-1 pl-1 border-l border-slate-300">
+                  <input
+                    type="date"
+                    value={selectedCustomDate}
+                    onChange={(e) => {
+                      setSelectedCustomDate(e.target.value);
+                      if (e.target.value) {
+                        setBookingDateFilter('CUSTOM');
+                      }
+                    }}
+                    className={`text-xs px-2 py-1 rounded-lg border outline-none cursor-pointer ${
+                      bookingDateFilter === 'CUSTOM'
+                        ? 'border-emerald-500 bg-white text-emerald-700 font-bold'
+                        : 'border-slate-300 bg-white text-slate-700'
+                    }`}
+                    title="Filter by Specific Date"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Bookings Table */}
+            <div className="glass-panel rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+                  <tr>
+                    <th className="p-3.5">Booking ID</th>
+                    <th className="p-3.5">Patient Details</th>
+                    <th className="p-3.5">Patient Phone (Direct Call 📞)</th>
+                    <th className="p-3.5">Doctor & Dept</th>
+                    <th className="p-3.5">Date & Time</th>
+                    <th className="p-3.5">Status</th>
+                    <th className="p-3.5 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-200 text-slate-800">
+                  {displayedBookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-slate-400">
+                        <Calendar className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                        <p className="font-semibold text-sm text-slate-600">No appointments found for this date selection.</p>
+                        <p className="text-xs text-slate-400 mt-1">Try switching tabs to "All", "Today", "Tomorrow", or pick another date.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedBookings.map(b => (
+                      <tr key={b._id} className="hover:bg-slate-50/80">
+                        <td className="p-3.5 font-mono text-emerald-600 font-bold">#{b.bookingId}</td>
+                        <td className="p-3.5 font-medium">
+                          <div className="text-slate-900 font-bold">{b.userName}</div>
+                          <div className="text-slate-500 text-[11px]">{b.patientAge ? `${b.patientAge} yrs, ${b.patientGender || 'M'}` : 'Patient'}</div>
+                          {b.patientReason && <div className="text-cyan-600 text-[10px] italic mt-0.5">"{b.patientReason}"</div>}
+                        </td>
+                        <td className="p-3.5 space-y-1">
+                          <div className="font-mono text-slate-900 font-bold flex items-center gap-1.5 text-xs">
+                            <Phone className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
+                            <span>+91 {b.userPhone || b.patientPhone || '9876543210'}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 pt-0.5">
+                            <a
+                              href={`tel:+91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}`}
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Direct Phone Call to Patient"
+                            >
+                              <PhoneCall className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                              <span>Call</span>
+                            </a>
+                            <a
+                              href={`https://api.whatsapp.com/send?phone=91${(b.userPhone || b.patientPhone || '').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *${hospital.hospitalName} OP Desk*\n\nHello ${b.userName || 'Patient'}, this is regarding your OP Appointment for ${b.doctorName || 'Doctor'} on ${b.date} at ${b.time}.`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 p-1 rounded text-[10px] inline-flex items-center justify-center transition-colors cursor-pointer"
+                              title="WhatsApp Message to Patient"
+                            >
+                              <MessageCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                            </a>
+                          </div>
+                        </td>
+                        <td className="p-3.5 text-slate-800 font-medium">{b.doctorName} ({b.department})</td>
+                        <td className="p-3.5">
+                          <div className="font-semibold text-slate-900">{b.date}</div>
+                          <div className="text-[11px] text-slate-500">{b.time}</div>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            b.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                            b.status === 'Completed' ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' :
+                            b.status === 'Cancelled' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                            'bg-amber-50 text-amber-700 border border-amber-200'
+                          }`}>
+                            {b.status}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right space-x-2">
+                          <button
+                            onClick={() => updateBookingStatus(b._id, 'Confirmed')}
+                            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-[11px] font-semibold cursor-pointer transition-colors"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => {
+                              const presc = prompt('Enter Medical Prescription / Doctor Advice Note for patient:');
+                              if (presc) {
+                                updateBookingStatus(b._id, 'Completed');
+                                alert('✅ Medical Prescription attached to patient OP Record!');
+                              }
+                            }}
+                            className="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-lg text-[11px] font-semibold cursor-pointer transition-colors"
+                          >
+                            + Prescription
+                          </button>
+                          <button
+                            onClick={() => updateBookingStatus(b._id, 'Cancelled')}
+                            className="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-lg text-[11px] font-semibold cursor-pointer transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* --- REPORTS & EXPORT --- */}
       {activeTab === 'REPORTS' && (
