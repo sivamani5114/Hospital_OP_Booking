@@ -11,8 +11,8 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
   // If not logged in, render the Portal Header
   if (!currentUser) {
     return (
-      <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 lg:px-8 py-3 backdrop-blur-md shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-3 sm:px-6 md:px-8 py-3 backdrop-blur-md shadow-sm w-full">
+        <div className="w-full flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div 
             onClick={() => onNavigate && onNavigate('PORTAL_SELECT')}
@@ -80,8 +80,8 @@ export default function Navbar({ authView, onNavigate, appPortalMode = 'ALL' }) 
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-4 lg:px-8 py-3.5 backdrop-blur-md shadow-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 px-3 sm:px-6 md:px-8 py-3.5 backdrop-blur-md shadow-sm w-full">
+      <div className="w-full flex items-center justify-between gap-4">
         
         {/* Brand Logo & Role Badge */}
         <div className="flex items-center gap-3">

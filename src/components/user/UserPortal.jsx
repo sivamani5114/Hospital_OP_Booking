@@ -785,7 +785,7 @@ export default function UserPortal() {
 
       {/* --- TAB 5: PROFILE --- */}
       {activeTab === 'PROFILE' && (
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-6 items-stretch">
             
             {/* ═══ LEFT PANEL: Patient Card + Stats + Danger Zone ═══ */}
