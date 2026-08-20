@@ -4,6 +4,7 @@ import {
   Search, MapPin, Stethoscope, Calendar, Clock, Ticket, 
   CheckCircle2, AlertCircle, QrCode, FileText, X, ArrowRight, UserCheck, CreditCard, Sparkles, Filter 
 } from 'lucide-react';
+import { ALL_INDIAN_CITIES } from '../utils/citiesData';
 
 export default function PatientPortal() {
   const { 
@@ -156,12 +157,12 @@ export default function PatientPortal() {
               <select
                 value={searchCity}
                 onChange={(e) => setSearchCity(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 cursor-pointer"
               >
-                <option value="">All Cities (Hyderabad, Vijayawada, Vizag)</option>
-                <option value="Hyderabad">Hyderabad</option>
-                <option value="Vijayawada">Vijayawada</option>
-                <option value="Visakhapatnam">Visakhapatnam</option>
+                <option value="">All Cities ({ALL_INDIAN_CITIES.length})</option>
+                {ALL_INDIAN_CITIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
 

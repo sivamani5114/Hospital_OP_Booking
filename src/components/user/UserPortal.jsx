@@ -12,6 +12,7 @@ import {
   Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert, PhoneCall, MessageCircle,
   Building, Wallet, Zap, ChevronRight, ArrowLeft
 } from 'lucide-react';
+import { ALL_INDIAN_CITIES, getCombinedCities } from '../../utils/citiesData';
 
 export default function UserPortal() {
   const { currentUser, logout, setCurrentUser, showToast } = useAuth();
@@ -436,12 +437,12 @@ export default function UserPortal() {
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer"
               >
-                <option value="">All Cities (Hyderabad, Vijayawada, Vizag)</option>
-                <option value="Hyderabad">Hyderabad</option>
-                <option value="Vijayawada">Vijayawada</option>
-                <option value="Visakhapatnam">Visakhapatnam</option>
+                <option value="">All Cities ({getCombinedCities(hospitals).length} Cities)</option>
+                {getCombinedCities(hospitals).map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
               </select>
               <button
                 onClick={() => setActiveTab('SEARCH')}
@@ -535,12 +536,12 @@ export default function UserPortal() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white"
+              className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white cursor-pointer"
             >
-              <option value="">All Cities</option>
-              <option value="Hyderabad">Hyderabad</option>
-              <option value="Vijayawada">Vijayawada</option>
-              <option value="Visakhapatnam">Visakhapatnam</option>
+              <option value="">All Cities ({getCombinedCities(hospitals).length})</option>
+              {getCombinedCities(hospitals).map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
             </select>
             <select
               value={selectedSpecialty}

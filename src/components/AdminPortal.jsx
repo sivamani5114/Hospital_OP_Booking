@@ -4,6 +4,7 @@ import {
   ShieldCheck, Building2, Stethoscope, Users, Plus, 
   Edit3, Trash2, CheckCircle, AlertTriangle, DollarSign, Activity, X 
 } from 'lucide-react';
+import { ALL_INDIAN_CITIES } from '../utils/citiesData';
 
 export default function AdminPortal() {
   const { 
@@ -293,9 +294,9 @@ export default function AdminPortal() {
                 onChange={(e) => setHospForm(prev => ({ ...prev, city: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
               >
-                <option value="Hyderabad">Hyderabad</option>
-                <option value="Vijayawada">Vijayawada</option>
-                <option value="Visakhapatnam">Visakhapatnam</option>
+                {ALL_INDIAN_CITIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
               <input
                 type="text"
