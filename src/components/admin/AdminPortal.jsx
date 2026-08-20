@@ -35,6 +35,8 @@ export default function AdminPortal() {
   const [doctorSpecialtyFilter, setDoctorSpecialtyFilter] = useState('ALL');
   const [bookingSearchQuery, setBookingSearchQuery] = useState('');
   const [bookingStatusFilter, setBookingStatusFilter] = useState('ALL');
+  const [adminBookingDateFilter, setAdminBookingDateFilter] = useState('ALL');
+  const [adminBookingCustomDate, setAdminBookingCustomDate] = useState('');
 
   // Master Control States
   const [announcementText, setAnnouncementText] = useState(() => localStorage.getItem('carepulse_broadcast_announcement') || '');
@@ -994,8 +996,100 @@ export default function AdminPortal() {
             </div>
           </div>
 
+          {/* Quick Date Separation Filter Tabs */}
+          {(() => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const tomorrowObj = new Date();
+            tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+            const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
+
+            const adminTodayCount = bookings.filter(b => b.date === todayStr).length;
+            const adminTomorrowCount = bookings.filter(b => b.date === tomorrowStr).length;
+            const adminUpcomingCount = bookings.filter(b => b.date && b.date > tomorrowStr).length;
+
+            return (
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-indigo-600" /> Filter Date:
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminBookingDateFilter('ALL')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      adminBookingDateFilter === 'ALL'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                    }`}
+                  >
+                    All ({bookings.length})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminBookingDateFilter('TODAY')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      adminBookingDateFilter === 'TODAY'
+                        ? 'bg-emerald-600 text-white shadow-sm'
+                        : 'text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100'
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Today ({adminTodayCount})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminBookingDateFilter('TOMORROW')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      adminBookingDateFilter === 'TOMORROW'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                    }`}
+                  >
+                    Tomorrow ({adminTomorrowCount})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminBookingDateFilter('UPCOMING')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      adminBookingDateFilter === 'UPCOMING'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                    }`}
+                  >
+                    Upcoming ({adminUpcomingCount})
+                  </button>
+                </div>
+
+                {/* Specific Date Picker Input */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-slate-500 font-medium">Pick Date:</span>
+                  <input
+                    type="date"
+                    value={adminBookingCustomDate}
+                    onChange={(e) => {
+                      setAdminBookingCustomDate(e.target.value);
+                      if (e.target.value) {
+                        setAdminBookingDateFilter('CUSTOM');
+                      }
+                    }}
+                    className={`text-xs px-2.5 py-1 rounded-lg border outline-none cursor-pointer ${
+                      adminBookingDateFilter === 'CUSTOM'
+                        ? 'border-indigo-500 bg-white text-indigo-700 font-bold'
+                        : 'border-slate-300 bg-white text-slate-700'
+                    }`}
+                    title="Filter by Specific Date"
+                  />
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Search & Status Filter */}
-          <div className="glass-panel p-3 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+          <div className="glass-panel p-3 rounded-2xl border border-slate-200 flex flex-col sm:flex-row gap-3 items-center justify-between bg-white shadow-sm">
             <div className="relative flex-1 w-full">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -1003,14 +1097,14 @@ export default function AdminPortal() {
                 placeholder="Search booking by booking ID, patient name, phone, doctor or hospital..."
                 value={bookingSearchQuery}
                 onChange={(e) => setBookingSearchQuery(e.target.value)}
-                className="w-full bg-slate-900/90 border border-slate-800 focus:border-indigo-500/40 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none"
+                className="w-full bg-white border border-slate-300 focus:border-indigo-500 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 outline-none shadow-sm"
               />
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <select
                 value={bookingStatusFilter}
                 onChange={(e) => setBookingStatusFilter(e.target.value)}
-                className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer"
+                className="bg-white border border-slate-300 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none cursor-pointer shadow-sm"
               >
                 <option value="ALL">All Status ({bookings.length})</option>
                 <option value="Confirmed">Confirmed ({bookings.filter(b => b.status === 'Confirmed').length})</option>
@@ -1020,9 +1114,9 @@ export default function AdminPortal() {
             </div>
           </div>
 
-          <div className="glass-panel rounded-2xl border border-slate-800 overflow-x-auto">
+          <div className="glass-panel rounded-2xl border border-slate-200 overflow-x-auto bg-white shadow-sm">
             <table className="w-full text-left text-xs min-w-[850px]">
-              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold text-[10px]">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold text-[10px]">
                 <tr>
                   <th className="p-3.5">Booking / Token ID</th>
                   <th className="p-3.5">Patient Details</th>
@@ -1033,9 +1127,20 @@ export default function AdminPortal() {
                   <th className="p-3.5 text-right">Master Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-200">
+              <tbody className="divide-y divide-slate-200 text-slate-800">
                 {bookings
                   .filter(b => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const tomorrowObj = new Date();
+                    tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+                    const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
+
+                    let matchesDate = true;
+                    if (adminBookingDateFilter === 'TODAY') matchesDate = b.date === todayStr;
+                    else if (adminBookingDateFilter === 'TOMORROW') matchesDate = b.date === tomorrowStr;
+                    else if (adminBookingDateFilter === 'UPCOMING') matchesDate = b.date && b.date > tomorrowStr;
+                    else if (adminBookingDateFilter === 'CUSTOM' && adminBookingCustomDate) matchesDate = b.date === adminBookingCustomDate;
+
                     const matchesStatus = bookingStatusFilter === 'ALL' || b.status === bookingStatusFilter;
                     const q = bookingSearchQuery.toLowerCase();
                     const matchesSearch = !bookingSearchQuery ||
@@ -1045,7 +1150,7 @@ export default function AdminPortal() {
                       b.doctorName?.toLowerCase().includes(q) ||
                       b.hospitalName?.toLowerCase().includes(q) ||
                       b.txnRefNumber?.toLowerCase().includes(q);
-                    return matchesStatus && matchesSearch;
+                    return matchesDate && matchesStatus && matchesSearch;
                   })
                   .map(b => (
                     <tr key={b._id} className="hover:bg-slate-900/50 transition-colors">
