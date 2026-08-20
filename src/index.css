@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  html, body, #root {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+  }
+
+  * {
+    box-sizing: border-box !important;
+  }
+
   body {
     @apply bg-slate-50 text-slate-900 font-outfit antialiased selection:bg-cyan-500 selection:text-white min-h-screen;
     background-color: #f8fafc;

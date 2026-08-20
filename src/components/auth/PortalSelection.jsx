@@ -3,13 +3,13 @@ import { Stethoscope, User, Building2, ArrowRight, ShieldCheck, CheckCircle2, Lo
 
 export default function PortalSelection({ onSelectPortal }) {
   return (
-    <div className="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center p-4 sm:p-6 lg:p-10 relative">
+    <div className="w-full max-w-full overflow-hidden min-h-[calc(100vh-120px)] flex flex-col items-center justify-center p-2.5 sm:p-6 lg:p-10 relative">
       
-      {/* Ambient Radial Accent Backdrops */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      {/* Ambient Radial Accent Backdrops (Contained) */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-      <div className="w-full max-w-2xl glass-panel p-6 sm:p-10 rounded-3xl border border-slate-800/80 shadow-2xl space-y-8 text-center relative overflow-hidden">
+      <div className="w-full max-w-2xl glass-panel p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl space-y-6 sm:space-y-8 text-center relative overflow-hidden bg-white">
         
         {/* Top Trust & Verification Banner */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
