@@ -333,12 +333,12 @@ export default function UserPortal() {
     <div className="space-y-6 pb-20">
 
       {/* Navigation Sub-Bar */}
-      <div className="glass-panel p-2 rounded-2xl border border-slate-800 flex items-center justify-between overflow-x-auto">
+      <div className="bg-white border border-slate-200 shadow-sm p-2 rounded-2xl flex items-center justify-between overflow-x-auto">
         <div className="flex items-center gap-1 min-w-max">
           <button
             onClick={() => setActiveTab('HOME')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'HOME' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'HOME' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Home className="w-3.5 h-3.5" /> {t('home')}
@@ -346,7 +346,7 @@ export default function UserPortal() {
           <button
             onClick={() => setActiveTab('SEARCH')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'SEARCH' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'SEARCH' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Search className="w-3.5 h-3.5" /> {t('search')}
@@ -354,7 +354,7 @@ export default function UserPortal() {
           <button
             onClick={() => setActiveTab('BOOKINGS')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'BOOKINGS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'BOOKINGS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" /> {t('myBookings')} ({userBookings.length})
@@ -362,7 +362,7 @@ export default function UserPortal() {
           <button
             onClick={() => setActiveTab('HOSPITALS')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'HOSPITALS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'HOSPITALS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Building2 className="w-3.5 h-3.5" /> {t('hospitals')}
@@ -370,7 +370,7 @@ export default function UserPortal() {
           <button
             onClick={() => setActiveTab('DOCTORS')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'DOCTORS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'DOCTORS' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Stethoscope className="w-3.5 h-3.5" /> {t('doctors')}
@@ -378,7 +378,7 @@ export default function UserPortal() {
           <button
             onClick={() => setActiveTab('PROFILE')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              activeTab === 'PROFILE' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'PROFILE' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <User className="w-3.5 h-3.5" /> {t('profile')}
@@ -387,7 +387,7 @@ export default function UserPortal() {
 
         <button
           onClick={logout}
-          className="px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-1"
+          className="px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-1 transition-all"
         >
           <LogOut className="w-3.5 h-3.5" /> {t('logout')}
         </button>
@@ -398,14 +398,14 @@ export default function UserPortal() {
         <div className="space-y-6">
           
           {/* Hero Banner */}
-          <div className="glass-panel p-8 rounded-3xl border border-slate-800 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-10"></div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-gradient-to-br from-cyan-600 to-blue-700 p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-xl">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl -z-0"></div>
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl lg:text-3xl font-extrabold text-white font-outfit">
-                  Welcome back, <span className="text-cyan-400">{currentUser?.fullName}</span> 👋
+                  Welcome back, <span className="text-cyan-200">{currentUser?.fullName}</span> 👋
                 </h2>
-                <p className="text-xs text-slate-400 mt-1 max-w-xl">
+                <p className="text-xs text-cyan-100 mt-1 max-w-xl">
                   Search verified hospitals & specialist doctors, book instant OP tokens, and avoid long waiting queues.
                 </p>
               </div>
@@ -413,20 +413,20 @@ export default function UserPortal() {
               {/* 🚨 Emergency ER 24/7 Helpline Card */}
               <a
                 href="tel:108"
-                className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 p-3 rounded-2xl flex items-center gap-3 shrink-0 transition-all shadow-lg shadow-rose-500/10 group"
+                className="bg-white/20 hover:bg-white/30 border border-white/30 text-white p-3 rounded-2xl flex items-center gap-3 shrink-0 transition-all shadow-lg group"
               >
                 <div className="p-2 bg-rose-500 text-white rounded-xl group-hover:scale-110 transition-transform animate-pulse">
                   🚨
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 block">Emergency 24/7</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-200 block">Emergency 24/7</span>
                   <span className="text-sm font-extrabold text-white">Call 108 / OPD ER</span>
                 </div>
               </a>
             </div>
 
             {/* Quick Search Bar */}
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3 relative z-10">
               <input
                 type="text"
                 placeholder="Search Doctor, Hospital, or Area..."

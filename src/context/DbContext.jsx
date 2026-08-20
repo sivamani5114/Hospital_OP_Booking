@@ -95,7 +95,7 @@ export function DbProvider({ children }) {
         };
       }
     } catch (e) {
-      console.log('BroadcastChannel fallback:', e);
+      // BroadcastChannel not supported in this browser, fallback to storage events only
     }
 
     // Storage Event Listener (Cross-window multi-browser real-time sync)

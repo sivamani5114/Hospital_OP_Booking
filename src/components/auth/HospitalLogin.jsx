@@ -40,7 +40,7 @@ export default function HospitalLogin({ onGoBack, onBackToPortals, onGoToRegiste
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] flex-1 flex flex-col md:flex-row items-stretch w-full bg-slate-950">
+    <div className="min-h-[calc(100vh-65px)] flex-1 flex flex-col md:flex-row items-stretch w-full bg-white">
 
       {/* ═══ LEFT BRANDING PANEL (Emerald & Teal Medical SaaS - Edge to Edge) ═══ */}
       <div className="hidden md:flex flex-col justify-between w-[440px] lg:w-[480px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 border-r border-slate-800/80 p-10 lg:p-14 relative overflow-hidden">
