@@ -9,7 +9,8 @@ import {
   Home, Search, Calendar, Building2, Stethoscope, User, LogOut, MapPin, Clock, 
   Ticket, CheckCircle2, QrCode, ArrowRight, X, Edit3, Lock, Sparkles, Filter, 
   CreditCard, Smartphone, Banknote, ScanLine, Star, MessageSquare, ShieldCheck, Copy,
-  Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert, PhoneCall, MessageCircle
+  Trash2, Edit, AlertTriangle, Mail, Phone, Calendar as CalendarIcon, UserCheck, ShieldAlert, PhoneCall, MessageCircle,
+  Building, Wallet, Zap, ChevronRight, ArrowLeft
 } from 'lucide-react';
 
 export default function UserPortal() {
@@ -24,6 +25,20 @@ export default function UserPortal() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
+
+  // Amazon / Flipkart Style Multi-Option Payment Gateway State
+  const [checkoutMethod, setCheckoutMethod] = useState('UPI_APPS'); // 'UPI_APPS' | 'UPI_QR' | 'UPI_ID' | 'CARD' | 'NETBANKING' | 'WALLETS' | 'COUNTER'
+  const [selectedUpiApp, setSelectedUpiApp] = useState('GPAY'); // 'GPAY' | 'PHONEPE' | 'PAYTM'
+  const [customUpiId, setCustomUpiId] = useState('');
+  const [isUpiIdVerified, setIsUpiIdVerified] = useState(false);
+  const [cardForm, setCardForm] = useState({
+    cardNumber: '',
+    cardHolder: currentUser?.fullName || '',
+    expiry: '',
+    cvv: ''
+  });
+  const [selectedBank, setSelectedBank] = useState('SBI');
+  const [selectedWallet, setSelectedWallet] = useState('AMAZON_PAY');
 
   // Booking Modal State
   const [bookingDoctor, setBookingDoctor] = useState(null);
@@ -1240,156 +1255,508 @@ export default function UserPortal() {
               </div>
             )}
 
-            {/* STEP 2: NETBANKING & UPI QR PAYMENT SECTION */}
+            {/* STEP 2: COMPLETE AMAZON / FLIPKART STYLE MULTI-OPTION PAYMENT CHECKOUT GATEWAY */}
             {bookingStep === 'PAYMENT' && (
-              <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+              <div className="flex flex-col lg:flex-row flex-1 overflow-hidden bg-slate-50 text-slate-900">
+                
+                {/* ═══ 1. LEFT PAYMENT METHODS SIDEBAR ═══ */}
+                <div className="lg:w-[260px] flex-shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 p-4 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider">STEP 2 OF 2 · CHECKOUT</span>
+                      <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5 mt-0.5">
+                        <Lock className="w-4 h-4 text-emerald-600" /> Payment Options
+                      </h4>
+                    </div>
 
-                {/* LEFT PANEL: QR Code + Hospital Info */}
-                <div className="lg:w-[340px] flex-shrink-0 bg-gradient-to-br from-slate-900 via-cyan-950/20 to-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 p-6 flex flex-col gap-4">
-                  <div>
-                    <p className="text-[10px] text-cyan-400 font-bold tracking-wider mb-1">STEP 2 OF 2 · SECURE PAYMENT</p>
-                    <h3 className="font-bold text-white text-base flex items-center gap-2">
-                      <ScanLine className="w-4 h-4 text-cyan-400" /> Scan & Pay
-                    </h3>
+                    <div className="space-y-1">
+                      {/* 1. UPI Apps & QR */}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutMethod('UPI_APPS')}
+                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          checkoutMethod === 'UPI_APPS'
+                            ? 'bg-cyan-50 text-cyan-800 border-2 border-cyan-500 shadow-sm'
+                            : 'hover:bg-slate-100 text-slate-700 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-cyan-600 shrink-0" />
+                          <div>
+                            <span className="block">UPI & QR Code</span>
+                            <span className="text-[10px] text-slate-500 font-normal">GPay, PhonePe, Paytm</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                      </button>
+
+                      {/* 2. Credit / Debit Cards */}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutMethod('CARD')}
+                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          checkoutMethod === 'CARD'
+                            ? 'bg-cyan-50 text-cyan-800 border-2 border-cyan-500 shadow-sm'
+                            : 'hover:bg-slate-100 text-slate-700 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <div>
+                            <span className="block">Credit / Debit Card</span>
+                            <span className="text-[10px] text-slate-500 font-normal">Visa, Mastercard, RuPay</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                      </button>
+
+                      {/* 3. Net Banking */}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutMethod('NETBANKING')}
+                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          checkoutMethod === 'NETBANKING'
+                            ? 'bg-cyan-50 text-cyan-800 border-2 border-cyan-500 shadow-sm'
+                            : 'hover:bg-slate-100 text-slate-700 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <div>
+                            <span className="block">Net Banking</span>
+                            <span className="text-[10px] text-slate-500 font-normal">SBI, HDFC, ICICI, Axis</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                      </button>
+
+                      {/* 4. Digital Wallets */}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutMethod('WALLETS')}
+                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          checkoutMethod === 'WALLETS'
+                            ? 'bg-cyan-50 text-cyan-800 border-2 border-cyan-500 shadow-sm'
+                            : 'hover:bg-slate-100 text-slate-700 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Wallet className="w-4 h-4 text-amber-600 shrink-0" />
+                          <div>
+                            <span className="block">Wallets / Amazon Pay</span>
+                            <span className="text-[10px] text-slate-500 font-normal">Amazon Pay, Paytm</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                      </button>
+
+                      {/* 5. Pay at Hospital Counter (COD Style) */}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutMethod('COUNTER')}
+                        className={`w-full p-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          checkoutMethod === 'COUNTER'
+                            ? 'bg-cyan-50 text-cyan-800 border-2 border-cyan-500 shadow-sm'
+                            : 'hover:bg-slate-100 text-slate-700 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Banknote className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <div>
+                            <span className="block">Pay at Counter</span>
+                            <span className="text-[10px] text-slate-500 font-normal">Cash on Hospital Visit</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Payment Tabs */}
-                  <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-                    <button type="button" onClick={() => setPaymentTab('UPI')}
-                      className={`flex-1 py-2 rounded-lg transition-all ${(!paymentTab || paymentTab === 'UPI') ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}>
-                      📱 UPI QR
-                    </button>
-                    <button type="button" onClick={() => setPaymentTab('NETBANKING')}
-                      className={`flex-1 py-2 rounded-lg transition-all ${paymentTab === 'NETBANKING' ? 'bg-cyan-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}>
-                      🏦 NetBanking
-                    </button>
+                  <div className="pt-3 border-t border-slate-200">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-semibold">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>256-bit Bank Encrypted</span>
+                    </div>
                   </div>
-
-                  {/* UPI QR Code Area */}
-                  {(!paymentTab || paymentTab === 'UPI') && (
-                    <div className="bg-white rounded-2xl p-4 flex flex-col items-center gap-2.5 shadow-xl text-slate-900">
-                      
-                      {/* Top Header: Reference Number & Transaction Amount */}
-                      <div className="w-full flex justify-between items-center pb-2 border-b border-slate-200 text-[11px]">
-                        <div>
-                          <span className="text-slate-500 font-semibold block text-[10px]">Reference Number :</span>
-                          <span className="font-mono font-extrabold text-slate-900 tracking-wider text-xs">{txnRefNumber}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-slate-500 font-semibold block text-[10px]">Transaction Amount:</span>
-                          <span className="font-extrabold text-cyan-700 text-sm">₹ {Number(bookingDoctor?.opFee || 0).toLocaleString('en-IN')}.00</span>
-                        </div>
-                      </div>
-
-                      {/* Centered QR Code Image */}
-                      <div className="bg-slate-950 p-2.5 rounded-2xl border-2 border-cyan-500/40 shadow-md my-0.5">
-                        <img
-                          src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR&tr=${txnRefNumber}`)}`}
-                          className="w-36 h-36 object-contain rounded-xl"
-                          alt="UPI QR Code"
-                        />
-                      </div>
-
-                      {/* "Please Scan the code" Title */}
-                      <p className="font-bold text-slate-800 text-xs tracking-wide">Please Scan the code</p>
-
-                      {/* Animated Progress Bar & Timer */}
-                      <div className="w-full space-y-1">
-                        <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all duration-1000"
-                            style={{ width: `${(paymentTimer / 300) * 100}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-[11px] text-slate-600 font-semibold text-center">
-                          Time Left to Scan & Pay : <span className="font-mono font-bold text-cyan-700">{formatTimer(paymentTimer)}</span>
-                        </p>
-                      </div>
-
-                      {/* Hospital Branding & UPI ID */}
-                      <div className="text-center pt-1.5 border-t border-slate-100 w-full">
-                        <p className="font-extrabold text-xs text-slate-900">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</p>
-                        <p className="text-[10px] font-mono font-bold mt-0.5 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-slate-700 inline-block">
-                          UPI ID: {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* NetBanking */}
-                  {paymentTab === 'NETBANKING' && (
-                    <div className="bg-slate-950 rounded-2xl p-4 border border-cyan-500/40 space-y-2.5 text-xs">
-                      <p className="text-cyan-300 font-bold">🏦 Hospital Business NetBanking</p>
-                      <div className="space-y-2 bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300">
-                        <div className="flex justify-between"><span className="text-slate-400">Account Holder:</span><span className="text-white font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.accountHolderName || 'Sukhavasi Sivamani'}</span></div>
-                        <div className="flex justify-between"><span className="text-slate-400">Bank:</span><span className="text-emerald-400 font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankName || 'SBI'}</span></div>
-                        <div className="flex justify-between"><span className="text-slate-400">Account No:</span><span className="text-cyan-300 font-mono font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.bankAccountNo || '42417133367'}</span></div>
-                        <div className="flex justify-between"><span className="text-slate-400">IFSC:</span><span className="text-amber-300 font-mono font-bold">{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.ifscCode || 'sbin0008487'}</span></div>
-                      </div>
-                      <p className="text-[11px] text-cyan-300 text-center">Transfer ₹{bookingDoctor?.opFee} via NEFT/RTGS/IMPS</p>
-                    </div>
-                  )}
                 </div>
 
-                {/* RIGHT PANEL: Patient Summary + Payment Action */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-4 justify-between">
-                  <div className="space-y-4">
-                    {/* Patient + Doctor summary */}
-                    <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-4 space-y-2.5 text-xs">
-                      <p className="text-white font-bold text-sm">Booking Summary</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
-                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">DOCTOR</p>
-                          <p className="text-white font-bold text-xs">{bookingDoctor?.doctorName}</p>
-                          <p className="text-cyan-400 text-[10px]">{bookingDoctor?.specialization}</p>
+                {/* ═══ 2. CENTER INTERACTIVE PAYMENT FORM ═══ */}
+                <div className="flex-1 p-5 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col justify-start">
+                  
+                  {/* OPTION A: UPI APPS & QR CODE */}
+                  {checkoutMethod === 'UPI_APPS' && (
+                    <div className="space-y-5">
+                      <div>
+                        <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                          <Smartphone className="w-5 h-5 text-cyan-600" /> Instant UPI Payment
+                        </h4>
+                        <p className="text-xs text-slate-500">Pay directly from any UPI app or scan the live QR code.</p>
+                      </div>
+
+                      {/* 1-Click Fast App Pills */}
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 block mb-2">1. Select Preferred UPI App:</label>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {[
+                            { id: 'GPAY', name: 'Google Pay', icon: '🟢', color: 'border-emerald-300 hover:border-emerald-500' },
+                            { id: 'PHONEPE', name: 'PhonePe', icon: '🟣', color: 'border-purple-300 hover:border-purple-500' },
+                            { id: 'PAYTM', name: 'Paytm UPI', icon: '🔵', color: 'border-blue-300 hover:border-blue-500' }
+                          ].map(app => (
+                            <button
+                              key={app.id}
+                              type="button"
+                              onClick={() => setSelectedUpiApp(app.id)}
+                              className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                                selectedUpiApp === app.id
+                                  ? 'bg-cyan-50 border-2 border-cyan-600 shadow-sm'
+                                  : `bg-white ${app.color} shadow-xs`
+                              }`}
+                            >
+                              <span className="text-xl block mb-1">{app.icon}</span>
+                              <span className="text-xs font-bold text-slate-900 block">{app.name}</span>
+                            </button>
+                          ))}
                         </div>
-                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
-                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">PATIENT</p>
-                          <p className="text-white font-bold text-xs">{patientDetails.name}</p>
-                          <p className="text-slate-400 text-[10px]">{patientDetails.phone}</p>
+                      </div>
+
+                      {/* Enter UPI ID / VPA */}
+                      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2 shadow-xs">
+                        <label className="text-xs font-bold text-slate-700 block">2. Or Enter Any UPI ID (VPA):</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="e.g. yourname@okhdfcbank / mobile@ybl"
+                            value={customUpiId}
+                            onChange={(e) => {
+                              setCustomUpiId(e.target.value);
+                              setIsUpiIdVerified(false);
+                            }}
+                            className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 outline-none focus:border-cyan-500 font-mono"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (customUpiId.includes('@')) {
+                                setIsUpiIdVerified(true);
+                                showToast('✅ UPI ID Verified Successfully!', 'success');
+                              } else {
+                                showToast('❌ Please enter a valid UPI ID (e.g. user@okaxis)', 'error');
+                              }
+                            }}
+                            className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer shadow-xs active:scale-95 transition-all"
+                          >
+                            {isUpiIdVerified ? '✓ Verified' : 'Verify'}
+                          </button>
                         </div>
-                        <div className="bg-slate-950 rounded-xl p-2.5 border border-slate-800">
-                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">DATE & TIME</p>
-                          <p className="text-white font-bold text-xs">{bookingDate}</p>
-                          <p className="text-slate-400 text-[10px]">{bookingTime}</p>
+                        {isUpiIdVerified && (
+                          <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Account Verified: {customUpiId}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Dynamic Live QR Code with Countdown */}
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center gap-4 shadow-xs">
+                        <div className="p-2 bg-white rounded-xl border border-slate-300 shadow-sm shrink-0">
+                          <img
+                            src={(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital'}&am=${bookingDoctor?.opFee || 100}&cu=INR&tr=${txnRefNumber}`)}`}
+                            className="w-28 h-28 object-contain rounded-lg"
+                            alt="Live UPI QR Code"
+                          />
                         </div>
-                        <div className="bg-cyan-950/40 rounded-xl p-2.5 border border-cyan-500/30">
-                          <p className="text-slate-400 text-[10px] font-semibold mb-0.5">OP FEE</p>
-                          <p className="text-cyan-400 font-extrabold text-lg">₹{bookingDoctor?.opFee}</p>
+                        <div className="space-y-1.5 text-center sm:text-left">
+                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full inline-block">
+                            Live Scanner Ready
+                          </span>
+                          <h5 className="font-bold text-xs text-slate-900">Scan with any Camera or UPI App</h5>
+                          <p className="text-[11px] text-slate-500 font-medium">
+                            Time Left to Pay : <span className="font-mono font-bold text-cyan-700">{formatTimer(paymentTimer)}</span>
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-mono">
+                            Ref: {txnRefNumber}
+                          </p>
                         </div>
                       </div>
                     </div>
+                  )}
 
-                    {/* Security note */}
-                    <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-slate-300 space-y-1">
-                      <div className="flex items-center gap-1.5 font-bold text-cyan-400 text-xs">
-                        <ShieldCheck className="w-4 h-4" /> Secure Payment & Bank Account Verification
+                  {/* OPTION B: CREDIT / DEBIT CARDS */}
+                  {checkoutMethod === 'CARD' && (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-indigo-600" /> Credit or Debit Card
+                        </h4>
+                        <p className="text-xs text-slate-500">We accept Visa, MasterCard, RuPay, Maestro & Amex.</p>
                       </div>
-                      <p className="text-[11px] text-slate-400">
-                        🔒 Payments routed directly to <strong>{(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}</strong>'s verified bank account.
+
+                      <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-3.5 shadow-xs">
+                        <div>
+                          <label className="text-xs font-bold text-slate-700 block mb-1">Card Number *</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              maxLength={19}
+                              placeholder="4123 4567 8901 2345"
+                              value={cardForm.cardNumber}
+                              onChange={(e) => {
+                                const v = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+                                setCardForm(prev => ({ ...prev, cardNumber: v }));
+                              }}
+                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-indigo-500 font-mono tracking-wider"
+                            />
+                            <CreditCard className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-bold text-slate-700 block mb-1">Cardholder Name *</label>
+                          <input
+                            type="text"
+                            placeholder="Name as printed on card"
+                            value={cardForm.cardHolder}
+                            onChange={(e) => setCardForm(prev => ({ ...prev, cardHolder: e.target.value }))}
+                            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-indigo-500 font-semibold"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-xs font-bold text-slate-700 block mb-1">Expiry Date (MM/YY) *</label>
+                            <input
+                              type="text"
+                              maxLength={5}
+                              placeholder="12/28"
+                              value={cardForm.expiry}
+                              onChange={(e) => {
+                                let v = e.target.value.replace(/\D/g, '');
+                                if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+                                setCardForm(prev => ({ ...prev, expiry: v }));
+                              }}
+                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-indigo-500 font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-slate-700 block mb-1">CVV / CVC *</label>
+                            <input
+                              type="password"
+                              maxLength={4}
+                              placeholder="•••"
+                              value={cardForm.cvv}
+                              onChange={(e) => setCardForm(prev => ({ ...prev, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-indigo-500 font-mono tracking-widest"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-1 text-[11px] text-slate-500">
+                          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Your card details are protected by 3D Secure OTP & 256-bit encryption.</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* OPTION C: NET BANKING */}
+                  {checkoutMethod === 'NETBANKING' && (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                          <Building className="w-5 h-5 text-emerald-600" /> Internet Banking
+                        </h4>
+                        <p className="text-xs text-slate-500">Select your bank from top Indian banking institutions.</p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {[
+                          { id: 'SBI', name: 'State Bank of India', short: 'SBI' },
+                          { id: 'HDFC', name: 'HDFC Bank', short: 'HDFC' },
+                          { id: 'ICICI', name: 'ICICI Bank', short: 'ICICI' },
+                          { id: 'AXIS', name: 'Axis Bank', short: 'AXIS' },
+                          { id: 'KOTAK', name: 'Kotak Mahindra', short: 'KOTAK' },
+                          { id: 'PNB', name: 'Punjab National Bank', short: 'PNB' }
+                        ].map(bank => (
+                          <button
+                            key={bank.id}
+                            type="button"
+                            onClick={() => setSelectedBank(bank.id)}
+                            className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                              selectedBank === bank.id
+                                ? 'bg-emerald-50 border-2 border-emerald-600 shadow-sm'
+                                : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
+                            }`}
+                          >
+                            <span className="font-mono font-extrabold text-xs text-slate-900 block mb-0.5">{bank.short}</span>
+                            <span className="text-[10px] text-slate-500 font-medium block truncate">{bank.name}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-2xl border border-slate-200">
+                        <label className="text-xs font-bold text-slate-700 block mb-1.5">Or Choose from All Indian Banks:</label>
+                        <select
+                          value={selectedBank}
+                          onChange={(e) => setSelectedBank(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 outline-none focus:border-emerald-500"
+                        >
+                          <option value="SBI">State Bank of India (SBI)</option>
+                          <option value="HDFC">HDFC Bank</option>
+                          <option value="ICICI">ICICI Bank</option>
+                          <option value="AXIS">Axis Bank</option>
+                          <option value="KOTAK">Kotak Mahindra Bank</option>
+                          <option value="PNB">Punjab National Bank</option>
+                          <option value="BOB">Bank of Baroda</option>
+                          <option value="CANARA">Canara Bank</option>
+                          <option value="UNION">Union Bank of India</option>
+                          <option value="INDUSIND">IndusInd Bank</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* OPTION D: DIGITAL WALLETS */}
+                  {checkoutMethod === 'WALLETS' && (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                          <Wallet className="w-5 h-5 text-amber-600" /> Digital Wallets & Pay Later
+                        </h4>
+                        <p className="text-xs text-slate-500">Fast 1-click checkout with your linked wallet balance.</p>
+                      </div>
+
+                      <div className="space-y-2.5">
+                        {[
+                          { id: 'AMAZON_PAY', name: 'Amazon Pay Balance & UPI', icon: '🛒', desc: 'Instant 1-Click Pay' },
+                          { id: 'PAYTM', name: 'Paytm Wallet & Postpaid', icon: '💳', desc: 'Link and pay via Paytm' },
+                          { id: 'MOBIKWIK', name: 'MobiKwik / ZIP Pay Later', icon: '⚡', desc: 'Pay next month' }
+                        ].map(w => (
+                          <div
+                            key={w.id}
+                            onClick={() => setSelectedWallet(w.id)}
+                            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                              selectedWallet === w.id
+                                ? 'bg-amber-50/60 border-2 border-amber-500 shadow-sm'
+                                : 'bg-white border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{w.icon}</span>
+                              <div>
+                                <span className="font-bold text-xs text-slate-900 block">{w.name}</span>
+                                <span className="text-[10px] text-slate-500">{w.desc}</span>
+                              </div>
+                            </div>
+                            <input
+                              type="radio"
+                              name="walletSelection"
+                              checked={selectedWallet === w.id}
+                              onChange={() => setSelectedWallet(w.id)}
+                              className="w-4 h-4 text-amber-600 cursor-pointer"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* OPTION E: PAY AT HOSPITAL COUNTER */}
+                  {checkoutMethod === 'COUNTER' && (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                          <Banknote className="w-5 h-5 text-emerald-600" /> Pay at Hospital Counter (Cash on Visit)
+                        </h4>
+                        <p className="text-xs text-slate-500">Book token online now and pay cash/card upon hospital arrival.</p>
+                      </div>
+
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2 text-xs text-emerald-900 shadow-xs">
+                        <span className="font-bold text-sm block">🏥 Hospital Counter Payment Terms:</span>
+                        <ul className="list-disc list-inside space-y-1 text-[11px] text-emerald-800">
+                          <li>Your digital queue token will be confirmed immediately.</li>
+                          <li>Please arrive 15 minutes before slot time to pay at the OP Registration Counter.</li>
+                          <li>Accepted at desk: Cash, Cards, UPI QR, Hospital Health Cards.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* ═══ 3. RIGHT FLIPKART/AMAZON ORDER SUMMARY & ACTION ═══ */}
+                <div className="lg:w-[320px] flex-shrink-0 bg-white border-t lg:border-t-0 lg:border-l border-slate-200 p-5 flex flex-col justify-between shadow-xs">
+                  <div className="space-y-4">
+                    <h4 className="font-extrabold text-sm text-slate-900 pb-2 border-b border-slate-200">
+                      Order Summary
+                    </h4>
+
+                    {/* Doctor & Hospital Details */}
+                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-1.5 text-xs">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-bold text-slate-900">{bookingDoctor?.doctorName}</p>
+                          <p className="text-[11px] text-cyan-700 font-semibold">{bookingDoctor?.specialization}</p>
+                        </div>
+                        <span className="bg-cyan-100 text-cyan-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          OP Slot
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        🏥 {(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName}
+                      </p>
+                      <p className="text-[10px] text-slate-600 font-mono pt-1 border-t border-slate-200">
+                        📅 {bookingDate} · ⏰ {bookingTime}
                       </p>
                     </div>
+
+                    {/* Price Breakdown */}
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Consultation Fee</span>
+                        <span className="font-semibold text-slate-900">₹{bookingDoctor?.opFee}.00</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Digital Platform Fee</span>
+                        <span className="font-semibold text-emerald-600">FREE <span className="line-through text-slate-400">₹49</span></span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Taxes & GST (0%)</span>
+                        <span className="font-semibold text-slate-900">₹0.00</span>
+                      </div>
+                      <div className="flex justify-between pt-2.5 border-t border-slate-200 text-sm font-extrabold text-slate-900">
+                        <span>Total Payable</span>
+                        <span className="text-base text-cyan-700 font-extrabold">₹{bookingDoctor?.opFee}.00</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="space-y-2 pt-2">
-                    <button type="button"
-                      onClick={() => handleConfirmPayment(paymentTab === 'NETBANKING' ? 'NetBanking' : 'UPI')}
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer text-sm">
-                      <CheckCircle2 className="w-5 h-5" />
-                      {paymentTab === 'NETBANKING' ? 'I Have Paid via NetBanking ✓' : t('paidUpi')} (₹{bookingDoctor?.opFee})
+                  {/* Confirm & Pay Action */}
+                  <div className="space-y-2 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        let finalMethod = 'UPI';
+                        if (checkoutMethod === 'CARD') finalMethod = 'Card';
+                        else if (checkoutMethod === 'NETBANKING') finalMethod = 'NetBanking';
+                        else if (checkoutMethod === 'WALLETS') finalMethod = 'Wallet';
+                        else if (checkoutMethod === 'COUNTER') finalMethod = 'Counter';
+                        handleConfirmPayment(finalMethod);
+                      }}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer text-sm transition-all active:scale-[0.98]"
+                    >
+                      <Lock className="w-4 h-4" />
+                      {checkoutMethod === 'COUNTER' ? 'Confirm Counter Booking' : `Pay ₹${bookingDoctor?.opFee} Securely`}
                     </button>
-                    <button type="button"
-                      onClick={() => handleConfirmPayment('Counter')}
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 border border-slate-700 text-xs cursor-pointer">
-                      <Banknote className="w-4 h-4 text-amber-400" /> {t('payAtCounter')} (₹{bookingDoctor?.opFee})
-                    </button>
-                    <button type="button" onClick={() => setBookingStep('FORM')}
-                      className="w-full text-slate-500 hover:text-slate-300 text-xs py-1 cursor-pointer text-center">
-                      ← Back to booking details
+
+                    <button
+                      type="button"
+                      onClick={() => setBookingStep('FORM')}
+                      className="w-full text-slate-500 hover:text-slate-800 text-xs py-1.5 cursor-pointer text-center font-semibold"
+                    >
+                      ← Back to Patient Details
                     </button>
                   </div>
                 </div>
+
               </div>
             )}
 
