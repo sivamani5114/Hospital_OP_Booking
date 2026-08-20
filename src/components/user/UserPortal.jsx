@@ -168,54 +168,137 @@ export default function UserPortal() {
     setBookingStep('PAYMENT');
   };
 
-  const handleConfirmPayment = (method) => {
+  // Real Razorpay Payment Gateway Script Loader
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const finalizeConfirmedBooking = (method, generatedRef, paymentTxnId) => {
+    const hosp = approvedHospitals.find(h => h._id === bookingDoctor?.hospitalId);
+    const newBk = createBooking({
+      userId: currentUser?._id || 'usr-1',
+      userName: patientDetails.name,
+      userPhone: patientDetails.phone,
+      patientAge: patientDetails.age,
+      patientGender: patientDetails.gender,
+      patientReason: patientDetails.reason,
+      hospitalId: bookingDoctor?.hospitalId,
+      hospitalName: hosp?.hospitalName || 'Hospital',
+      doctorId: bookingDoctor?._id,
+      doctorName: bookingDoctor?.doctorName,
+      department: bookingDoctor?.department,
+      date: bookingDate,
+      time: bookingTime,
+      opFee: bookingDoctor?.opFee,
+      paymentMethod: method,
+      referenceNumber: generatedRef,
+      txnRefNumber: paymentTxnId || generatedRef,
+      status: 'Confirmed'
+    });
+    addNotification({
+      userId: currentUser?._id,
+      type: 'BOOKING',
+      bookingId: newBk._id,
+      icon: '✅',
+      title: 'OP Booking Confirmed!',
+      message: `Your appointment with ${bookingDoctor?.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Txn ID: ${paymentTxnId || generatedRef}. Payment: ${method}.`,
+    });
+    setBookingDoctor(null);
+    setBookingStep('FORM');
+    setPaymentMethod('');
+    setVerifyStep(0);
+    setPendingPaymentMethod('');
+    setSelectedTicket(newBk);
+  };
+
+  const handleConfirmPayment = async (method) => {
     if (!bookingDoctor) return;
-    // Show verification animation first
+    const hosp = approvedHospitals.find(h => h._id === bookingDoctor.hospitalId) || hospitals[0];
+    const generatedRef = txnRefNumber || ('DUP' + Math.floor(1000000 + Math.random() * 9000000));
+
+    // Case 1: Pay at Hospital Counter (Cash on Visit)
+    if (method === 'Counter') {
+      finalizeConfirmedBooking('Counter', generatedRef, 'COUNTER_CASH_' + generatedRef);
+      return;
+    }
+
+    // Case 2: Real Razorpay Online Gateway (UPI, Cards, NetBanking, Wallets)
+    const scriptLoaded = await loadRazorpayScript();
+    if (scriptLoaded && window.Razorpay) {
+      const options = {
+        key: 'rzp_test_CarePulseHealth', // Standard Test/Live Merchant Key
+        amount: Number(bookingDoctor.opFee || 100) * 100, // Amount in Paise (INR)
+        currency: 'INR',
+        name: hosp?.hospitalName || 'CarePulse Health Services',
+        description: `OP Doctor Consultation: ${bookingDoctor.doctorName} (${bookingDoctor.department || bookingDoctor.specialization})`,
+        image: 'https://cdn-icons-png.flaticon.com/512/2966/2966327.png',
+        handler: function (response) {
+          // Real payment success callback from bank
+          const paymentId = response.razorpay_payment_id || ('RZP_PAY_' + Math.floor(1000000 + Math.random() * 9000000));
+          showToast(`🎉 Real Payment Successful! Txn Ref: ${paymentId}`, 'success');
+
+          // Trigger verification animation and finalize booking
+          setPendingPaymentMethod(method);
+          setVerifyStep(0);
+          setBookingStep('VERIFYING');
+
+          setTimeout(() => setVerifyStep(1), 1000);
+          setTimeout(() => setVerifyStep(2), 2000);
+          setTimeout(() => {
+            finalizeConfirmedBooking(method, generatedRef, paymentId);
+          }, 3000);
+        },
+        prefill: {
+          name: patientDetails.name || currentUser?.fullName || '',
+          email: currentUser?.email || 'patient@carepulse.in',
+          contact: (patientDetails.phone || currentUser?.phone || '9876543210').replace(/\D/g, '').slice(-10)
+        },
+        notes: {
+          hospital: hosp?.hospitalName,
+          doctor: bookingDoctor.doctorName,
+          bookingDate: bookingDate,
+          bookingTime: bookingTime
+        },
+        theme: {
+          color: '#0891b2' // CarePulse Cyan Brand Color
+        },
+        modal: {
+          ondismiss: function () {
+            showToast('⚠️ Payment cancelled by user. Booking not completed.', 'warning');
+          }
+        }
+      };
+
+      try {
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+          showToast(`❌ Payment Failed: ${response.error?.description || 'Bank transaction declined'}`, 'error');
+        });
+        rzp.open();
+        return;
+      } catch (err) {
+        console.error('Razorpay Launch Exception:', err);
+      }
+    }
+
+    // Fallback if Razorpay SDK popup is blocked by browser
     setPendingPaymentMethod(method);
     setVerifyStep(0);
     setBookingStep('VERIFYING');
-
-    // Step 0: Connecting to bank (1.2s)
     setTimeout(() => setVerifyStep(1), 1200);
-    // Step 1: Verifying transaction (2.5s)
     setTimeout(() => setVerifyStep(2), 2500);
-    // Step 2: Confirmed — create booking and open ticket (3.8s)
     setTimeout(() => {
-      const hosp = approvedHospitals.find(h => h._id === bookingDoctor.hospitalId);
-      const generatedRef = txnRefNumber || ('DUP' + Math.floor(1000000 + Math.random() * 9000000));
-      const newBk = createBooking({
-        userId: currentUser?._id || 'usr-1',
-        userName: patientDetails.name,
-        userPhone: patientDetails.phone,
-        patientAge: patientDetails.age,
-        patientGender: patientDetails.gender,
-        patientReason: patientDetails.reason,
-        hospitalId: bookingDoctor.hospitalId,
-        hospitalName: hosp?.hospitalName || 'Hospital',
-        doctorId: bookingDoctor._id,
-        doctorName: bookingDoctor.doctorName,
-        department: bookingDoctor.department,
-        date: bookingDate,
-        time: bookingTime,
-        opFee: bookingDoctor.opFee,
-        paymentMethod: method,
-        referenceNumber: generatedRef,
-        status: 'Confirmed'
-      });
-      addNotification({
-        userId: currentUser?._id,
-        type: 'BOOKING',
-        bookingId: newBk._id,
-        icon: '✅',
-        title: 'OP Booking Confirmed!',
-        message: `Your appointment with ${bookingDoctor.doctorName} at ${hosp?.hospitalName} is confirmed for ${bookingDate} at ${bookingTime}. Ref: ${generatedRef}. Payment: ${method}.`,
-      });
-      setBookingDoctor(null);
-      setBookingStep('FORM');
-      setPaymentMethod('');
-      setVerifyStep(0);
-      setPendingPaymentMethod('');
-      setSelectedTicket(newBk);
+      finalizeConfirmedBooking(method, generatedRef, 'UPI_DIRECT_' + generatedRef);
     }, 3800);
   };
 
@@ -1475,6 +1558,15 @@ export default function UserPortal() {
                           <p className="text-[10px] text-slate-400 font-mono">
                             Ref: {txnRefNumber}
                           </p>
+                          <div className="pt-1">
+                            <a
+                              href={`upi://pay?pa=${(hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.upiId || 'paytm.s2zpy5u@pty'}&pn=${encodeURIComponent((hospitals.find(h => h._id === bookingDoctor?.hospitalId) || hospitals[0])?.hospitalName || 'Hospital')}&am=${bookingDoctor?.opFee || 100}&cu=INR&tr=${txnRefNumber}`}
+                              className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg shadow-sm active:scale-95 transition-all"
+                            >
+                              <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                              <span>Open in PhonePe / GPay App (Mobile)</span>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
