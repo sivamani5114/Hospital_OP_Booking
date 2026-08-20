@@ -953,7 +953,7 @@ export default function HospitalPortal() {
                   <tr>
                     <th className="p-3.5">Booking ID</th>
                     <th className="p-3.5">Patient Details</th>
-                    <th className="p-3.5">Patient Phone (Direct Call 📞)</th>
+                    <th className="p-3.5">Patient Contact</th>
                     <th className="p-3.5">Doctor & Dept</th>
                     <th className="p-3.5">Date & Time</th>
                     <th className="p-3.5">Status</th>

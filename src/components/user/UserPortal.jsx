@@ -429,9 +429,9 @@ export default function UserPortal() {
                           <span className="text-[10px] text-slate-400 font-mono">+91 {hosp?.phone || '9123456789'}</span>
                           <a
                             href={`tel:+91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}`}
-                            className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold border border-emerald-500/30"
+                            className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-semibold border border-emerald-300 inline-flex items-center gap-1"
                           >
-                            📞 Call
+                            <Phone className="w-2.5 h-2.5 text-emerald-600" /> Call
                           </a>
                         </div>
                       </div>
@@ -528,10 +528,10 @@ export default function UserPortal() {
                       <div className="flex items-center gap-1.5">
                         <a
                           href={`tel:+91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}`}
-                          className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 shadow cursor-pointer transition-all active:scale-95"
+                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 shadow cursor-pointer transition-all active:scale-95"
                           title="Direct Phone Call to Hospital Desk"
                         >
-                          <PhoneCall className="w-3 h-3 text-emerald-400" /> Call Hospital 📞
+                          <PhoneCall className="w-3 h-3 text-emerald-600" /> Call Hospital
                         </a>
                         <a
                           href={`https://api.whatsapp.com/send?phone=91${(hosp?.phone || '9123456789').replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(`🏥 *Enquiry regarding Dr. ${doc.doctorName}*\n\nHello ${hosp?.hospitalName}, I would like to enquire about appointment consultation timings for Dr. ${doc.doctorName} (${doc.specialization}).`)}`}
@@ -1627,7 +1627,7 @@ export default function UserPortal() {
                   className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer transition-all scale-[1.02] active:scale-95"
                   title="Direct Phone Call to Hospital Desk"
                 >
-                  <PhoneCall className="w-4 h-4" /> Call Hospital (+91 {selectedHospitalModal.phone}) 📞
+                  <PhoneCall className="w-4 h-4" /> Call Hospital (+91 {selectedHospitalModal.phone})
                 </a>
 
                 <div className="flex items-center gap-2">

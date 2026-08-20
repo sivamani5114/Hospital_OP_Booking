@@ -1059,10 +1059,11 @@ export default function AdminPortal() {
                           <span className="font-mono text-[11px] text-cyan-300 font-bold">+91 {b.userPhone}</span>
                           <a
                             href={`tel:+91${(b.userPhone || '').replace(/\D/g, '').slice(-10)}`}
-                            className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 shadow cursor-pointer"
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
                             title="Direct Phone Call to Patient"
                           >
-                            <Phone className="w-2.5 h-2.5 text-emerald-400" /> Call 📞
+                            <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                            <span>Call</span>
                           </a>
                         </div>
                       </td>
