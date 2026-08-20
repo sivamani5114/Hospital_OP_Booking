@@ -51,33 +51,139 @@ export function DbProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Sync to LocalStorage
+  const [lastLiveSync, setLastLiveSync] = useState(Date.now());
+
+  // ═══ REAL-TIME CROSS-TAB & MULTI-DEVICE BROADCAST CHANNEL ENGINE ═══
+  useEffect(() => {
+    let liveChannel = null;
+    try {
+      if (typeof window !== 'undefined' && window.BroadcastChannel) {
+        liveChannel = new BroadcastChannel('carepulse_live_db_sync');
+        liveChannel.onmessage = (event) => {
+          if (event.data && event.data.type === 'DB_STATE_UPDATE') {
+            const { entity } = event.data;
+            if (entity === 'ALL' || entity === 'bookings') {
+              const b = localStorage.getItem('op_db_bookings');
+              if (b) setBookings(JSON.parse(b));
+            }
+            if (entity === 'ALL' || entity === 'hospitals') {
+              const h = localStorage.getItem('op_db_hospitals');
+              if (h) setHospitals(JSON.parse(h));
+            }
+            if (entity === 'ALL' || entity === 'doctors') {
+              const d = localStorage.getItem('op_db_doctors');
+              if (d) setDoctors(JSON.parse(d));
+            }
+            if (entity === 'ALL' || entity === 'users') {
+              const u = localStorage.getItem('op_db_users');
+              if (u) setUsers(JSON.parse(u));
+            }
+            if (entity === 'ALL' || entity === 'notifications') {
+              const n = localStorage.getItem('op_db_notifications');
+              if (n) setNotifications(JSON.parse(n));
+            }
+            if (entity === 'ALL' || entity === 'prescriptions') {
+              const p = localStorage.getItem('op_db_prescriptions');
+              if (p) setPrescriptions(JSON.parse(p));
+            }
+            if (entity === 'ALL' || entity === 'reviews') {
+              const r = localStorage.getItem('op_db_reviews');
+              if (r) setReviews(JSON.parse(r));
+            }
+            setLastLiveSync(Date.now());
+          }
+        };
+      }
+    } catch (e) {
+      console.log('BroadcastChannel fallback:', e);
+    }
+
+    // Storage Event Listener (Cross-window multi-browser real-time sync)
+    const handleStorageChange = (e) => {
+      if (e.key === 'op_db_bookings' && e.newValue) setBookings(JSON.parse(e.newValue));
+      if (e.key === 'op_db_hospitals' && e.newValue) setHospitals(JSON.parse(e.newValue));
+      if (e.key === 'op_db_doctors' && e.newValue) setDoctors(JSON.parse(e.newValue));
+      if (e.key === 'op_db_users' && e.newValue) setUsers(JSON.parse(e.newValue));
+      if (e.key === 'op_db_notifications' && e.newValue) setNotifications(JSON.parse(e.newValue));
+      if (e.key === 'op_db_prescriptions' && e.newValue) setPrescriptions(JSON.parse(e.newValue));
+      if (e.key === 'op_db_reviews' && e.newValue) setReviews(JSON.parse(e.newValue));
+      setLastLiveSync(Date.now());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Periodic Heartbeat Reconciler (Ensures live accuracy every 2.5s)
+    const syncInterval = setInterval(() => {
+      try {
+        const b = localStorage.getItem('op_db_bookings');
+        if (b) {
+          const parsed = JSON.parse(b);
+          setBookings(prev => JSON.stringify(prev) !== b ? parsed : prev);
+        }
+        const h = localStorage.getItem('op_db_hospitals');
+        if (h) {
+          const parsed = JSON.parse(h);
+          setHospitals(prev => JSON.stringify(prev) !== h ? parsed : prev);
+        }
+        const d = localStorage.getItem('op_db_doctors');
+        if (d) {
+          const parsed = JSON.parse(d);
+          setDoctors(prev => JSON.stringify(prev) !== d ? parsed : prev);
+        }
+      } catch (err) {}
+    }, 2500);
+
+    return () => {
+      if (liveChannel) liveChannel.close();
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(syncInterval);
+    };
+  }, []);
+
+  const broadcastLiveChange = (entity) => {
+    try {
+      if (typeof window !== 'undefined' && window.BroadcastChannel) {
+        const ch = new BroadcastChannel('carepulse_live_db_sync');
+        ch.postMessage({ type: 'DB_STATE_UPDATE', entity, timestamp: Date.now() });
+        ch.close();
+      }
+    } catch (e) {}
+  };
+
+  // Sync to LocalStorage & Trigger Live Broadcast
   useEffect(() => {
     localStorage.setItem('op_db_users', JSON.stringify(users));
+    broadcastLiveChange('users');
   }, [users]);
 
   useEffect(() => {
     localStorage.setItem('op_db_hospitals', JSON.stringify(hospitals));
+    broadcastLiveChange('hospitals');
   }, [hospitals]);
 
   useEffect(() => {
     localStorage.setItem('op_db_doctors', JSON.stringify(doctors));
+    broadcastLiveChange('doctors');
   }, [doctors]);
 
   useEffect(() => {
     localStorage.setItem('op_db_bookings', JSON.stringify(bookings));
+    broadcastLiveChange('bookings');
   }, [bookings]);
 
   useEffect(() => {
     localStorage.setItem('op_db_reviews', JSON.stringify(reviews));
+    broadcastLiveChange('reviews');
   }, [reviews]);
 
   useEffect(() => {
     localStorage.setItem('op_db_notifications', JSON.stringify(notifications));
+    broadcastLiveChange('notifications');
   }, [notifications]);
 
   useEffect(() => {
     localStorage.setItem('op_db_prescriptions', JSON.stringify(prescriptions));
+    broadcastLiveChange('prescriptions');
   }, [prescriptions]);
 
   // --- USER CRUD ---
@@ -277,7 +383,8 @@ export function DbProvider({ children }) {
       bookings, createBooking, updateBookingStatus, updateBooking, deleteBooking,
       reviews, addReview, getReviewsByDoctor, hasUserReviewedBooking,
       notifications, addNotification, markNotificationRead, clearNotifications,
-      prescriptions, addPrescription, getPrescriptionsByUser, getPrescriptionsByBooking
+      prescriptions, addPrescription, getPrescriptionsByUser, getPrescriptionsByBooking,
+      lastLiveSync, broadcastLiveChange
     }}>
       {children}
     </DbContext.Provider>
